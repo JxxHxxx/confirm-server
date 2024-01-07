@@ -1,0 +1,2 @@
+### RAISE
+POST http://localhost:8010/api/confirm-documents/VAC4/raise
