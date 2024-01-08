@@ -1,5 +1,6 @@
 package com.jxx.approval.domain;
 
+import com.jxx.approval.dto.request.Document;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -7,56 +8,45 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "JXX_CONFIRM_DOCUMENT_MASTER", indexes = @Index(name = "IDX_CONFIRM_DOCUMENT_ID", columnList = "CONFIRM_DOCUMENT_ID", unique = true))
+@Table(name = "JXX_CONFIRM_DOCUMENT_MASTER",
+        indexes = @Index(name = "IDX_CONFIRM_DOCUMENT_ID", columnList = "CONFIRM_DOCUMENT_ID", unique = true))
 public class ConfirmDocument {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CONFIRM_DOCUMENT_PK")
-    @Comment(value = "결제 테이블 PK")
+    @Comment(value = "결재 문서 테이블 PK")
     private Long pk;
-
-    @Column(name = "CONFIRM_DOCUMENT_ID", nullable = false, unique = true)
-    @Comment(value = "결재 문서 ID")
-    private String confirmDocumentId;
-
-    @Column(name = "COMPANY_ID", nullable = false)
-    @Comment(value = "회사 ID")
-    private String companyId;
-
-    @Column(name = "DEPARTMENT_ID", nullable = false)
-    @Comment(value = "부서 ID")
-    private String departmentId;
-
-    @Column(name = "CREATE_SYSTEM", nullable = false)
-    @Comment(value = "결재 데이터를 생성한 시스템")
-    private String createSystem;
-
+    @Embedded
+    private Document document;
+    @Embedded
+    private Requester requester;
     @Column(name = "CONFIRM_STATUS", nullable = false)
     @Comment(value = "결재 상태")
     @Enumerated(EnumType.STRING)
     private ConfirmStatus confirmStatus;
+    @Column(name = "CREATE_SYSTEM", nullable = false)
+    @Comment(value = "결재 데이터를 생성한 시스템")
+    private String createSystem;
 
-    @Column(name = "DOCUMENT_TYPE", nullable = false)
-    @Enumerated(EnumType.STRING)
-    @Comment(value = "결재 양식 종류(ex 휴가, 구매 신청)")
-    private DocumentType documentType;
-
-    @Column(name = "APPROVAL_ID", nullable = true)
-    @Comment(value = "결재자 ID")
-    private String approvalId;
+    @OneToMany(mappedBy = "confirmDocument")
+    private List<Approver> approvers = new ArrayList<>();
 
     @Builder
-    public ConfirmDocument(String confirmDocumentId, String companyId, String departmentId, String createSystem, ConfirmStatus confirmStatus, DocumentType documentType, String approvalId) {
-        this.confirmDocumentId = confirmDocumentId;
-        this.companyId = companyId;
-        this.departmentId = departmentId;
-        this.createSystem = createSystem;
+    public ConfirmDocument(Document document, Requester requester, ConfirmStatus confirmStatus, String createSystem) {
+        this.document = document;
+        this.requester = requester;
         this.confirmStatus = confirmStatus;
-        this.documentType = documentType;
-        this.approvalId = approvalId;
+        this.createSystem = createSystem;
+    }
+
+    public void setApprovers(List<Approver> approvers) {
+
     }
 
     public void changeConfirmStatus(ConfirmStatus confirmStatus) {

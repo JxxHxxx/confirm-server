@@ -1,7 +1,6 @@
 package com.jxx.approval.dto.request;
 
-public record ApprovalForm(
-        String approvalId,
+public record ConfirmRaiseForm(
         String requesterId
 ) {
 }
