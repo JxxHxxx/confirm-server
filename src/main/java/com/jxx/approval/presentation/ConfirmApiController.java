@@ -1,11 +1,10 @@
 package com.jxx.approval.presentation;
 
+import com.jxx.approval.application.ApproverService;
 import com.jxx.approval.application.ConfirmService;
+import com.jxx.approval.dto.request.ApproverEnrollForm;
 import com.jxx.approval.dto.request.ConfirmRaiseForm;
-import com.jxx.approval.dto.response.ConfirmReadAllResponse;
-import com.jxx.approval.dto.response.ConfirmServiceDto;
-import com.jxx.approval.dto.response.ConfirmServiceResponse;
-import com.jxx.approval.dto.response.ResponseResult;
+import com.jxx.approval.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,6 +19,7 @@ import java.util.List;
 public class ConfirmApiController {
 
     private final ConfirmService confirmService;
+    private final ApproverService approverService;
 
     @GetMapping("/api/confirm-documents")
     public ResponseEntity<ResponseResult<ConfirmReadAllResponse>> readAll() {
@@ -44,6 +44,21 @@ public class ConfirmApiController {
         ConfirmServiceResponse response = confirmService.raise(confirmDocumentPk, form);
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/api/confirm-documents/raise")
+    public ResponseEntity<?> raise(@RequestParam(name = "cdid") String confirmDocumentId,
+                                   @RequestBody ConfirmRaiseForm form) {
+        ConfirmRaiseServiceResponse response = confirmService.raise(confirmDocumentId, form);
+
+        return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 상신 요청 결과", response));
+    }
+
+    @PostMapping("/api/confirm-documents/{confirm-document-pk}/approvers")
+    public ResponseEntity<?> enroll(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk,
+                                    @RequestBody List<ApproverEnrollForm> forms) {
+        List<ApproverServiceResponse> responses = approverService.enrollApprovers(forms, confirmDocumentPk);
+        return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재자 등록", responses));
     }
 
 }

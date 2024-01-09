@@ -36,7 +36,7 @@ public class Approver {
     private LocalDateTime approveTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CONFIRM_DOCUMENT_PK", columnDefinition = "CONFIRM_DOCUMENT_PK", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @JoinColumn(name = "CONFIRM_DOCUMENT_PK", referencedColumnName = "CONFIRM_DOCUMENT_PK", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Comment(value = "결재 문서 테이블 PK")
     private ConfirmDocument confirmDocument;
 

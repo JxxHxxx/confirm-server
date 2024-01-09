@@ -48,4 +48,20 @@ public class ConfirmDocument {
     public void changeConfirmStatus(ConfirmStatus confirmStatus) {
         this.confirmStatus = confirmStatus;
     }
+
+    public void checkDocumentRequester(String requesterId) {
+        if (!this.requester.isRequester(requesterId)) {
+            throw new IllegalArgumentException("결재 문서 내 결재 요청자와 결재를 요청한 사용자가 일치하지 않습니다.");
+        };
+    }
+
+    public String requesterId() {
+        return this.requester.getRequesterId();
+    }
+
+    public void verifyWhetherRiseIsPossible() {
+        if (!(ConfirmStatus.CREATE.equals(confirmStatus) || ConfirmStatus.UPDATE.equals(confirmStatus) || ConfirmStatus.REJECT.equals(confirmStatus))) {
+            throw new IllegalArgumentException("결재 불가합니다. 사유 :" + confirmStatus.getDescription());
+        }
+    }
 }

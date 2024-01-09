@@ -9,4 +9,6 @@ public interface ConfirmDocumentRepository extends JpaRepository<ConfirmDocument
     boolean existsByPk(Long pk);
 
     Optional<ConfirmDocument> findByPk(Long pk);
+
+    Optional<ConfirmDocument> findByDocumentConfirmDocumentId(String confirmDocumentId);
 }
