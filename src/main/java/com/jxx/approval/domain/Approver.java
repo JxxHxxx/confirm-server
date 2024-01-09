@@ -40,6 +40,11 @@ public class Approver {
     @Comment(value = "결재 문서 테이블 PK")
     private ConfirmDocument confirmDocument;
 
+    public void setConfirmDocument(ConfirmDocument confirmDocument) {
+        this.confirmDocument = confirmDocument;
+        confirmDocument.getApprovers().add(this);
+    }
+
     @Builder
     public Approver(Integer approvalOrder, String approvalId, ConfirmDocument confirmDocument) {
         this.approvalOrder = approvalOrder;

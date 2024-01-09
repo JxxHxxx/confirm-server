@@ -45,10 +45,6 @@ public class ConfirmDocument {
         this.createSystem = createSystem;
     }
 
-    public void setApprovers(List<Approver> approvers) {
-
-    }
-
     public void changeConfirmStatus(ConfirmStatus confirmStatus) {
         this.confirmStatus = confirmStatus;
     }
