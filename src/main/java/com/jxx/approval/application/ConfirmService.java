@@ -6,9 +6,11 @@ import com.jxx.approval.dto.request.ConfirmDocumentSearchCondition;
 import com.jxx.approval.dto.request.ConfirmRaiseForm;
 import com.jxx.approval.dto.request.Document;
 import com.jxx.approval.dto.response.ConfirmRaiseServiceResponse;
-import com.jxx.approval.dto.response.ConfirmServiceDto;
+import com.jxx.approval.dto.response.ConfirmDocumentServiceResponse;
 import com.jxx.approval.dto.response.ConfirmServiceResponse;
 import com.jxx.approval.infra.ApprovalLineRepository;
+import com.jxx.approval.infra.ConfirmDocumentMapper;
+import com.jxx.approval.infra.ConfirmDocumentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,29 +25,30 @@ public class ConfirmService {
 
     private final ConfirmDocumentRepository confirmDocumentRepository;
     private final ApprovalLineRepository approvalLineRepository;
+    private final ConfirmDocumentMapper confirmDocumentMapper;
+
     @Transactional
     public void createConfirmDocument(ConfirmCreateForm form) {
-        Document document = new Document(form.confirmDocument(), form.documentType());
+        Document document = new Document(form.confirmDocumentId(), form.documentType());
         Requester requester = new Requester(form.companyId(), form.departmentId(), form.requesterId());
 
         ConfirmDocument confirmDocument = ConfirmDocument.builder()
                 .document(document)
                 .requester(requester)
                 .createSystem(form.createSystem())
-                .confirmStatus(CREATE)
                 .build();
 
-        confirmDocumentRepository.save(confirmDocument);
+        confirmDocumentMapper.save(confirmDocument);
     }
 
-    public ConfirmServiceDto readByPk(Long confirmDocumentPk) {
+    public ConfirmDocumentServiceResponse readByPk(Long confirmDocumentPk) {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk)
                 .orElseThrow(() -> new IllegalArgumentException("없어요~"));
 
         return toConfirmServiceDto(confirmDocument);
     }
 
-    public List<ConfirmServiceDto> readAll() {
+    public List<ConfirmDocumentServiceResponse> readAll() {
         List<ConfirmDocument> confirmDocuments = confirmDocumentRepository.findAll();
 
         return confirmDocuments.stream()
@@ -74,11 +77,11 @@ public class ConfirmService {
         confirmDocument.verifyWhetherRiseIsPossible();
 
         confirmDocument.changeConfirmStatus(RAISE);
-        return new ConfirmRaiseServiceResponse(confirmDocument.getPk(), confirmDocument.requesterId(), confirmDocument.getConfirmStatus());
+        return new ConfirmRaiseServiceResponse(confirmDocument.getPk(), confirmDocument.getRequesterId(), confirmDocument.getConfirmStatus());
     }
 
-    private static ConfirmServiceDto toConfirmServiceDto(ConfirmDocument confirmDocument) {
-        return new ConfirmServiceDto(
+    private static ConfirmDocumentServiceResponse toConfirmServiceDto(ConfirmDocument confirmDocument) {
+        return new ConfirmDocumentServiceResponse(
                 confirmDocument.getPk(),
                 confirmDocument.getDocument().getConfirmDocumentId(),
                 confirmDocument.getRequester().getCompanyId(),
@@ -89,9 +92,7 @@ public class ConfirmService {
                 confirmDocument.getRequester().getRequesterId());
     }
 
-
-    //mybatis 써야 됨
-    public void search(ConfirmDocumentSearchCondition condition) {
-
+    public List<ConfirmDocumentServiceResponse> search(ConfirmDocumentSearchCondition condition) {
+        return confirmDocumentMapper.search(condition);
     }
 }

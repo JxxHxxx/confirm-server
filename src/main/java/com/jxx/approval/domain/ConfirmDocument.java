@@ -61,8 +61,25 @@ public class ConfirmDocument {
         };
     }
 
-    public String requesterId() {
+    public String getConfirmDocumentId() {
+        return this.document.getConfirmDocumentId();
+    }
+
+
+    public DocumentType getDocumentType() {
+        return this.document.getDocumentType();
+    }
+
+    public String getRequesterId() {
         return this.requester.getRequesterId();
+    }
+
+    public String getDepartmentId() {
+        return this.requester.getDepartmentId();
+    }
+
+    public String getCompanyId() {
+        return this.requester.getCompanyId();
     }
 
     public void verifyWhetherRiseIsPossible() {

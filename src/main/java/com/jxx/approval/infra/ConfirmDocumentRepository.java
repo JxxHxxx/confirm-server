@@ -1,5 +1,6 @@
-package com.jxx.approval.domain;
+package com.jxx.approval.infra;
 
+import com.jxx.approval.domain.ConfirmDocument;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

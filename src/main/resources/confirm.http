@@ -1,2 +1,67 @@
-### RAISE
-GET http://localhost:8010/api/confirm-documents/1/test
+### INSERT 1
+POST http://localhost:8010/api/confirm-documents
+Content-Type: application/json
+
+{
+  "confirmDocumentId" : "DCR0000001",
+  "companyId" :  "JXX",
+  "departmentId" :  "D00001",
+  "createSystem" :  "API",
+  "documentType" :  "DC",
+  "requesterId" : "U00001"
+}
+
+### INSERT 2
+POST http://localhost:8010/api/confirm-documents
+Content-Type: application/json
+
+{
+  "confirmDocumentId" : "VAC0000001",
+  "companyId" :  "JXX",
+  "departmentId" :  "D00001",
+  "createSystem" :  "API",
+  "documentType" :  "VAC",
+  "requesterId" : "U00001"
+}
+
+### INSERT 3
+POST http://localhost:8010/api/confirm-documents
+Content-Type: application/json
+
+{
+  "confirmDocumentId" : "DCR0000002",
+  "companyId" :  "JXX",
+  "departmentId" :  "D00001",
+  "createSystem" :  "API",
+  "documentType" :  "DC",
+  "requesterId" : "U00002"
+}
+
+### INSERT 4
+POST http://localhost:8010/api/confirm-documents
+Content-Type: application/json
+
+{
+  "confirmDocumentId" : "DCR0000003",
+  "companyId" :  "JXX",
+  "departmentId" :  "D00001",
+  "createSystem" :  "API",
+  "documentType" :  "DC",
+  "requesterId" : "U00002"
+}
+
+### INSERT 5
+POST http://localhost:8010/api/confirm-documents
+Content-Type: application/json
+
+{
+  "confirmDocumentId" : "DCR0000004",
+  "companyId" :  "JXX",
+  "departmentId" :  "D00001",
+  "createSystem" :  "API",
+  "documentType" :  "DC",
+  "requesterId" : "U00001"
+}
+
+### SEARCH
+GET http://localhost:8010/api/confirm-documents?requesterId=U00001&confirmDocumentId=&approvalId=&createDate=&confirmStatus=

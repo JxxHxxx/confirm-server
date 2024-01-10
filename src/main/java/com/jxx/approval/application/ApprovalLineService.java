@@ -2,7 +2,7 @@ package com.jxx.approval.application;
 
 import com.jxx.approval.domain.ApprovalLine;
 import com.jxx.approval.domain.ConfirmDocument;
-import com.jxx.approval.domain.ConfirmDocumentRepository;
+import com.jxx.approval.infra.ConfirmDocumentRepository;
 import com.jxx.approval.dto.request.ApproverEnrollForm;
 import com.jxx.approval.dto.response.ApproverServiceResponse;
 import com.jxx.approval.infra.ApprovalLineRepository;

@@ -17,7 +17,7 @@ public class ConfirmDocumentSearchCondition {
     private ConfirmStatus confirmStatus;
     private String approvalId;
     private String requesterId;
-    private LocalDate localDate;
+    private LocalDate createDate;
 
 
 }

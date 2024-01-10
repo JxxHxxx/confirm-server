@@ -3,10 +3,11 @@ package com.jxx.approval.presentation;
 import com.jxx.approval.application.ApprovalLineService;
 import com.jxx.approval.application.ConfirmService;
 import com.jxx.approval.dto.request.ApproverEnrollForm;
+import com.jxx.approval.dto.request.ConfirmCreateForm;
 import com.jxx.approval.dto.request.ConfirmDocumentSearchCondition;
 import com.jxx.approval.dto.request.ConfirmRaiseForm;
 import com.jxx.approval.dto.response.*;
-import com.jxx.approval.infra.ConfirmDocumentSearchRepository;
+import com.jxx.approval.infra.ConfirmDocumentMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,28 +23,33 @@ public class ConfirmApiController {
 
     private final ConfirmService confirmService;
     private final ApprovalLineService approvalLineService;
-    private final ConfirmDocumentSearchRepository searchRepository;
+    private final ConfirmDocumentMapper searchRepository;
 
     //결재 문서 생성
+    @PostMapping("/api/confirm-documents")
+    public ResponseEntity<?> save(@RequestBody ConfirmCreateForm form) {
+        confirmService.createConfirmDocument(form);
+        return ResponseEntity.ok("생성");
+    }
 
     // 결재 문서 검색
     @GetMapping("/api/confirm-documents")
     public ResponseEntity<?> searchConfirmDocument(@ModelAttribute ConfirmDocumentSearchCondition condition) {
-        confirmService.search(condition);
-        return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "검색 조회", null));
+        List<ConfirmDocumentServiceResponse> responses = confirmService.search(condition);
+        return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "검색 조회", responses));
     }
 
     // 결재 문서 PK 조회
     @GetMapping("/api/confirm-documents/{confirm-document-pk}")
     public ResponseEntity<ResponseResult<?>> readByPk(@PathVariable(value = "confirm-document-pk") Long confirmDocumentPk) {
-        ConfirmServiceDto response = confirmService.readByPk(confirmDocumentPk);
+        ConfirmDocumentServiceResponse response = confirmService.readByPk(confirmDocumentPk);
 
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 단건 조회", response));
     }
 
     @GetMapping("/api/confirm-documents/{confirm-document-pk}/test")
     public ResponseEntity<ResponseResult<?>> readByPkV2(@PathVariable(value = "confirm-document-pk") Long confirmDocumentPk) {
-        ConfirmServiceDto response = searchRepository.select(confirmDocumentPk);
+        ConfirmDocumentServiceResponse response = searchRepository.select(confirmDocumentPk);
 
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 단건 조회", response));
     }

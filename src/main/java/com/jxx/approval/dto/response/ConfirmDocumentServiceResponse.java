@@ -3,7 +3,7 @@ package com.jxx.approval.dto.response;
 import com.jxx.approval.domain.ConfirmStatus;
 import com.jxx.approval.domain.DocumentType;
 
-public record ConfirmServiceDto(
+public record ConfirmDocumentServiceResponse(
         Long pk,
         String confirmDocumentId,
         String companyId,
