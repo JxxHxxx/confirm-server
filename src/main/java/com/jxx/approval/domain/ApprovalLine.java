@@ -12,26 +12,26 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "JXX_APPROVER_MASTER")
-public class Approver {
+@Table(name = "JXX_APPROVAL_LINE_MASTER")
+public class ApprovalLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "APPROVER_PK")
+    @Column(name = "APPROVER_LINE_PK")
     @Comment(value = "결재자 테이블 PK")
     private Long pk;
-    @Column(name = "APPROVAL_ORDER", nullable = false)
+    @Column(name = "APPROVAL_LINE_ORDER", nullable = false)
     @Comment(value = "결재 순서")
     private Integer approvalOrder;
-    @Column(name = "APPROVAL_ID", nullable = false)
+    @Column(name = "APPROVAL_LINE_ID", nullable = false)
     @Comment(value = "결재자 ID")
     private String approvalId;
-    @Column(name = "APPROVE_STATUS", nullable = false)
+    @Column(name = "APPROVAL_STATUS", nullable = false)
     @Comment(value = "결재 승인 여부")
     @Enumerated(EnumType.STRING)
     private ApproveStatus approveStatus;
 
-    @Column(name = "APPROVE_TIME", nullable = true)
+    @Column(name = "APPROVAL_TIME", nullable = true)
     @Comment(value = "결재 승인/반려 일시")
     private LocalDateTime approveTime;
 
@@ -42,11 +42,11 @@ public class Approver {
 
     public void setConfirmDocument(ConfirmDocument confirmDocument) {
         this.confirmDocument = confirmDocument;
-        confirmDocument.getApprovers().add(this);
+        confirmDocument.getApprovalLines().add(this);
     }
 
     @Builder
-    public Approver(Integer approvalOrder, String approvalId, ConfirmDocument confirmDocument) {
+    public ApprovalLine(Integer approvalOrder, String approvalId, ConfirmDocument confirmDocument) {
         this.approvalOrder = approvalOrder;
         this.approvalId = approvalId;
         this.approveTime = null;

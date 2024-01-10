@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jxx.approval.infra.ConfirmDocumentSearchRepository">
+    <select id="select" parameterType="Long" resultType="com.jxx.approval.dto.response.ConfirmServiceDto">
+        SELECT * FROM JXX_CONFIRM_DOCUMENT_MASTER
+                 WHERE CONFIRM_DOCUMENT_PK=#{confirmDocumentPk}
+    </select>
+</mapper>

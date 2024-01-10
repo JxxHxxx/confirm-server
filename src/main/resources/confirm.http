@@ -1,2 +1,2 @@
 ### RAISE
-POST http://localhost:8010/api/confirm-documents/VAC4/raise
+GET http://localhost:8010/api/confirm-documents/1/test

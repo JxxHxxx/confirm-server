@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,8 +35,12 @@ public class ConfirmDocument {
     @Comment(value = "결재 데이터를 생성한 시스템")
     private String createSystem;
 
+    @Column(name = "CREATE_TIME", nullable = false)
+    @Comment(value = "결재 문서 생성 시간")
+    private LocalDateTime createTime;
+
     @OneToMany(mappedBy = "confirmDocument")
-    private List<Approver> approvers = new ArrayList<>();
+    private List<ApprovalLine> approvalLines = new ArrayList<>();
 
     @Builder
     public ConfirmDocument(Document document, Requester requester, ConfirmStatus confirmStatus, String createSystem) {
@@ -43,6 +48,7 @@ public class ConfirmDocument {
         this.requester = requester;
         this.confirmStatus = confirmStatus;
         this.createSystem = createSystem;
+        this.createTime = LocalDateTime.now();
     }
 
     public void changeConfirmStatus(ConfirmStatus confirmStatus) {
