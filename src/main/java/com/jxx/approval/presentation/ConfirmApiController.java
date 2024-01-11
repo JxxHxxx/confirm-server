@@ -32,6 +32,9 @@ public class ConfirmApiController {
         return ResponseEntity.ok("생성");
     }
 
+    //결재 문서 업로드
+
+
     // 결재 문서 검색
     @GetMapping("/api/confirm-documents")
     public ResponseEntity<?> searchConfirmDocument(@ModelAttribute ConfirmDocumentSearchCondition condition) {
