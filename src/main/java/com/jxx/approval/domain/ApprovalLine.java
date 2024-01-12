@@ -53,4 +53,14 @@ public class ApprovalLine {
         this.approveStatus = ApproveStatus.PENDING;
         this.confirmDocument = confirmDocument;
     }
+
+    public boolean matchApprovalId(String approvalId) {
+        return this.approvalOrder.equals(approvalId);
+    }
+
+    public void tryAccept() {
+        if (!approveStatus.equals(ApproveStatus.PENDING)) {
+            throw new IllegalArgumentException("이미 처리한 결재 문서입니다.");
+        }
+    }
 }

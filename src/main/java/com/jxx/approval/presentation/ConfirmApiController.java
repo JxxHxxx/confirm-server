@@ -23,8 +23,6 @@ public class ConfirmApiController {
 
     private final ConfirmService confirmService;
     private final ApprovalLineService approvalLineService;
-    private final ConfirmDocumentMapper searchRepository;
-
     //결재 문서 생성
     @PostMapping("/api/confirm-documents")
     public ResponseEntity<?> save(@RequestBody ConfirmCreateForm form) {
@@ -40,7 +38,6 @@ public class ConfirmApiController {
 
     //결재 문서 업로드
 
-
     // 결재 문서 검색
     @GetMapping("/api/confirm-documents")
     public ResponseEntity<?> searchConfirmDocument(@ModelAttribute ConfirmDocumentSearchCondition condition) {
@@ -52,13 +49,6 @@ public class ConfirmApiController {
     @GetMapping("/api/confirm-documents/{confirm-document-pk}")
     public ResponseEntity<ResponseResult<?>> readByPk(@PathVariable(value = "confirm-document-pk") Long confirmDocumentPk) {
         ConfirmDocumentServiceResponse response = confirmService.readByPk(confirmDocumentPk);
-
-        return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 단건 조회", response));
-    }
-
-    @GetMapping("/api/confirm-documents/{confirm-document-pk}/test")
-    public ResponseEntity<ResponseResult<?>> readByPkV2(@PathVariable(value = "confirm-document-pk") Long confirmDocumentPk) {
-        ConfirmDocumentServiceResponse response = searchRepository.select(confirmDocumentPk);
 
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 단건 조회", response));
     }
@@ -80,16 +70,23 @@ public class ConfirmApiController {
 
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 상신 요청 결과", response));
     }
-    // 결재 문서 승인
-    // 결재 문서 반려
-    // 결재 문서 취소
-    // 결재 문서 수정
 
     // 결재 문서에 대한 결재자 등록
     @PostMapping("/api/confirm-documents/{confirm-document-pk}/approvals")
     public ResponseEntity<?> enrollApprovalLine(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk,
-                                    @RequestBody List<ApproverEnrollForm> forms) {
+                                                @RequestBody List<ApproverEnrollForm> forms) {
         List<ApproverServiceResponse> responses = approvalLineService.enrollApprovers(forms, confirmDocumentPk);
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재자 등록", responses));
     }
+
+    // 결재 문서 승인
+    @PatchMapping("/api/confirm-documents/{confirm-document-pk}/accept")
+    public ResponseEntity<?> acceptConfirmDocument(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk) {
+
+        return ResponseEntity.ok(null);
+    }
+    // 결재 문서 반려
+    // 결재 문서 취소
+    // 결재 문서 수정
+
 }
