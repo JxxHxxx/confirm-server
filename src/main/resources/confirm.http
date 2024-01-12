@@ -33,7 +33,7 @@ Content-Type: application/json
   "companyId" :  "JXX",
   "departmentId" :  "D00001",
   "createSystem" :  "API",
-  "documentType" :  "DC",
+  "documentType" :  "DCR",
   "requesterId" : "U00002"
 }
 
@@ -46,7 +46,7 @@ Content-Type: application/json
   "companyId" :  "JXX",
   "departmentId" :  "D00001",
   "createSystem" :  "API",
-  "documentType" :  "DC",
+  "documentType" :  "DCR",
   "requesterId" : "U00002"
 }
 
@@ -59,7 +59,7 @@ Content-Type: application/json
   "companyId" :  "JXX",
   "departmentId" :  "D00001",
   "createSystem" :  "API",
-  "documentType" :  "DC",
+  "documentType" :  "DCR",
   "requesterId" : "U00001"
 }
 

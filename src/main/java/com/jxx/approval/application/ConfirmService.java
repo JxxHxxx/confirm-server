@@ -11,10 +11,12 @@ import com.jxx.approval.dto.response.ConfirmServiceResponse;
 import com.jxx.approval.infra.ApprovalLineRepository;
 import com.jxx.approval.infra.ConfirmDocumentMapper;
 import com.jxx.approval.infra.ConfirmDocumentRepository;
+import com.jxx.approval.utils.ConfirmDocumentGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.jxx.approval.domain.ConfirmStatus.*;
@@ -28,8 +30,25 @@ public class ConfirmService {
     private final ConfirmDocumentMapper confirmDocumentMapper;
 
     @Transactional
+    public void createAuto() {
+        ConfirmDocument confirmDocument = ConfirmDocumentGenerator.execute();
+        confirmDocumentMapper.save(confirmDocument);
+    }
+
+    @Transactional
+    public void createAuto(int iter) {
+        List<ConfirmDocument> confirmDocuments = new ArrayList<>();
+        for (int i = 0; i < iter; i++) {
+            ConfirmDocument confirmDocument = ConfirmDocumentGenerator.execute();
+            confirmDocuments.add(confirmDocument);
+        }
+
+        confirmDocumentRepository.saveAll(confirmDocuments);
+    }
+
+    @Transactional
     public void createConfirmDocument(ConfirmCreateForm form) {
-        Document document = new Document(form.confirmDocumentId(), form.documentType());
+        Document document = new Document(form.documentType());
         Requester requester = new Requester(form.companyId(), form.departmentId(), form.requesterId());
 
         ConfirmDocument confirmDocument = ConfirmDocument.builder()

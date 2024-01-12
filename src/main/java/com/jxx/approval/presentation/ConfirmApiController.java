@@ -32,6 +32,12 @@ public class ConfirmApiController {
         return ResponseEntity.ok("생성");
     }
 
+    @PostMapping("/test/confirm-documents")
+    public ResponseEntity<?> saveAuto(@RequestParam("iter") int iter) {
+        confirmService.createAuto(iter);
+        return ResponseEntity.ok("생성");
+    }
+
     //결재 문서 업로드
 
 
