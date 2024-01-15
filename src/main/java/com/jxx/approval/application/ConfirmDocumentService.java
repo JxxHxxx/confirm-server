@@ -23,7 +23,7 @@ import static com.jxx.approval.domain.ConfirmStatus.*;
 
 @Service
 @RequiredArgsConstructor
-public class ConfirmService {
+public class ConfirmDocumentService {
 
     private final ConfirmDocumentRepository confirmDocumentRepository;
     private final ApprovalLineRepository approvalLineRepository;
