@@ -24,6 +24,7 @@ public class ApprovalLineService {
     private final ApprovalLineRepository approvalLineRepository;
     private final ConfirmDocumentRepository confirmDocumentRepository;
 
+    // 리팩토링 29행 stream 에서 null 들어가서 혼란스러움, 34행 이 제일먼저 선언되도 되듯? 37행 필요 없어보임, 29행 생성자에서 박으면 될듯?
     @Transactional
     public List<ApprovalLineServiceResponse> enrollApprovals(List<ApproverEnrollForm> enrollForms, Long confirmDocumentPk) {
         List<ApprovalLine> approvalLines = enrollForms.stream()
