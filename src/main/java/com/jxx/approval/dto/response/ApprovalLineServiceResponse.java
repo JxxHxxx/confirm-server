@@ -2,10 +2,10 @@ package com.jxx.approval.dto.response;
 
 import com.jxx.approval.domain.ApproveStatus;
 
-public record ApproverServiceResponse(
+public record ApprovalLineServiceResponse(
         Long pk,
-        Integer approverOrder,
-        String approverId,
+        Integer approvalOrder,
+        String approvalId,
         ApproveStatus approveStatus
 ) {
 }

@@ -25,7 +25,7 @@ public class ApprovalLine {
     private Integer approvalOrder;
     @Column(name = "APPROVAL_LINE_ID", nullable = false)
     @Comment(value = "결재자 ID")
-    private String approvalId;
+    private String approvalLineId;
     @Column(name = "APPROVAL_STATUS", nullable = false)
     @Comment(value = "결재 승인 여부")
     @Enumerated(EnumType.STRING)
@@ -46,21 +46,24 @@ public class ApprovalLine {
     }
 
     @Builder
-    public ApprovalLine(Integer approvalOrder, String approvalId, ConfirmDocument confirmDocument) {
+    public ApprovalLine(Integer approvalOrder, String approvalLineId, ConfirmDocument confirmDocument) {
         this.approvalOrder = approvalOrder;
-        this.approvalId = approvalId;
+        this.approvalLineId = approvalLineId;
         this.approveTime = null;
         this.approveStatus = ApproveStatus.PENDING;
         this.confirmDocument = confirmDocument;
     }
 
-    public boolean matchApprovalId(String approvalId) {
-        return this.approvalOrder.equals(approvalId);
+    public boolean matchApprovalLineId(String approvalId) {
+        return this.approvalLineId.equals(approvalId);
     }
 
     public void tryAccept() {
         if (!approveStatus.equals(ApproveStatus.PENDING)) {
             throw new IllegalArgumentException("이미 처리한 결재 문서입니다.");
         }
+    }
+    protected void accept() {
+        approveStatus = ApproveStatus.ACCEPT;
     }
 }

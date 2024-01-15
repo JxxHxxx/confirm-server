@@ -125,7 +125,7 @@ public class ConfirmDocumentService {
 
         List<ApprovalLine> approvalLines = confirmDocument.getApprovalLines();
         ApprovalLine findApprovalLine = approvalLines.stream()
-                .filter(approvalLine -> approvalLine.matchApprovalId(approvalId))
+                .filter(approvalLine -> approvalLine.matchApprovalLineId(approvalId))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException());
 

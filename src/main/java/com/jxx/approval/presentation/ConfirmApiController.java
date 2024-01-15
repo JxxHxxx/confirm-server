@@ -2,10 +2,7 @@ package com.jxx.approval.presentation;
 
 import com.jxx.approval.application.ApprovalLineService;
 import com.jxx.approval.application.ConfirmDocumentService;
-import com.jxx.approval.dto.request.ApproverEnrollForm;
-import com.jxx.approval.dto.request.ConfirmCreateForm;
-import com.jxx.approval.dto.request.ConfirmDocumentSearchCondition;
-import com.jxx.approval.dto.request.ConfirmRaiseForm;
+import com.jxx.approval.dto.request.*;
 import com.jxx.approval.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,17 +62,20 @@ public class ConfirmApiController {
     @PostMapping("/api/confirm-documents/{confirm-document-pk}/approvals")
     public ResponseEntity<?> enrollApprovalLine(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk,
                                                 @RequestBody List<ApproverEnrollForm> forms) {
-        List<ApproverServiceResponse> responses = approvalLineService.enrollApprovers(forms, confirmDocumentPk);
+        List<ApprovalLineServiceResponse> responses = approvalLineService.enrollApprovers(forms, confirmDocumentPk);
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재자 등록", responses));
     }
 
     // 결재 문서 승인
+    // 1. 해당 결재 문서에 대한 결재자가 맞는지 확인
+    // 2. 결재 진행
     @PatchMapping("/api/confirm-documents/{confirm-document-pk}/accept")
-    public ResponseEntity<?> acceptConfirmDocument(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk) {
+    public ResponseEntity<?> acceptConfirmDocument(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk,
+                                                   @RequestBody ApprovalInformationForm form) {
 
+        ApprovalLineServiceResponse response = approvalLineService.approveConfirmDocument(confirmDocumentPk, form);
 
-
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 승인", response));
     }
     // 결재 문서 반려
     // 결재 문서 취소
