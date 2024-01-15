@@ -66,4 +66,16 @@ public class ApprovalLine {
     protected void accept() {
         approveStatus = ApproveStatus.ACCEPT;
     }
+
+    protected void changeApproveStatus(ApproveStatus approveStatus) {
+        this.approveStatus = approveStatus;
+    }
+
+    public boolean checkApproveStatus(ApproveStatus approveStatus) {
+        return this.approveStatus.equals(approveStatus);
+    }
+
+    public boolean isBeforeOrderThan(ApprovalLine approvalLine) {
+        return this.approvalOrder < approvalLine.getApprovalOrder();
+    }
 }

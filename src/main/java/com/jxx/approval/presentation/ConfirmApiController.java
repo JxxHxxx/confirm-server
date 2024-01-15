@@ -62,7 +62,7 @@ public class ConfirmApiController {
     @PostMapping("/api/confirm-documents/{confirm-document-pk}/approvals")
     public ResponseEntity<?> enrollApprovalLine(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk,
                                                 @RequestBody List<ApproverEnrollForm> forms) {
-        List<ApprovalLineServiceResponse> responses = approvalLineService.enrollApprovers(forms, confirmDocumentPk);
+        List<ApprovalLineServiceResponse> responses = approvalLineService.enrollApprovals(forms, confirmDocumentPk);
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재자 등록", responses));
     }
 
@@ -78,6 +78,15 @@ public class ConfirmApiController {
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 승인", response));
     }
     // 결재 문서 반려
+    @PatchMapping("/api/confirm-documents/{confirm-document-pk}/reject")
+    public ResponseEntity<?> rejectConfirmDocument(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk,
+                                                   @RequestBody ApprovalInformationForm form) {
+
+        ApprovalLineServiceResponse response = approvalLineService.rejectConfirmDocument(confirmDocumentPk, form);
+
+        return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 반려", response));
+    }
+
     // 결재 문서 취소
     // 결재 문서 수정
 
