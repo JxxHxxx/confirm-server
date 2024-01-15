@@ -62,15 +62,6 @@ public class ConfirmApiController {
         return ResponseEntity.ok(response);
     }
 
-    // 결재 문서 상신
-    @PostMapping("/api/confirm-documents/raise")
-    public ResponseEntity<?> raise(@RequestParam(name = "cdid") String confirmDocumentId,
-                                   @RequestBody ConfirmRaiseForm form) {
-        ConfirmRaiseServiceResponse response = confirmService.raise(confirmDocumentId, form);
-
-        return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 상신 요청 결과", response));
-    }
-
     // 결재 문서에 대한 결재자 등록
     @PostMapping("/api/confirm-documents/{confirm-document-pk}/approvals")
     public ResponseEntity<?> enrollApprovalLine(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk,
