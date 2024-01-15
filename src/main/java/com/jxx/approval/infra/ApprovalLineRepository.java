@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface ApprovalLineRepository extends JpaRepository<ApprovalLine, Long> {
 
-    List<ApprovalLine> findByConfirmDocument(Long confirmDocumentPk);
+    List<ApprovalLine> findByConfirmDocumentId(Long confirmDocumentPk);
 }

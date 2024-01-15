@@ -82,3 +82,13 @@ Content-Type: application/json
     "approvalOrder": "2"
   }
 ]
+
+###
+PATCH http://localhost:8010/api/confirm-documents/607/accept
+Content-Type: application/json
+
+{
+   "companyId": "",
+   "departmentId": "",
+   "approvalLineId": "J20020009"
+}

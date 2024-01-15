@@ -46,7 +46,7 @@ public class ApprovalLineService {
     }
 
     public ApprovalLineServiceResponse approveConfirmDocument(Long confirmDocumentPk, ApprovalInformationForm form) {
-        List<ApprovalLine> approvalLines = approvalLineRepository.findByConfirmDocument(confirmDocumentPk);
+        List<ApprovalLine> approvalLines = approvalLineRepository.findByConfirmDocumentId(confirmDocumentPk);
         // 해당 결재 문서가 없는 경우 처리
         if (approvalLines.isEmpty()) {
             throw new IllegalArgumentException("존재하지 않은 결재 문서입니다.");
