@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class ConfirmDocumentFormElementApiController {
     private final ConfirmDocumentFormElementService confirmDocumentFormElementService;
 
     @PostMapping("/admin/confirm-document-elements")
-    public ResponseEntity<?> createElement(List<ConfirmDocumentElementForm> form) {
+    public ResponseEntity<?> createElement(@RequestBody List<ConfirmDocumentElementForm> form) {
         List<ConfirmDocumentElementServiceResponse> response = confirmDocumentFormElementService.createElements(form);
 
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "생성 완료", response));
@@ -38,7 +39,7 @@ public class ConfirmDocumentFormElementApiController {
     }
 
     @PostMapping("/admin/confirm-document-form-elements")
-    public ResponseEntity<?> createFormElement(FormElementCreateRequest request) {
+    public ResponseEntity<?> createFormElement(@RequestBody FormElementCreateRequest request) {
         confirmDocumentFormElementService.createFormElement(request);
 
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 양식 생성 완료", null));

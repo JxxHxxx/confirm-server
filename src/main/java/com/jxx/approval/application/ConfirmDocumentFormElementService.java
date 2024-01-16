@@ -57,7 +57,7 @@ public class ConfirmDocumentFormElementService {
         ConfirmDocumentForm confirmDocumentForm = new ConfirmDocumentForm(request.formId(), request.formName(), request.companyId());
 
         ConfirmDocumentForm savedForm = formRepository.save(confirmDocumentForm);
-        List<ConfirmDocumentElement> elements = elementRepository.findByPkIn(request.pks());
+        List<ConfirmDocumentElement> elements = elementRepository.findByPkIn(request.elementPks());
 
         List<ConfirmDocumentFormElement> formElements = elements.stream()
                 .map(element -> ConfirmDocumentFormElement.builder()

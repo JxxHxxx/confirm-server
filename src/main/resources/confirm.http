@@ -48,3 +48,34 @@ Content-Type: application/json
 {
   "requesterId": "J20240007"
 }
+
+
+### 요소 생성
+POST http://localhost:8010/admin/confirm-document-elements
+Content-Type: application/json
+
+[
+  {
+    "elementKey" : "title",
+    "elementName": "제목"
+  },
+  {
+    "elementKey" : "request department",
+    "elementName": "요청 부서"
+  },
+  {
+    "elementKey" : "request content",
+    "elementName": "요청 내용"
+  }
+]
+
+###
+POST http://localhost:8010/admin/confirm-document-form-elements
+Content-Type: application/json
+
+{
+  "elementPks": [1,2,3],
+  "formId": "N00003",
+  "formName" : "기본 양식3",
+  "companyId" : "JXX"
+}

@@ -23,9 +23,11 @@ public class ConfirmDocumentFormElement {
     private Long pk;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CONFIRM_DOCUMENT_ELEMENT_PK", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private ConfirmDocumentElement confirmDocumentElement;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CONFIRM_DOCUMENT_FORM_PK", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private ConfirmDocumentForm confirmDocumentForm;
 
     private LocalDateTime createTime;
