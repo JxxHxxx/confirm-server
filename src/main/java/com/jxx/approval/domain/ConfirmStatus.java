@@ -2,6 +2,8 @@ package com.jxx.approval.domain;
 
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 public enum ConfirmStatus {
     CREATE("결재 생성"), // 200
@@ -12,6 +14,9 @@ public enum ConfirmStatus {
     CANCEL("결재 취소"); // 100
 
     private final String description;
+
+    protected static final List<ConfirmStatus> cancelPossible = List.of(CREATE, UPDATE, REJECT);
+    protected static final List<ConfirmStatus> raisePossible = List.of(CREATE, UPDATE, REJECT);
 
     ConfirmStatus(String description) {
         this.description = description;

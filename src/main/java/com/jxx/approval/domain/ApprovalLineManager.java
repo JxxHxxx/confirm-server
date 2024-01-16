@@ -10,8 +10,7 @@ public class ApprovalLineManager {
     private final List<ApprovalLine> approvalLines;
     private final String approvalLineId;
     private ApprovalLine approvalLine;
-    
-    private boolean afterPropertiesSetFlag;
+    private boolean isEmptyApprovalLineFlag;
     private boolean checkBelongInApprovalLineFlag;
     private boolean checkApprovalOrderLineFlag;
 
@@ -22,21 +21,20 @@ public class ApprovalLineManager {
 
         checkBelongInApprovalLineFlag = false;
         checkApprovalOrderLineFlag = false;
-        afterPropertiesSetFlag = false;
+        isEmptyApprovalLineFlag = false;
     }
     
-    public ApprovalLineManager afterPropertiesSet() {
+    public ApprovalLineManager isEmptyApprovalLine() {
         if (approvalLines.isEmpty()) {
             throw new IllegalArgumentException("존재하지 않은 결재 문서입니다.");
         }
-        afterPropertiesSetFlag = true;
+        isEmptyApprovalLineFlag = true;
         return this;
     }
 
-
-    // 해당 결재 문서 결재 권한이 있는지 여부
+    // 해당 결재 문서 권한이 있는지 검증
     public ApprovalLineManager checkBelongInApprovalLine() {
-        if (!afterPropertiesSetFlag) {
+        if (!isEmptyApprovalLineFlag) {
             throw new IllegalArgumentException("afterPropertiesSetFlag() 를 호출하세요.");
         }
         ApprovalLine approvalLine = approvalLines.stream()
@@ -49,17 +47,17 @@ public class ApprovalLineManager {
         return this;
     }
 
-    // 이전 결재자가 결재를 했는지 여부
-    public ApprovalLineManager checkApprovalOrderLine() {
-        if (!afterPropertiesSetFlag || !checkBelongInApprovalLineFlag) {
+    // 자신의 결재 순서인지 검증
+    public ApprovalLineManager checkApprovalLineOrder() {
+        if (!isEmptyApprovalLineFlag || !checkBelongInApprovalLineFlag) {
             throw new IllegalArgumentException("filterRequesterInApprovalLine() 이 호출되지 않았습니다.");
         }
 
-        if (previousApprovalLineResultIs(ApproveStatus.PENDING)) {
+        if (previousOrderApprovalLine(ApproveStatus.PENDING)) {
             throw new IllegalArgumentException("당신의 차례가 아닙니다.");
         }
 
-        if (previousApprovalLineResultIs(ApproveStatus.REJECT)) {
+        if (previousOrderApprovalLine(ApproveStatus.REJECT)) {
             throw new IllegalArgumentException("반려된 결재 문서입니다.");
         }
 
@@ -68,7 +66,7 @@ public class ApprovalLineManager {
     }
 
     public ApprovalLine changeApproveStatus(ApproveStatus approveStatus) {
-        if (!afterPropertiesSetFlag || !checkBelongInApprovalLineFlag || !checkApprovalOrderLineFlag) {
+        if (!isEmptyApprovalLineFlag || !checkBelongInApprovalLineFlag || !checkApprovalOrderLineFlag) {
             throw new IllegalArgumentException("checkRequestersOrderTurn() 이 호출되지 않았습니다.");
         }
         
@@ -76,7 +74,7 @@ public class ApprovalLineManager {
         return approvalLine;
     }
 
-    private boolean previousApprovalLineResultIs(ApproveStatus approveStatus) {
+    private boolean previousOrderApprovalLine(ApproveStatus approveStatus) {
         return approvalLines.stream()
                 .filter(al -> al.isBeforeOrderThan(approvalLine)) // 이전 결재자 필터링
                 .anyMatch(al -> al.checkApproveStatus(approveStatus));

@@ -88,6 +88,14 @@ public class ConfirmApiController {
     }
 
     // 결재 문서 취소 - policy 상신 완료된 문서는 취소 불가능
+    @PatchMapping("/api/confirm-documents/{confirm-document-pk}/cancel")
+    public ResponseEntity<?> cancelConfirmDocument(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk,
+                                                   @RequestBody ConfirmDocumentCancelForm form) {
+
+        ConfirmDocumentServiceResponse response = approvalLineService.cancelConfirmDocument(confirmDocumentPk, form);
+
+        return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 반려", response));
+    }
     // 결재 문서 수정
 
 }

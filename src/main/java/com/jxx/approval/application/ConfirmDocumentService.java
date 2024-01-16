@@ -80,7 +80,7 @@ public class ConfirmDocumentService {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk)
                 .orElseThrow(() -> new IllegalArgumentException());
 
-        confirmDocument.checkDocumentRequester(form.requesterId());
+        confirmDocument.isDocumentRequester(form.requesterId());
         confirmDocument.verifyWhetherRiseIsPossible();
 
         confirmDocument.changeConfirmStatus(RAISE);
@@ -92,7 +92,7 @@ public class ConfirmDocumentService {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByDocumentConfirmDocumentId(confirmDocumentId)
                 .orElseThrow(() -> new IllegalArgumentException());
 
-        confirmDocument.checkDocumentRequester(form.requesterId());
+        confirmDocument.isDocumentRequester(form.requesterId());
         confirmDocument.verifyWhetherRiseIsPossible();
 
         confirmDocument.changeConfirmStatus(RAISE);

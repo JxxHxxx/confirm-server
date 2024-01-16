@@ -40,3 +40,11 @@ Content-Type: application/json
   "departmentId": "",
   "approvalLineId": "J20020001"
 }
+
+### 문서 파기
+PATCH http://localhost:8010/api/confirm-documents/619/cancel
+Content-Type: application/json
+
+{
+  "requesterId": "J20240007"
+}

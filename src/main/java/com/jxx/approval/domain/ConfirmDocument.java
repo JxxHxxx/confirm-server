@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.jxx.approval.domain.ConfirmDocumentException.*;
+
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -55,9 +57,9 @@ public class ConfirmDocument {
         this.confirmStatus = confirmStatus;
     }
 
-    public void checkDocumentRequester(String requesterId) {
+    public void isDocumentRequester(String requesterId) {
         if (!this.requester.isRequester(requesterId)) {
-            throw new IllegalArgumentException("결재 문서 내 결재 요청자와 결재를 요청한 사용자가 일치하지 않습니다.");
+            throw new ConfirmDocumentException(FAIL_SELF_VERIFICATION, requesterId);
         };
     }
 
@@ -83,8 +85,14 @@ public class ConfirmDocument {
     }
 
     public void verifyWhetherRiseIsPossible() {
-        if (!(ConfirmStatus.CREATE.equals(confirmStatus) || ConfirmStatus.UPDATE.equals(confirmStatus) || ConfirmStatus.REJECT.equals(confirmStatus))) {
-            throw new IllegalArgumentException("결재 불가합니다. 사유 :" + confirmStatus.getDescription());
+        if (!ConfirmStatus.raisePossible.contains(confirmStatus)) {
+            throw new ConfirmDocumentException(FAIL_RAISE + " 사유 : " + confirmStatus.getDescription(), getRequesterId());
+        }
+    }
+
+    public void verifyCancelable() {
+        if (!ConfirmStatus.cancelPossible.contains(confirmStatus)) {
+            throw new ConfirmDocumentException(FAIL_CANCEL + " 사유 : " + confirmStatus.getDescription(), getRequesterId());
         }
     }
 }

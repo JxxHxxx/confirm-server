@@ -1,10 +1,10 @@
 package com.jxx.approval.application;
 
-import com.jxx.approval.domain.ApprovalLine;
-import com.jxx.approval.domain.ApproveStatus;
-import com.jxx.approval.domain.ConfirmDocument;
-import com.jxx.approval.domain.ApprovalLineManager;
+import com.jxx.approval.domain.*;
 import com.jxx.approval.dto.request.ApprovalInformationForm;
+import com.jxx.approval.dto.request.ConfirmDocumentCancelForm;
+import com.jxx.approval.dto.response.ConfirmDocumentServiceResponse;
+import com.jxx.approval.dto.response.ConfirmServiceResponse;
 import com.jxx.approval.infra.ConfirmDocumentRepository;
 import com.jxx.approval.dto.request.ApproverEnrollForm;
 import com.jxx.approval.dto.response.ApprovalLineServiceResponse;
@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.jxx.approval.domain.ConfirmStatus.*;
 
 @Slf4j
 @Service
@@ -51,20 +53,16 @@ public class ApprovalLineService {
     public ApprovalLineServiceResponse approveConfirmDocument(Long confirmDocumentPk, ApprovalInformationForm form) {
         // 리스너로 ConfirmDocument 체킹 해야됨
         List<ApprovalLine> approvalLines = approvalLineRepository.findByConfirmDocumentPk(confirmDocumentPk);
-        // 해당 결재 문서가 없는 경우 처리
-        if (approvalLines.isEmpty()) {
-            throw new IllegalArgumentException("존재하지 않은 결재 문서입니다.");
-        }
 
         ApprovalLineManager approvalLineManager = ApprovalLineManager.builder()
                 .approvalLineId(form.approvalLineId())
                 .approvalLines(approvalLines)
                 .build()
-                .afterPropertiesSet();
+                .isEmptyApprovalLine();
 
         ApprovalLine approvalLine = approvalLineManager
                 .checkBelongInApprovalLine()
-                .checkApprovalOrderLine()
+                .checkApprovalLineOrder()
                 .changeApproveStatus(ApproveStatus.ACCEPT);
 
         return new ApprovalLineServiceResponse(
@@ -80,22 +78,18 @@ public class ApprovalLineService {
 
         // 파기된 문서인지 체크
         List<ApprovalLine> approvalLines = approvalLineRepository.findByConfirmDocumentPk(confirmDocumentPk);
-        // 해당 결재 문서가 없는 경우 처리
-        if (approvalLines.isEmpty()) {
-            throw new IllegalArgumentException("존재하지 않은 결재 문서입니다.");
-        }
 
         ApprovalLineManager approvalLineManager = ApprovalLineManager.builder()
                 .approvalLineId(form.approvalLineId())
                 .approvalLines(approvalLines)
-                .build()
-                .afterPropertiesSet();
+                .build();
 
+        approvalLineManager.isEmptyApprovalLine();
 
         // 자신이 이미 결정한 사안인지 체크
         ApprovalLine approvalLine = approvalLineManager
                 .checkBelongInApprovalLine()
-                .checkApprovalOrderLine()
+                .checkApprovalLineOrder()
                 .changeApproveStatus(ApproveStatus.REJECT);
 
         return new ApprovalLineServiceResponse(
@@ -103,5 +97,27 @@ public class ApprovalLineService {
                 approvalLine.getApprovalOrder(),
                 approvalLine.getApprovalLineId(),
                 approvalLine.getApproveStatus());
+    }
+
+    @Transactional
+    public ConfirmDocumentServiceResponse cancelConfirmDocument(Long confirmDocumentPk, ConfirmDocumentCancelForm form) {
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk)
+                .orElseThrow();
+
+        // 취소 가능한 자인지
+        confirmDocument.isDocumentRequester(form.requesterId());
+        // 취소 가능한 상태인지
+        confirmDocument.verifyCancelable();
+        // 결재 문서 상태 변경
+        confirmDocument.changeConfirmStatus(CANCEL);
+        return new ConfirmDocumentServiceResponse(
+                confirmDocument.getPk(),
+                confirmDocument.getConfirmDocumentId(),
+                confirmDocument.getCompanyId(),
+                confirmDocument.getDepartmentId(),
+                confirmDocument.getCreateSystem(),
+                confirmDocument.getConfirmStatus(),
+                confirmDocument.getDocumentType(),
+                confirmDocument.getRequesterId());
     }
 }
