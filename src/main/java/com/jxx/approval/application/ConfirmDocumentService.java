@@ -1,10 +1,7 @@
 package com.jxx.approval.application;
 
 import com.jxx.approval.domain.*;
-import com.jxx.approval.dto.request.ConfirmCreateForm;
-import com.jxx.approval.dto.request.ConfirmDocumentSearchCondition;
-import com.jxx.approval.dto.request.ConfirmRaiseForm;
-import com.jxx.approval.dto.request.Document;
+import com.jxx.approval.dto.request.*;
 import com.jxx.approval.dto.response.ConfirmRaiseServiceResponse;
 import com.jxx.approval.dto.response.ConfirmDocumentServiceResponse;
 import com.jxx.approval.dto.response.ConfirmServiceResponse;
@@ -26,7 +23,6 @@ import static com.jxx.approval.domain.ConfirmStatus.*;
 public class ConfirmDocumentService {
 
     private final ConfirmDocumentRepository confirmDocumentRepository;
-    private final ApprovalLineRepository approvalLineRepository;
     private final ConfirmDocumentMapper confirmDocumentMapper;
 
     @Transactional
@@ -131,5 +127,13 @@ public class ConfirmDocumentService {
 
         findApprovalLine.tryAccept();
 
+    }
+
+    @Transactional
+    public ConfirmDocumentServiceResponse updateConfirmDocument(Long confirmDocumentPk, ConfirmDocumentUpdateForm form) {
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk)
+                .orElseThrow(() -> new IllegalArgumentException());
+
+        return null;
     }
 }
