@@ -51,6 +51,11 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.poi/poi
     implementation 'org.apache.poi:poi:5.2.5'
 
+    // json 타입 컬럼을 사용하기 위한 프로젝트 START
+    implementation 'io.hypersistence:hypersistence-utils-hibernate-60:3.7.0'
+    implementation 'com.fasterxml.jackson.module:jackson-module-jakarta-xmlbind-annotations'
+    // json 타입 컬럼을 사용하기 위한 프로젝트 START END
+
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'

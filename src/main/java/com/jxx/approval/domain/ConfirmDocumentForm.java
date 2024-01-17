@@ -25,7 +25,7 @@ public class ConfirmDocumentForm {
     @Comment(value = "결재 문서 양식 이름")
     private String formName;
 
-    @Column(name = "CONFIRM_DOCUMENT_FORM_COMPANY_ID", nullable = false, unique = true)
+    @Column(name = "CONFIRM_DOCUMENT_FORM_COMPANY_ID", nullable = false)
     @Comment(value = "결재 문서 양식 회사 ID")
     private String companyId;
 

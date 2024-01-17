@@ -1,6 +1,7 @@
 package com.jxx.approval.presentation;
 
 import com.jxx.approval.application.ApprovalLineService;
+import com.jxx.approval.application.ConfirmDocumentContentRequest;
 import com.jxx.approval.application.ConfirmDocumentService;
 import com.jxx.approval.domain.ConfirmDocument;
 import com.jxx.approval.dto.request.*;
@@ -104,5 +105,11 @@ public class ConfirmApiController {
         ConfirmDocumentServiceResponse response = approvalLineService.cancelConfirmDocument(confirmDocumentPk, form);
 
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 반려", response));
+    }
+
+    @PostMapping("/api/confirm-documents/contents")
+    public ResponseEntity<?> createContent(@RequestBody List<ConfirmDocumentContentRequest> requests) {
+        confirmDocumentService.makeContent(requests);
+        return ResponseEntity.ok("내용 주입 완료");
     }
 }

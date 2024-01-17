@@ -75,7 +75,45 @@ Content-Type: application/json
 
 {
   "elementPks": [1,2,3],
-  "formId": "N00003",
-  "formName" : "기본 양식3",
+  "formId": "N00001",
+  "formName" : "기본 양식1",
   "companyId" : "JXX"
 }
+
+###
+POST http://localhost:8010/admin/confirm-document-form-elements
+Content-Type: application/json
+
+{
+  "elementPks": [1,3],
+  "formId": "N10001",
+  "formName" : "전체 부서 공지",
+  "companyId" : "JXX"
+}
+
+###
+POST http://localhost:8010/api/confirm-documents/contents
+Content-Type: application/json
+
+[
+  {
+     "elementKey" : "title",
+     "elementName" : "제목",
+     "elementValue" : "휴가신청"
+  },
+  {
+    "elementKey" : "request department",
+    "elementName" : "요청 부서",
+    "elementValue" : "플랫폼사업팀"
+  },
+  {
+    "elementKey" : "request content",
+    "elementName" : "요청 내용",
+    "elementValue" : "휴가 신청합니다~"
+  }
+]
+
+
+### 양식에 들어있는 요소 조회
+GET localhost:8010/api/confirm-document-forms/2
+Content-Type: application/json

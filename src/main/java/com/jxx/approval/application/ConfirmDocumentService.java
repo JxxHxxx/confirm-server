@@ -5,16 +5,16 @@ import com.jxx.approval.dto.request.*;
 import com.jxx.approval.dto.response.ConfirmRaiseServiceResponse;
 import com.jxx.approval.dto.response.ConfirmDocumentServiceResponse;
 import com.jxx.approval.dto.response.ConfirmServiceResponse;
-import com.jxx.approval.infra.ApprovalLineRepository;
-import com.jxx.approval.infra.ConfirmDocumentMapper;
-import com.jxx.approval.infra.ConfirmDocumentRepository;
+import com.jxx.approval.infra.*;
 import com.jxx.approval.utils.ConfirmDocumentGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.jxx.approval.domain.ConfirmStatus.*;
 
@@ -24,6 +24,8 @@ public class ConfirmDocumentService {
 
     private final ConfirmDocumentRepository confirmDocumentRepository;
     private final ConfirmDocumentMapper confirmDocumentMapper;
+    private final ConfirmDocumentFormElementRepository formElementRepository;
+    private final ConfirmDocumentContentRepository contentRepository;
 
     @Transactional
     public void createAuto() {
@@ -135,5 +137,17 @@ public class ConfirmDocumentService {
                 .orElseThrow(() -> new IllegalArgumentException());
 
         return null;
+    }
+
+    @Transactional
+    public void makeContent(List<ConfirmDocumentContentRequest> forms) {
+        Map<String, Object> confirmDocumentContents = new HashMap<>();
+
+        for (ConfirmDocumentContentRequest form : forms) {
+            confirmDocumentContents.put(form.elementKey(),
+                    new ConfirmDocumentContentNameAndValue(form.elementName(), form.elementValue()));
+        }
+
+        contentRepository.save(new ConfirmDocumentContent(confirmDocumentContents));
     }
 }

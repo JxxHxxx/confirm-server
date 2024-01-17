@@ -6,6 +6,7 @@ import com.jxx.approval.domain.ConfirmDocumentFormElement;
 import com.jxx.approval.dto.request.FormElementCreateRequest;
 import com.jxx.approval.dto.request.ConfirmDocumentElementForm;
 import com.jxx.approval.dto.response.ConfirmDocumentElementServiceResponse;
+import com.jxx.approval.dto.response.ContentServiceResponse;
 import com.jxx.approval.infra.ConfirmDocumentElementRepository;
 import com.jxx.approval.infra.ConfirmDocumentFormElementRepository;
 import com.jxx.approval.infra.ConfirmDocumentFormRepository;
@@ -66,5 +67,13 @@ public class ConfirmDocumentFormElementService {
                         .build()).toList();
 
         formElementRepository.saveAll(formElements);
+    }
+
+    public List<ContentServiceResponse> readFormElement(Long documentFormPk) {
+        List<ConfirmDocumentFormElement> formElements = formElementRepository.findByConfirmDocumentFormPk(documentFormPk);
+
+        return formElements.stream()
+                .map(formElement -> new ContentServiceResponse(formElement.getFormElementKey(), formElement.getFormElementName()))
+                .toList();
     }
 }
