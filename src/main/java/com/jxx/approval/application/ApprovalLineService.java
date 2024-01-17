@@ -9,14 +9,14 @@ import com.jxx.approval.infra.ConfirmDocumentRepository;
 import com.jxx.approval.dto.request.ApproverEnrollForm;
 import com.jxx.approval.dto.response.ApprovalLineServiceResponse;
 import com.jxx.approval.infra.ApprovalLineRepository;
+import com.jxx.approval.listener.ApproveStatusChangedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-import static com.jxx.approval.domain.ConfirmStatus.*;
 
 @Slf4j
 @Service
@@ -26,7 +26,6 @@ public class ApprovalLineService {
     private final ApprovalLineRepository approvalLineRepository;
     private final ConfirmDocumentRepository confirmDocumentRepository;
 
-    // 리팩토링 29행 stream 에서 null 들어가서 혼란스러움, 34행 이 제일먼저 선언되도 되듯? 37행 필요 없어보임, 29행 생성자에서 박으면 될듯?
     @Transactional
     public List<ApprovalLineServiceResponse> enrollApprovals(List<ApproverEnrollForm> enrollForms, Long confirmDocumentPk) {
         List<ApprovalLine> approvalLines = enrollForms.stream()
@@ -97,27 +96,5 @@ public class ApprovalLineService {
                 approvalLine.getApprovalOrder(),
                 approvalLine.getApprovalLineId(),
                 approvalLine.getApproveStatus());
-    }
-
-    @Transactional
-    public ConfirmDocumentServiceResponse cancelConfirmDocument(Long confirmDocumentPk, ConfirmDocumentCancelForm form) {
-        ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk)
-                .orElseThrow();
-
-        // 취소 가능한 자인지
-        confirmDocument.isDocumentRequester(form.requesterId());
-        // 취소 가능한 상태인지
-        confirmDocument.verifyCancelable();
-        // 결재 문서 상태 변경
-        confirmDocument.changeConfirmStatus(CANCEL);
-        return new ConfirmDocumentServiceResponse(
-                confirmDocument.getPk(),
-                confirmDocument.getConfirmDocumentId(),
-                confirmDocument.getCompanyId(),
-                confirmDocument.getDepartmentId(),
-                confirmDocument.getCreateSystem(),
-                confirmDocument.getConfirmStatus(),
-                confirmDocument.getDocumentType(),
-                confirmDocument.getRequesterId());
     }
 }

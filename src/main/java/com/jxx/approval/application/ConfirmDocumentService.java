@@ -142,7 +142,7 @@ public class ConfirmDocumentService {
     @Transactional
     public void makeContent(Long confirmDocumentPk, List<ConfirmDocumentContentRequest> forms) {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk)
-                .orElseThrow(() -> new IllegalArgumentException("없는 문서"));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문서입니다."));
         Map<String, Object> confirmDocumentContents = new HashMap<>();
 
         for (ConfirmDocumentContentRequest form : forms) {
@@ -152,6 +152,27 @@ public class ConfirmDocumentService {
         ConfirmDocumentContent content = new ConfirmDocumentContent(confirmDocumentContents);
         confirmDocument.setContent(content);
         contentRepository.save(content);
+    }
 
+    @Transactional
+    public ConfirmDocumentServiceResponse cancelConfirmDocument(Long confirmDocumentPk, ConfirmDocumentCancelForm form) {
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk)
+                .orElseThrow();
+
+        // 취소 가능한 자인지
+        confirmDocument.isDocumentRequester(form.requesterId());
+        // 취소 가능한 상태인지
+        confirmDocument.verifyCancelable();
+        // 결재 문서 상태 변경
+        confirmDocument.changeConfirmStatus(CANCEL);
+        return new ConfirmDocumentServiceResponse(
+                confirmDocument.getPk(),
+                confirmDocument.getConfirmDocumentId(),
+                confirmDocument.getCompanyId(),
+                confirmDocument.getDepartmentId(),
+                confirmDocument.getCreateSystem(),
+                confirmDocument.getConfirmStatus(),
+                confirmDocument.getDocumentType(),
+                confirmDocument.getRequesterId());
     }
 }

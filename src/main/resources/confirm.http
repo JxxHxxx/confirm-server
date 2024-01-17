@@ -6,7 +6,7 @@ GET http://localhost:8010/api/confirm-documents?requesterId=U00001&confirmDocume
 
 ### ADD APPROVAL
 
-POST http://localhost:8010/api/confirm-documents/607/approvals
+POST http://localhost:8010/api/confirm-documents/1/approvals
 Content-Type: application/json
 
 [
@@ -20,6 +20,14 @@ Content-Type: application/json
     "approvalOrder": "2"
   }
 ]
+
+### 결재 상신
+POST http://localhost:8010/api/confirm-documents/1/raise
+Content-Type: application/json
+
+{
+  "requesterId": "J20240008"
+}
 
 ### 결재 수락
 PATCH http://localhost:8010/api/confirm-documents/607/accept

@@ -4,15 +4,20 @@ import com.jxx.approval.application.ApprovalLineService;
 import com.jxx.approval.application.ConfirmDocumentContentRequest;
 import com.jxx.approval.application.ConfirmDocumentService;
 import com.jxx.approval.domain.ConfirmDocument;
+import com.jxx.approval.domain.ConfirmStatus;
 import com.jxx.approval.dto.request.*;
 import com.jxx.approval.dto.response.*;
+import com.jxx.approval.listener.ApproveStatusChangedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.jxx.approval.domain.ConfirmStatus.*;
 
 @Slf4j
 @RestController
@@ -21,6 +26,7 @@ public class ConfirmApiController {
 
     private final ConfirmDocumentService confirmDocumentService;
     private final ApprovalLineService approvalLineService;
+    private final ApplicationEventPublisher eventPublisher;
 
     // 테스트 데이터 푸시
     @PostMapping("/test/confirm-documents")
@@ -83,6 +89,9 @@ public class ConfirmApiController {
     public ResponseEntity<ResponseResult> acceptConfirmDocument(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk,
                                                    @RequestBody ApprovalInformationForm form) {
 
+        // ConfirmDocument 에서 결재자가 결재 문서를 승인할 수 있는 상태인지 검증
+        eventPublisher.publishEvent(ApproveStatusChangedEvent.acceptEvent(confirmDocumentPk, form.approvalLineId()));
+        // 결재 문서 승인 로직
         ApprovalLineServiceResponse response = approvalLineService.approveConfirmDocument(confirmDocumentPk, form);
 
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 승인", response));
@@ -92,6 +101,9 @@ public class ConfirmApiController {
     public ResponseEntity<ResponseResult> rejectConfirmDocument(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk,
                                                    @RequestBody ApprovalInformationForm form) {
 
+        // ConfirmDocument 에서 결재자가 결재 문서를 반려할 수 있는 상태인지 검증
+        eventPublisher.publishEvent(ApproveStatusChangedEvent.rejectEvent(confirmDocumentPk, form.approvalLineId()));
+        // 결재 문서 반려 로직
         ApprovalLineServiceResponse response = approvalLineService.rejectConfirmDocument(confirmDocumentPk, form);
 
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 반려", response));
@@ -101,8 +113,7 @@ public class ConfirmApiController {
     @PatchMapping("/api/confirm-documents/{confirm-document-pk}/cancel")
     public ResponseEntity<ResponseResult> cancelConfirmDocument(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk,
                                                    @RequestBody ConfirmDocumentCancelForm form) {
-
-        ConfirmDocumentServiceResponse response = approvalLineService.cancelConfirmDocument(confirmDocumentPk, form);
+        ConfirmDocumentServiceResponse response = confirmDocumentService.cancelConfirmDocument(confirmDocumentPk, form);
 
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 반려", response));
     }

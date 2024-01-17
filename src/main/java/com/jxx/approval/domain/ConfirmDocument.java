@@ -104,4 +104,8 @@ public class ConfirmDocument {
             throw new ConfirmDocumentException(FAIL_CANCEL + " 사유 : " + confirmStatus.getDescription(), getRequesterId());
         }
     }
+
+    public boolean confirmStatusNotBelongIn(List<ConfirmStatus> confirmStatuses) {
+        return !confirmStatuses.contains(this.confirmStatus);
+    }
 }

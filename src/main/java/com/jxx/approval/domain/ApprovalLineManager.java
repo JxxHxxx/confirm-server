@@ -26,7 +26,7 @@ public class ApprovalLineManager {
     
     public ApprovalLineManager isEmptyApprovalLine() {
         if (approvalLines.isEmpty()) {
-            throw new IllegalArgumentException("존재하지 않은 결재 문서입니다.");
+            throw new IllegalArgumentException("결재 라인이 아닙니다.");
         }
         isEmptyApprovalLineFlag = true;
         return this;
