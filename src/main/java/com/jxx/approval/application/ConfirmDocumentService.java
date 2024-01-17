@@ -140,14 +140,18 @@ public class ConfirmDocumentService {
     }
 
     @Transactional
-    public void makeContent(List<ConfirmDocumentContentRequest> forms) {
+    public void makeContent(Long confirmDocumentPk, List<ConfirmDocumentContentRequest> forms) {
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk)
+                .orElseThrow(() -> new IllegalArgumentException("없는 문서"));
         Map<String, Object> confirmDocumentContents = new HashMap<>();
 
         for (ConfirmDocumentContentRequest form : forms) {
             confirmDocumentContents.put(form.elementKey(),
                     new ConfirmDocumentContentNameAndValue(form.elementName(), form.elementValue()));
         }
+        ConfirmDocumentContent content = new ConfirmDocumentContent(confirmDocumentContents);
+        confirmDocument.setContent(content);
+        contentRepository.save(content);
 
-        contentRepository.save(new ConfirmDocumentContent(confirmDocumentContents));
     }
 }

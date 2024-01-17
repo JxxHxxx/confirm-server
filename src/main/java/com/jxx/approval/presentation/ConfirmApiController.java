@@ -107,9 +107,9 @@ public class ConfirmApiController {
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 반려", response));
     }
 
-    @PostMapping("/api/confirm-documents/contents")
-    public ResponseEntity<?> createContent(@RequestBody List<ConfirmDocumentContentRequest> requests) {
-        confirmDocumentService.makeContent(requests);
+    @PostMapping("/api/confirm-documents/{confirm-document-pk}/contents")
+    public ResponseEntity<?> createContent(@PathVariable(value = "confirm-document-pk")Long confirmDocumentPk ,@RequestBody List<ConfirmDocumentContentRequest> requests) {
+        confirmDocumentService.makeContent(confirmDocumentPk, requests);
         return ResponseEntity.ok("내용 주입 완료");
     }
 }

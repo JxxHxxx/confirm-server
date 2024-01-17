@@ -51,7 +51,7 @@ public class ApprovalLineService {
 
     @Transactional
     public ApprovalLineServiceResponse approveConfirmDocument(Long confirmDocumentPk, ApprovalInformationForm form) {
-        // 리스너로 ConfirmDocument 체킹 해야됨
+        // 리스너로 ConfirmDocument Status 체킹 해야됨
         List<ApprovalLine> approvalLines = approvalLineRepository.findByConfirmDocumentPk(confirmDocumentPk);
 
         ApprovalLineManager approvalLineManager = ApprovalLineManager.builder()
@@ -74,7 +74,7 @@ public class ApprovalLineService {
 
     @Transactional
     public ApprovalLineServiceResponse rejectConfirmDocument(Long confirmDocumentPk, ApprovalInformationForm form) {
-        // 리스너로 ConfirmDocument 체킹 해야됨
+        // 리스너로 ConfirmDocument Status 체킹 해야됨
 
         // 파기된 문서인지 체크
         List<ApprovalLine> approvalLines = approvalLineRepository.findByConfirmDocumentPk(confirmDocumentPk);

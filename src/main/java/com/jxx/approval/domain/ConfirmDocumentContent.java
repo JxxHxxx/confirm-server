@@ -19,7 +19,7 @@ public class ConfirmDocumentContent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CONFIRM_DOCUMENT_PK")
+    @Column(name = "CONFIRM_DOCUMENT_CONTNET_PK")
     @Comment(value = "결재 문서 테이블 PK")
     private Long pk;
 
