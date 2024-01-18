@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
+import java.util.Objects;
+
 @Getter
 @Embeddable
 @NoArgsConstructor
@@ -30,5 +32,18 @@ public class Requester {
 
     protected boolean isRequester(String requesterId) {
         return this.requesterId.equals(requesterId);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Requester requester = (Requester) o;
+        return Objects.equals(companyId, requester.companyId) && Objects.equals(departmentId, requester.departmentId) && Objects.equals(requesterId, requester.requesterId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(companyId, departmentId, requesterId);
     }
 }

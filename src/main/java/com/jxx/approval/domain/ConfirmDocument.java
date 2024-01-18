@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.jxx.approval.domain.ConfirmDocumentException.*;
+import static com.jxx.approval.domain.ConfirmStatus.*;
 
 @Getter
 @Entity
@@ -66,12 +66,6 @@ public class ConfirmDocument {
         this.confirmStatus = confirmStatus;
     }
 
-    public void isDocumentRequester(String requesterId) {
-        if (!this.requester.isRequester(requesterId)) {
-            throw new ConfirmDocumentException(FAIL_SELF_VERIFICATION, requesterId);
-        };
-    }
-
     public String getConfirmDocumentId() {
         return this.document.getConfirmDocumentId();
     }
@@ -93,16 +87,16 @@ public class ConfirmDocument {
         return this.requester.getCompanyId();
     }
 
-    public void verifyWhetherRiseIsPossible() {
-        if (!ConfirmStatus.raisePossible.contains(confirmStatus)) {
-            throw new ConfirmDocumentException(FAIL_RAISE + " 사유 : " + confirmStatus.getDescription(), getRequesterId());
-        }
+    public boolean isNotDocumentOwner(Requester requester) {
+        return !this.requester.equals(requester);
     }
 
-    public void verifyCancelable() {
-        if (!ConfirmStatus.cancelPossible.contains(confirmStatus)) {
-            throw new ConfirmDocumentException(FAIL_CANCEL + " 사유 : " + confirmStatus.getDescription(), getRequesterId());
-        }
+    public boolean raiseImpossible() {
+        return !raisePossible.contains(confirmStatus);
+    }
+
+    public boolean cancelImpossible() {
+        return !cancelPossible.contains(confirmStatus);
     }
 
     public boolean confirmStatusNotBelongIn(List<ConfirmStatus> confirmStatuses) {

@@ -2,7 +2,6 @@ package com.jxx.approval.application;
 
 import com.jxx.approval.domain.*;
 import com.jxx.approval.dto.request.*;
-import com.jxx.approval.dto.response.ConfirmRaiseServiceResponse;
 import com.jxx.approval.dto.response.ConfirmDocumentServiceResponse;
 import com.jxx.approval.dto.response.ConfirmServiceResponse;
 import com.jxx.approval.infra.*;
@@ -16,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.jxx.approval.domain.ConfirmDocumentException.*;
 import static com.jxx.approval.domain.ConfirmStatus.*;
 
 @Service
@@ -24,14 +24,7 @@ public class ConfirmDocumentService {
 
     private final ConfirmDocumentRepository confirmDocumentRepository;
     private final ConfirmDocumentMapper confirmDocumentMapper;
-    private final ConfirmDocumentFormElementRepository formElementRepository;
     private final ConfirmDocumentContentRepository contentRepository;
-
-    @Transactional
-    public void createAuto() {
-        ConfirmDocument confirmDocument = ConfirmDocumentGenerator.execute();
-        confirmDocumentMapper.save(confirmDocument);
-    }
 
     @Transactional
     public void createAuto(int iter) {
@@ -78,23 +71,17 @@ public class ConfirmDocumentService {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk)
                 .orElseThrow(() -> new IllegalArgumentException());
 
-        confirmDocument.isDocumentRequester(form.requesterId());
-        confirmDocument.verifyWhetherRiseIsPossible();
+        Requester raiseRequester = new Requester(form.companyId(), form.departmentId(), form.requesterId());
+        if (confirmDocument.isNotDocumentOwner(raiseRequester)) {
+            throw new ConfirmDocumentException(FAIL_SELF_VERIFICATION, form.requesterId());
+        }
+
+        if (confirmDocument.raiseImpossible()) {
+            throw new ConfirmDocumentException(FAIL_RAISE + " 사유 : " + confirmDocument.getConfirmStatus().getDescription(), confirmDocument.getRequesterId());
+        }
 
         confirmDocument.changeConfirmStatus(RAISE);
         return new ConfirmServiceResponse(confirmDocumentPk, form.requesterId());
-    }
-
-    @Transactional
-    public ConfirmRaiseServiceResponse raise(String confirmDocumentId, ConfirmRaiseForm form) {
-        ConfirmDocument confirmDocument = confirmDocumentRepository.findByDocumentConfirmDocumentId(confirmDocumentId)
-                .orElseThrow(() -> new IllegalArgumentException());
-
-        confirmDocument.isDocumentRequester(form.requesterId());
-        confirmDocument.verifyWhetherRiseIsPossible();
-
-        confirmDocument.changeConfirmStatus(RAISE);
-        return new ConfirmRaiseServiceResponse(confirmDocument.getPk(), confirmDocument.getRequesterId(), confirmDocument.getConfirmStatus());
     }
 
     private static ConfirmDocumentServiceResponse toConfirmServiceDto(ConfirmDocument confirmDocument) {
@@ -160,9 +147,15 @@ public class ConfirmDocumentService {
                 .orElseThrow();
 
         // 취소 가능한 자인지
-        confirmDocument.isDocumentRequester(form.requesterId());
+        Requester cancelRequester = new Requester(form.companyId(), form.departmentId(), form.requesterId());
+        if (confirmDocument.isNotDocumentOwner(cancelRequester)) {
+            throw new ConfirmDocumentException(FAIL_SELF_VERIFICATION, form.requesterId());
+        }
+
         // 취소 가능한 상태인지
-        confirmDocument.verifyCancelable();
+        if (confirmDocument.cancelImpossible()) {
+            throw new ConfirmDocumentException(FAIL_CANCEL + " 사유 : " + confirmDocument.getConfirmStatus().getDescription(),confirmDocument.getRequesterId());
+        }
         // 결재 문서 상태 변경
         confirmDocument.changeConfirmStatus(CANCEL);
         return new ConfirmDocumentServiceResponse(
