@@ -7,10 +7,10 @@ import java.util.List;
 @Getter
 public enum ConfirmStatus {
     CREATE("결재 생성"), // 200
-    UPDATE("결재 수정"), // 201
+    UPDATE("결재 수정"), // 210
     RAISE("결재 상신"),  // 300
     ACCEPT("결재 승인"), // 400
-    REJECT("결재 반려"), // 202
+    REJECT("결재 반려"), // 220
     CANCEL("결재 취소"); // 100
 
     private final String description;
