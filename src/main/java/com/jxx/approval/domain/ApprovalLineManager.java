@@ -5,6 +5,8 @@ import lombok.Builder;
 
 import java.util.List;
 
+import static com.jxx.approval.domain.ApprovalLineException.*;
+
 public class ApprovalLineManager {
 
     private final List<ApprovalLine> approvalLines;
@@ -26,7 +28,7 @@ public class ApprovalLineManager {
     
     public ApprovalLineManager isEmptyApprovalLine() {
         if (approvalLines.isEmpty()) {
-            throw new IllegalArgumentException("결재 라인이 아닙니다.");
+            throw new ApprovalLineException(EMPTY_APPROVAL_LINE, approvalLineId);
         }
         isEmptyApprovalLineFlag = true;
         return this;
@@ -35,12 +37,12 @@ public class ApprovalLineManager {
     // 해당 결재 문서 권한이 있는지 검증
     public ApprovalLineManager checkBelongInApprovalLine() {
         if (!isEmptyApprovalLineFlag) {
-            throw new IllegalArgumentException("afterPropertiesSetFlag() 를 호출하세요.");
+            throw new IllegalOrderMethodInvokeException("isEmptyApprovalLineFlag : " + isEmptyApprovalLineFlag);
         }
         ApprovalLine approvalLine = approvalLines.stream()
                 .filter(al -> al.matchApprovalLineId(approvalLineId))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 문서에 대한결재 권한이 없습니다."));
+                .orElseThrow(() -> new ApprovalLineException("해당 문서에 대한결재 권한이 없습니다.", approvalLineId));
 
         this.approvalLine = approvalLine;
         checkBelongInApprovalLineFlag = true;
@@ -50,15 +52,17 @@ public class ApprovalLineManager {
     // 자신의 결재 순서인지 검증
     public ApprovalLineManager checkApprovalLineOrder() {
         if (!isEmptyApprovalLineFlag || !checkBelongInApprovalLineFlag) {
-            throw new IllegalArgumentException("filterRequesterInApprovalLine() 이 호출되지 않았습니다.");
+            throw new IllegalOrderMethodInvokeException(
+                    "isEmptyApprovalLineFlag : " + isEmptyApprovalLineFlag +
+                    " checkBelongInApprovalLineFlag : " + checkBelongInApprovalLineFlag);
         }
 
         if (previousOrderApprovalLine(ApproveStatus.PENDING)) {
-            throw new IllegalArgumentException("당신의 차례가 아닙니다.");
+            throw new ApprovalLineException("당신의 차례가 아닙니다.", approvalLineId);
         }
 
         if (previousOrderApprovalLine(ApproveStatus.REJECT)) {
-            throw new IllegalArgumentException("반려된 결재 문서입니다.");
+            throw new ApprovalLineException("반려된 결재 문서입니다.", approvalLineId);
         }
 
         checkApprovalOrderLineFlag = true;
@@ -67,7 +71,10 @@ public class ApprovalLineManager {
 
     public ApprovalLine changeApproveStatus(ApproveStatus approveStatus) {
         if (!isEmptyApprovalLineFlag || !checkBelongInApprovalLineFlag || !checkApprovalOrderLineFlag) {
-            throw new IllegalArgumentException("checkRequestersOrderTurn() 이 호출되지 않았습니다.");
+            throw new IllegalOrderMethodInvokeException(
+                    "isEmptyApprovalLineFlag : " + isEmptyApprovalLineFlag +
+                    "checkBelongInApprovalLineFlag : " + checkBelongInApprovalLineFlag +
+                    "checkApprovalOrderLineFlag : "  + checkApprovalOrderLineFlag);
         }
         
         approvalLine.changeApproveStatus(approveStatus);
@@ -78,5 +85,29 @@ public class ApprovalLineManager {
         return approvalLines.stream()
                 .filter(al -> al.isBeforeOrderThan(approvalLine)) // 이전 결재자 필터링
                 .anyMatch(al -> al.checkApproveStatus(approveStatus));
+    }
+
+    protected List<ApprovalLine> getApprovalLines() {
+        return approvalLines;
+    }
+
+    protected String getApprovalLineId() {
+        return approvalLineId;
+    }
+
+    protected ApprovalLine getApprovalLine() {
+        return approvalLine;
+    }
+
+    protected boolean isEmptyApprovalLineFlag() {
+        return isEmptyApprovalLineFlag;
+    }
+
+    protected boolean isCheckBelongInApprovalLineFlag() {
+        return checkBelongInApprovalLineFlag;
+    }
+
+    protected boolean isCheckApprovalOrderLineFlag() {
+        return checkApprovalOrderLineFlag;
     }
 }

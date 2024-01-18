@@ -100,24 +100,6 @@ public class ConfirmDocumentService {
         return confirmDocumentMapper.search(condition);
     }
 
-    public void acceptDocument(Long confirmDocumentPk, String approvalId) {
-        ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk)
-                .orElseThrow(() -> new IllegalArgumentException());
-
-        if (!RAISE.equals(confirmDocument.getConfirmStatus())) {
-            throw new IllegalArgumentException("처리할 수 없습니다. 사유 :" + confirmDocument.getConfirmStatus());
-        }
-
-        List<ApprovalLine> approvalLines = confirmDocument.getApprovalLines();
-        ApprovalLine findApprovalLine = approvalLines.stream()
-                .filter(approvalLine -> approvalLine.matchApprovalLineId(approvalId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException());
-
-        findApprovalLine.tryAccept();
-
-    }
-
     @Transactional
     public ConfirmDocumentServiceResponse updateConfirmDocument(Long confirmDocumentPk, ConfirmDocumentUpdateForm form) {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk)

@@ -9,6 +9,8 @@ import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
 
+import static com.jxx.approval.domain.ApproveStatus.PENDING;
+
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -50,21 +52,12 @@ public class ApprovalLine {
         this.approvalOrder = approvalOrder;
         this.approvalLineId = approvalLineId;
         this.approveTime = null;
-        this.approveStatus = ApproveStatus.PENDING;
+        this.approveStatus = PENDING;
         this.confirmDocument = confirmDocument;
     }
 
     public boolean matchApprovalLineId(String approvalId) {
         return this.approvalLineId.equals(approvalId);
-    }
-
-    public void tryAccept() {
-        if (!approveStatus.equals(ApproveStatus.PENDING)) {
-            throw new IllegalArgumentException("이미 처리한 결재 문서입니다.");
-        }
-    }
-    protected void accept() {
-        approveStatus = ApproveStatus.ACCEPT;
     }
 
     protected void changeApproveStatus(ApproveStatus approveStatus) {

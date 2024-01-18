@@ -1,6 +1,8 @@
 package com.jxx.approval.exeception;
 
+import com.jxx.approval.domain.ApprovalLineException;
 import com.jxx.approval.domain.ConfirmDocumentException;
+import com.jxx.approval.domain.IllegalOrderMethodInvokeException;
 import com.jxx.approval.dto.response.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +16,25 @@ public class ConfirmDocumentExceptionHandler {
     @ExceptionHandler(ConfirmDocumentException.class)
     public ResponseEntity<ResponseResult> handle(ConfirmDocumentException exception) {
         log.info("FAIL MSG : {} REQUESTER ID : {}", exception.getMessage(), exception.getRequesterId(), exception);
-        return ResponseEntity.badRequest().body(new ResponseResult<>(400, exception.getMessage(), null));
+        return ResponseEntity
+                .badRequest()
+                .body(new ResponseResult<>(400, exception.getMessage(), null));
+    }
 
+    @ExceptionHandler(ApprovalLineException.class)
+    public ResponseEntity<ResponseResult> handle(ApprovalLineException exception) {
+        log.info("FAIL MSG : {} REQUESTER ID : {}", exception.getMessage(), exception.getApprovalId(), exception);
+        return ResponseEntity
+                .badRequest()
+                .body(new ResponseResult<>(400, exception.getMessage(), null));
+    }
+
+    @ExceptionHandler(IllegalOrderMethodInvokeException.class)
+    public ResponseEntity<ResponseResult> handle(IllegalOrderMethodInvokeException exception) {
+        log.error("ERROR OCCUR : ", exception);
+        return ResponseEntity
+                .internalServerError()
+                .body(new ResponseResult(500, "서버 에러입니다. 관리자에게 문의하십시오", null));
     }
 }
 

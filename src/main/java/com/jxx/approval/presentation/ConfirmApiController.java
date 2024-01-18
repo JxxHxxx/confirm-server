@@ -3,8 +3,6 @@ package com.jxx.approval.presentation;
 import com.jxx.approval.application.ApprovalLineService;
 import com.jxx.approval.application.ConfirmDocumentContentRequest;
 import com.jxx.approval.application.ConfirmDocumentService;
-import com.jxx.approval.domain.ConfirmDocument;
-import com.jxx.approval.domain.ConfirmStatus;
 import com.jxx.approval.dto.request.*;
 import com.jxx.approval.dto.response.*;
 import com.jxx.approval.listener.ApproveStatusChangedEvent;
@@ -16,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import static com.jxx.approval.domain.ConfirmStatus.*;
 
 @Slf4j
 @RestController
@@ -92,7 +88,7 @@ public class ConfirmApiController {
         // ConfirmDocument 에서 결재자가 결재 문서를 승인할 수 있는 상태인지 검증
         eventPublisher.publishEvent(ApproveStatusChangedEvent.acceptEvent(confirmDocumentPk, form.approvalLineId()));
         // 결재 문서 승인 로직
-        ApprovalLineServiceResponse response = approvalLineService.approveConfirmDocument(confirmDocumentPk, form);
+        ApprovalLineServiceResponse response = approvalLineService.accept(confirmDocumentPk, form);
 
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 승인", response));
     }
@@ -104,7 +100,7 @@ public class ConfirmApiController {
         // ConfirmDocument 에서 결재자가 결재 문서를 반려할 수 있는 상태인지 검증
         eventPublisher.publishEvent(ApproveStatusChangedEvent.rejectEvent(confirmDocumentPk, form.approvalLineId()));
         // 결재 문서 반려 로직
-        ApprovalLineServiceResponse response = approvalLineService.rejectConfirmDocument(confirmDocumentPk, form);
+        ApprovalLineServiceResponse response = approvalLineService.reject(confirmDocumentPk, form);
 
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 반려", response));
     }
