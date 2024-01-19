@@ -46,7 +46,7 @@
             <if test="confirmDocumentId != null and confirmDocumentId != ''">
                 AND CONFIRM_DOCUMENT_ID = #{confirmDocumentId}
             </if>
-            <if test="confirmStatus != null and confirmStatus != ''">
+            <if test="confirmStatus != null">
                 AND CONFIRM_STATUS = #{confirmStatus}
             </if>
             <if test="requesterId != null and requesterId != ''">

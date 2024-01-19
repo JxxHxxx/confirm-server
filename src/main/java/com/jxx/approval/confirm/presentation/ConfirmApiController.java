@@ -1,13 +1,10 @@
 package com.jxx.approval.confirm.presentation;
 
 import com.jxx.approval.confirm.application.ApprovalLineService;
-import com.jxx.approval.confirm.application.ConfirmDocumentContentRequest;
+import com.jxx.approval.confirm.dto.request.ConfirmDocumentContentRequest;
 import com.jxx.approval.confirm.application.ConfirmDocumentService;
 import com.jxx.approval.confirm.dto.request.*;
-import com.jxx.approval.confirm.dto.response.ApprovalLineServiceResponse;
-import com.jxx.approval.confirm.dto.response.ConfirmDocumentServiceResponse;
-import com.jxx.approval.confirm.dto.response.ConfirmServiceResponse;
-import com.jxx.approval.confirm.dto.response.ResponseResult;
+import com.jxx.approval.confirm.dto.response.*;
 import com.jxx.approval.confirm.listener.ApproveStatusChangedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +36,13 @@ public class ConfirmApiController {
     public ResponseEntity<?> save(@RequestBody ConfirmCreateForm form) {
         confirmDocumentService.createConfirmDocument(form);
         return ResponseEntity.ok("생성");
+    }
+
+    // 결재 양식 내 본문 생성
+    @PostMapping("/api/confirm-documents/{confirm-document-pk}/contents")
+    public ResponseEntity<ResponseResult> createContent(@PathVariable(value = "confirm-document-pk")Long confirmDocumentPk ,@RequestBody List<ConfirmDocumentContentRequest> requests) {
+        ConfirmDocumentAndContentServiceResponse response = confirmDocumentService.makeContent(confirmDocumentPk, requests);
+        return ResponseEntity.ok(new ResponseResult(200, "내용 주입 완료", response));
     }
 
     // 결재 문서 수정
@@ -115,11 +119,5 @@ public class ConfirmApiController {
         ConfirmDocumentServiceResponse response = confirmDocumentService.cancelConfirmDocument(confirmDocumentPk, form);
 
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 반려", response));
-    }
-
-    @PostMapping("/api/confirm-documents/{confirm-document-pk}/contents")
-    public ResponseEntity<?> createContent(@PathVariable(value = "confirm-document-pk")Long confirmDocumentPk ,@RequestBody List<ConfirmDocumentContentRequest> requests) {
-        confirmDocumentService.makeContent(confirmDocumentPk, requests);
-        return ResponseEntity.ok("내용 주입 완료");
     }
 }

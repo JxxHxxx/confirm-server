@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class ConfirmDocumentSearchCondition {
 
     private String confirmDocumentId;
-    private ConfirmStatus confirmStatus;
+    private ConfirmStatus confirmStatus; // enum 을 String 이랑 비교하지 못하는 문제
     private String approvalId;
     private String requesterId;
     private LocalDate createDate;

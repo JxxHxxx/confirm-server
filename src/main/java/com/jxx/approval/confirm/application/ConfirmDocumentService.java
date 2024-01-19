@@ -2,6 +2,7 @@ package com.jxx.approval.confirm.application;
 
 import com.jxx.approval.confirm.domain.*;
 import com.jxx.approval.confirm.dto.request.*;
+import com.jxx.approval.confirm.dto.response.ConfirmDocumentAndContentServiceResponse;
 import com.jxx.approval.confirm.dto.response.ConfirmServiceResponse;
 import com.jxx.approval.confirm.infra.ConfirmDocumentContentRepository;
 import com.jxx.approval.confirm.infra.ConfirmDocumentMapper;
@@ -108,7 +109,7 @@ public class ConfirmDocumentService {
     }
 
     @Transactional
-    public void makeContent(Long confirmDocumentPk, List<ConfirmDocumentContentRequest> forms) {
+    public ConfirmDocumentAndContentServiceResponse makeContent(Long confirmDocumentPk, List<ConfirmDocumentContentRequest> forms) {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문서입니다."));
         Map<String, Object> confirmDocumentContents = new HashMap<>();
@@ -120,6 +121,22 @@ public class ConfirmDocumentService {
         ConfirmDocumentContent content = new ConfirmDocumentContent(confirmDocumentContents);
         confirmDocument.setContent(content);
         contentRepository.save(content);
+
+        ConfirmDocumentServiceResponse confirmDocumentServiceResponse = new ConfirmDocumentServiceResponse(
+                        confirmDocument.getPk(),
+                        confirmDocument.getConfirmDocumentId(),
+                        confirmDocument.getCompanyId(),
+                        confirmDocument.getDepartmentId(),
+                        confirmDocument.getCreateSystem(),
+                        confirmDocument.getConfirmStatus(),
+                        confirmDocument.getDocumentType(),
+                        confirmDocument.getRequesterId());
+
+        ConfirmDocumentContent confirmDocumentContent = confirmDocument.getContent();
+        Map<String, Object> contents = confirmDocumentContent.getBody();
+
+        return new ConfirmDocumentAndContentServiceResponse(confirmDocumentServiceResponse, contents);
+
     }
 
     @Transactional

@@ -13,7 +13,4 @@ public record ConfirmDocumentServiceResponse(
         DocumentType documentType,
         String requesterId
 ) {
-    public ConfirmReadAllResponse confirmDocumentReadAllResponse() {
-        return new ConfirmReadAllResponse(pk, confirmDocumentId, companyId, departmentId, createSystem, confirmStatus, documentType, requesterId);
-    }
 }

@@ -1,4 +1,4 @@
-package com.jxx.approval.confirm.application;
+package com.jxx.approval.confirm.dto.request;
 
 public record ConfirmDocumentContentRequest(
         String elementKey,
