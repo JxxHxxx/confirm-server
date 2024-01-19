@@ -3,14 +3,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- id=인터페이스 내 정의된 메서드 명 namespace = 패키지.인터페이스 명, parameterType 인자로 들어가는 타입, resultType 조회 결과 매핑 해줄 클래스-->
-<mapper namespace="com.jxx.approval.infra.ConfirmDocumentMapper">
-    <select id="select" parameterType="Long" resultType="com.jxx.approval.dto.response.ConfirmDocumentServiceResponse">
+<mapper namespace="com.jxx.approval.confirm.infra.ConfirmDocumentMapper">
+    <select id="select" parameterType="Long" resultType="com.jxx.approval.confirm.dto.response.ConfirmDocumentServiceResponse">
         SELECT *
         FROM JXX_CONFIRM_DOCUMENT_MASTER
         WHERE CONFIRM_DOCUMENT_PK = #{confirmDocumentPk}
     </select>
 
-    <insert id="save" useGeneratedKeys="true" parameterType="com.jxx.approval.domain.ConfirmDocument">
+    <insert id="save" useGeneratedKeys="true" parameterType="com.jxx.approval.confirm.domain.ConfirmDocument">
         INSERT INTO JXX_CONFIRM_DOCUMENT_MASTER
         (CONFIRM_STATUS,
          CREATE_SYSTEM,
@@ -30,8 +30,8 @@
                 #{requesterId})
     </insert>
     <select id="search"
-            parameterType="com.jxx.approval.dto.request.ConfirmDocumentSearchCondition"
-            resultType="com.jxx.approval.dto.response.ConfirmDocumentServiceResponse">
+            parameterType="com.jxx.approval.confirm.dto.request.ConfirmDocumentSearchCondition"
+            resultType="com.jxx.approval.confirm.dto.response.ConfirmDocumentServiceResponse">
         SELECT CONFIRM_DOCUMENT_PK,
                CONFIRM_DOCUMENT_ID,
                COMPANY_ID,
