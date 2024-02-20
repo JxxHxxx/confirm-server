@@ -71,10 +71,10 @@ public class ConfirmApiController {
     }
 
     // 결재 문서 상신
-    @PostMapping("/api/confirm-documents/{confirm-document-pk}/raise")
-    public ResponseEntity<ResponseResult> raise(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk,
+    @PostMapping("/api/confirm-documents/{confirm-document-id}/raise")
+    public ResponseEntity<ResponseResult> raise(@PathVariable(name = "confirm-document-id") String confirmDocumentId,
                                    @RequestBody ConfirmRaiseForm form) {
-        ConfirmServiceResponse response = confirmDocumentService.raise(confirmDocumentPk, form);
+        ConfirmServiceResponseV2 response = confirmDocumentService.raise(confirmDocumentId, form);
 
         return ResponseEntity.ok(new ResponseResult(HttpStatus.OK.value(), "결재 문서 상신", response));
     }
