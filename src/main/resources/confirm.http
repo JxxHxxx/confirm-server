@@ -1,12 +1,12 @@
 ### ADD TEST CONFIRM-DOCUMENTTS
-POST http://localhost:8010/test/confirm-documents?iter=1000
+POST http://localhost:8000/test/confirm-documents?iter=1000
 
 ### SEARCH
-GET http://localhost:8010/api/confirm-documents?requesterId=U00001&confirmDocumentId=&approvalId=&createDate=&confirmStatus=
+GET http://localhost:8000/api/confirm-documents?requesterId=U00001&confirmDocumentId=&approvalId=&createDate=&confirmStatus=
 
 ### ADD APPROVAL
 
-POST http://localhost:8010/api/confirm-documents/1/approvals
+POST http://localhost:8000/api/confirm-documents/1/approvals
 Content-Type: application/json
 
 [
@@ -22,7 +22,7 @@ Content-Type: application/json
 ]
 
 ### 결재 상신
-POST http://localhost:8010/api/confirm-documents/1/raise
+POST http://localhost:8000/api/confirm-documents/1/raise
 Content-Type: application/json
 
 {
@@ -30,7 +30,7 @@ Content-Type: application/json
 }
 
 ### 결재 수락
-PATCH http://localhost:8010/api/confirm-documents/607/accept
+PATCH http://localhost:8000/api/confirm-documents/607/accept
 Content-Type: application/json
 
 {
@@ -40,7 +40,7 @@ Content-Type: application/json
 }
 
 ### 결재 반려
-PATCH http://localhost:8010/api/confirm-documents/607/reject
+PATCH http://localhost:8000/api/confirm-documents/607/reject
 Content-Type: application/json
 
 {
@@ -50,7 +50,7 @@ Content-Type: application/json
 }
 
 ### 문서 파기
-PATCH http://localhost:8010/api/confirm-documents/619/cancel
+PATCH http://localhost:8000/api/confirm-documents/619/cancel
 Content-Type: application/json
 
 {
@@ -59,7 +59,7 @@ Content-Type: application/json
 
 
 ### 요소 생성
-POST http://localhost:8010/admin/confirm-document-elements
+POST http://localhost:8000/admin/confirm-document-elements
 Content-Type: application/json
 
 [
@@ -78,7 +78,7 @@ Content-Type: application/json
 ]
 
 ### 결재 양식 생성1
-POST http://localhost:8010/admin/confirm-document-form-elements
+POST http://localhost:8000/admin/confirm-document-form-elements
 Content-Type: application/json
 
 {
@@ -89,7 +89,7 @@ Content-Type: application/json
 }
 
 ### 결재 양식 생성2
-POST http://localhost:8010/admin/confirm-document-form-elements
+POST http://localhost:8000/admin/confirm-document-form-elements
 Content-Type: application/json
 
 {
@@ -100,7 +100,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8010/api/confirm-documents/500/contents
+POST http://localhost:8000/api/confirm-documents/500/contents
 Content-Type: application/json
 
 [
@@ -122,7 +122,7 @@ Content-Type: application/json
 ]
 
 ###
-POST http://localhost:8010/api/confirm-documents/507/contents
+POST http://localhost:8000/api/confirm-documents/507/contents
 Content-Type: application/json
 
 [
@@ -145,5 +145,16 @@ Content-Type: application/json
 
 
 ### 양식에 들어있는 요소 조회
-GET localhost:8010/api/confirm-document-forms/2
+GET localhost:8000/api/confirm-document-forms/2
 Content-Type: application/json
+
+### 결재선 지정 confirm-document-pk:43540,
+POST http://localhost:8000/api/confirm-documents/43540/approval-lines
+Content-Type: application/json
+
+[
+  {
+    "approvalId": "U00121",
+    "approvalOrder": 1
+  }
+]

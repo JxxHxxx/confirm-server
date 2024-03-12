@@ -26,14 +26,12 @@ public class ApprovalLineService {
 
     @Transactional
     public List<ApprovalLineServiceResponse> enrollApprovals(List<ApproverEnrollForm> enrollForms, Long confirmDocumentPk) {
-        List<ApprovalLine> approvalLines = enrollForms.stream()
-                .map(form -> new ApprovalLine(form.approvalOrder(), form.approvalId(), null))
-                .toList();
-
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk)
                 .orElseThrow(() -> new IllegalArgumentException());
 
-        approvalLines.forEach(approvalLine -> approvalLine.setConfirmDocument(confirmDocument));
+        List<ApprovalLine> approvalLines = enrollForms.stream()
+                .map(form -> new ApprovalLine(form.approvalOrder(), form.approvalId(), confirmDocument))
+                .toList();
 
         List<ApprovalLine> savedApprovalLines = approvalLineRepository.saveAll(approvalLines);
 
