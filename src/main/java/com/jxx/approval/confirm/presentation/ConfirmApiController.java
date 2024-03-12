@@ -80,10 +80,10 @@ public class ConfirmApiController {
     }
 
     // 결재 문서에 대한 결재자 등록
-    @PostMapping("/api/confirm-documents/{confirm-document-pk}/approval-lines")
-    public ResponseEntity<ResponseResult> enrollApprovalLine(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk,
+    @PostMapping("/api/confirm-documents/{confirm-document-id}/approval-lines")
+    public ResponseEntity<ResponseResult> enrollApprovalLine(@PathVariable(name = "confirm-document-id") String confirmDocumentId,
                                                 @RequestBody List<ApproverEnrollForm> forms) {
-        List<ApprovalLineServiceResponse> responses = approvalLineService.enrollApprovals(forms, confirmDocumentPk);
+        List<ApprovalLineServiceResponse> responses = approvalLineService.enrollApprovalLines(forms, confirmDocumentId);
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재자 등록", responses));
     }
 

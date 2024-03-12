@@ -148,13 +148,18 @@ Content-Type: application/json
 GET localhost:8000/api/confirm-document-forms/2
 Content-Type: application/json
 
-### 결재선 지정 confirm-document-pk:43540,
-POST http://localhost:8000/api/confirm-documents/43540/approval-lines
+### 결재선 지정 confirm-document-pk:48311, VACSPY4823
+POST http://localhost:8000/api/confirm-documents/VACSPY4823/approval-lines
 Content-Type: application/json
 
 [
   {
-    "approvalId": "U00121",
+    "approvalId": "SPY00160",
     "approvalOrder": 1
+  }
+  ,
+  {
+    "approvalId": "SPY00011",
+    "approvalOrder": 2
   }
 ]

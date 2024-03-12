@@ -102,4 +102,8 @@ public class ConfirmDocument {
     public boolean confirmStatusNotBelongIn(List<ConfirmStatus> confirmStatuses) {
         return !confirmStatuses.contains(this.confirmStatus);
     }
+
+    public boolean isNotRaiseBefore() {
+        return !raiseBefore.contains(confirmStatus);
+    }
 }

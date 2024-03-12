@@ -1,9 +1,6 @@
 package com.jxx.approval.confirm.application;
 
-import com.jxx.approval.confirm.domain.ApprovalLine;
-import com.jxx.approval.confirm.domain.ApprovalLineManager;
-import com.jxx.approval.confirm.domain.ApproveStatus;
-import com.jxx.approval.confirm.domain.ConfirmDocument;
+import com.jxx.approval.confirm.domain.*;
 import com.jxx.approval.confirm.dto.request.ApprovalInformationForm;
 import com.jxx.approval.confirm.infra.ConfirmDocumentRepository;
 import com.jxx.approval.confirm.dto.request.ApproverEnrollForm;
@@ -25,15 +22,24 @@ public class ApprovalLineService {
     private final ConfirmDocumentRepository confirmDocumentRepository;
 
     @Transactional
-    public List<ApprovalLineServiceResponse> enrollApprovals(List<ApproverEnrollForm> enrollForms, Long confirmDocumentPk) {
-        ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk)
+    public List<ApprovalLineServiceResponse> enrollApprovalLines(List<ApproverEnrollForm> enrollForms, String confirmDocumentId) {
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findByDocumentConfirmDocumentId(confirmDocumentId)
                 .orElseThrow(() -> new IllegalArgumentException());
+        // 상신 전 상태인지 확인
+        if (confirmDocument.isNotRaiseBefore()) {
+            throw new ConfirmDocumentException("해당 결재 문서는 결재선을 수정할 수 없는 상태입니다." + confirmDocument.getConfirmStatus()
+                    , confirmDocument.getRequesterId());
+        };
+        // 이미 결재선이 등록되어 있는지 확인
+        List<ApprovalLine> approvalLines = approvalLineRepository.findByConfirmDocumentPk(confirmDocument.getPk());
+        if (!approvalLines.isEmpty()) {
+            throw new ConfirmDocumentException("이미 결재선이 지정된 결재 문서입니다.", confirmDocument.getRequesterId());
+        }
 
-        List<ApprovalLine> approvalLines = enrollForms.stream()
+        List<ApprovalLine> requestApprovalLines = enrollForms.stream()
                 .map(form -> new ApprovalLine(form.approvalOrder(), form.approvalId(), confirmDocument))
                 .toList();
-
-        List<ApprovalLine> savedApprovalLines = approvalLineRepository.saveAll(approvalLines);
+        List<ApprovalLine> savedApprovalLines = approvalLineRepository.saveAll(requestApprovalLines);
 
         return savedApprovalLines.stream()
                 .map(approvalLine -> new ApprovalLineServiceResponse(
