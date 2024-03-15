@@ -6,7 +6,7 @@ GET http://localhost:8000/api/confirm-documents?requesterId=U00001&confirmDocume
 
 ### ADD APPROVAL
 
-POST http://localhost:8000/api/confirm-documents/1/approvals
+POST http://localhost:8000/api/confirm-documents/VACSPY4838/approval-lines
 Content-Type: application/json
 
 [
@@ -22,11 +22,13 @@ Content-Type: application/json
 ]
 
 ### 결재 상신
-POST http://localhost:8000/api/confirm-documents/1/raise
+POST http://localhost:8000/api/confirm-documents/4543/raise
 Content-Type: application/json
 
 {
-  "requesterId": "J20240008"
+  "requesterId": "SPY00107",
+  "companyId" : "SPY",
+  "departmentId" :"SPY00102"
 }
 
 ### 결재 수락

@@ -1,5 +1,6 @@
 package com.jxx.approval.confirm.application;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jxx.approval.confirm.domain.ConfirmDocument;
 import com.jxx.approval.confirm.domain.DocumentType;
 import com.jxx.approval.confirm.domain.Requester;
@@ -41,7 +42,7 @@ class ApprovalLineServiceTest {
     }
 
     @Test
-    void enroll_approvals() {
+    void enroll_approvals() throws JsonProcessingException {
         ApproverEnrollForm enrollForm1 = new ApproverEnrollForm("U00001", 1);
         ApproverEnrollForm enrollForm2 = new ApproverEnrollForm("U00001", 2);
         approvalLineService.enrollApprovalLines(List.of(enrollForm1, enrollForm2), confirmDocumentId);

@@ -1,5 +1,6 @@
 package com.jxx.approval.confirm.presentation;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jxx.approval.confirm.application.ApprovalLineService;
 import com.jxx.approval.confirm.dto.request.ConfirmDocumentContentRequest;
 import com.jxx.approval.confirm.application.ConfirmDocumentService;
@@ -82,7 +83,7 @@ public class ConfirmApiController {
     // 결재 문서에 대한 결재자 등록
     @PostMapping("/api/confirm-documents/{confirm-document-id}/approval-lines")
     public ResponseEntity<ResponseResult> enrollApprovalLine(@PathVariable(name = "confirm-document-id") String confirmDocumentId,
-                                                @RequestBody List<ApproverEnrollForm> forms) {
+                                                @RequestBody List<ApproverEnrollForm> forms) throws JsonProcessingException {
         List<ApprovalLineServiceResponse> responses = approvalLineService.enrollApprovalLines(forms, confirmDocumentId);
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재자 등록", responses));
     }
