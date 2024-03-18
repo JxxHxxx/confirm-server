@@ -29,24 +29,6 @@ public class ApprovalLineService {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByDocumentConfirmDocumentId(confirmDocumentId)
                 .orElseThrow(() -> new IllegalArgumentException());
 
-        // 동일 회사 구성원인지 검증해야 함
-
-        String companyId = confirmDocument.getCompanyId();
-        List<String> membersId = enrollForms.stream().map(ApproverEnrollForm::approvalId).toList();
-        // 결재선에 지정된 사용자가 부서 사람인지 검증
-        SimpleRestClient restClient = new SimpleRestClient();
-        String url = UriComponentsBuilder.fromUriString("http://localhost:8080")
-                .path("/api/companies/{company-id}/member-leaves")
-                .queryParam("membersId", membersId)
-                .encode()
-                .buildAndExpand(companyId)
-                .toString();
-
-        ResponseEntity<List> responseEntity = restClient.getForEntity(url, List.class);
-        if (responseEntity.getStatusCode().is4xxClientError()) {
-            throw new ConfirmDocumentException("사내 구성원이 아닙니다.", null);
-        }
-
         // 상신 전 상태인지 확인
         if (confirmDocument.isNotRaiseBefore()) {
             throw new ConfirmDocumentException("해당 결재 문서는 결재선을 수정할 수 없는 상태입니다." + confirmDocument.getConfirmStatus()
@@ -57,6 +39,10 @@ public class ApprovalLineService {
         if (!approvalLines.isEmpty()) {
             throw new ConfirmDocumentException("이미 결재선이 지정된 결재 문서입니다.", confirmDocument.getRequesterId());
         }
+
+        // 결재선에 지정된 사용자가 사내 구성원인지 검증
+        List<String> approvalMembersId = enrollForms.stream().map(ApproverEnrollForm::approvalId).toList();
+        verifyApprovalMembersAreCompanyMember(confirmDocument.getCompanyId(), approvalMembersId);
 
         List<ApprovalLine> requestApprovalLines = enrollForms.stream()
                 .map(form -> new ApprovalLine(form.approvalOrder(), form.approvalId(), confirmDocument))
@@ -70,6 +56,22 @@ public class ApprovalLineService {
                         approvalLine.getApprovalLineId(),
                         approvalLine.getApproveStatus()))
                 .toList();
+    }
+
+    private static void verifyApprovalMembersAreCompanyMember(String companyId, List<String> membersId) throws JsonProcessingException {
+        SimpleRestClient restClient = new SimpleRestClient();
+        String url = UriComponentsBuilder
+                .fromUriString("http://localhost:8080")
+                .path("/api/companies/{company-id}/member-leaves")
+                .queryParam("membersId", membersId)
+                .encode()
+                .buildAndExpand(companyId)
+                .toString();
+
+        ResponseEntity<List> responseEntity = restClient.getForEntity(url, List.class);
+        if (responseEntity.getStatusCode().is4xxClientError()) {
+            throw new ConfirmDocumentException("사내 구성원이 아닙니다.", null);
+        }
     }
 
     @Transactional

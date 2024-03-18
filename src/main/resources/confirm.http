@@ -6,7 +6,7 @@ GET http://localhost:8000/api/confirm-documents?requesterId=U00001&confirmDocume
 
 ### ADD APPROVAL
 
-POST http://localhost:8000/api/confirm-documents/VACSPY4838/approval-lines
+POST http://localhost:8000/api/confirm-documents/VACSPY4796/approval-lines
 Content-Type: application/json
 
 [

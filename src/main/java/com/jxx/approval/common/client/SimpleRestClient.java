@@ -42,6 +42,10 @@ public class SimpleRestClient {
 
     public <T> ResponseEntity<T> getForEntity(String url, Class<T> responseType) throws JsonProcessingException {
         ResponseEntity<T> response = restTemplate.getForEntity(url, responseType);
+
+//        if (response.getStatusCode().is4xxClientError()) {
+//            throw new ServerToServerException("서버 통신 중 예외가 발생하였습니다.");
+//        };
         return response;
     }
 }

@@ -1,16 +1,18 @@
 package com.jxx.approval.confirm.dto.response;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class ResponseResult<T> {
-    private final Integer status;
-    private final String message;
-    private final T response;
+    private Integer status;
+    private String message;
+    private T data;
 
-    public ResponseResult(Integer status, String message, T response) {
+    public ResponseResult(Integer status, String message, T data) {
         this.status = status;
         this.message = message;
-        this.response = response;
+        this.data = data;
     }
 }
