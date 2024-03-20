@@ -10,7 +10,7 @@ public class WebConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new ApiLog());
+        registry.addInterceptor(new ApiAccessLogInterceptor());
     }
 
     @Override
