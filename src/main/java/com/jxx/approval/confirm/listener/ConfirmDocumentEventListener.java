@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 
 @Slf4j
@@ -18,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ConfirmDocumentEventListener {
     private final ConfirmDocumentRepository confirmDocumentRepository;
 
-    @EventListener(ApproveStatusChangedEvent.class)
+    @TransactionalEventListener(value = ApproveStatusChangedEvent.class, phase = TransactionPhase.BEFORE_COMMIT)
     public void handle(ApproveStatusChangedEvent event) {
         // 로깅 작업 해야함
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(event.getConfirmDocumentPk())
@@ -29,7 +31,7 @@ public class ConfirmDocumentEventListener {
         }
     }
 
-    @EventListener(ConfirmStatusEvent.class)
+    @TransactionalEventListener(value = ConfirmStatusEvent.class, phase = TransactionPhase.BEFORE_COMMIT)
     public void handle(ConfirmStatusEvent event) throws JsonProcessingException {
         log.info("cdp:{} eventType:{}", event.confirmDocumentPk(), event.confirmStatusToChange());
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(event.confirmDocumentPk())

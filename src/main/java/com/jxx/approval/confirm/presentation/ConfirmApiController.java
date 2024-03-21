@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -107,6 +108,7 @@ public class ConfirmApiController {
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 승인", response));
     }
     // 결재 문서 반려
+    @Transactional // 안되겠다. 이벤트 퍼블리셔 서비스레이어에 둬야 할듯.
     @PatchMapping("/api/confirm-documents/{confirm-document-pk}/reject")
     public ResponseEntity<ResponseResult> rejectConfirmDocument(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk,
                                                    @RequestBody ApprovalInformationForm form) {

@@ -6,7 +6,7 @@ GET http://localhost:8000/api/confirm-documents?requesterId=U00001&confirmDocume
 
 ### ADD APPROVAL
 
-POST http://localhost:8000/api/confirm-documents/VACJXX4840/approval-lines
+POST http://localhost:8000/api/confirm-documents/VACJXX4839/approval-lines
 Content-Type: application/json
 
 [
@@ -42,11 +42,11 @@ Content-Type: application/json
 }
 
 ### 결재 반려
-PATCH http://localhost:8000/api/confirm-documents/48320/reject
+PATCH http://localhost:8000/api/confirm-documents/48312/reject
 Content-Type: application/json
 
 {
-  "companyId": "SPY",
+  "companyId": "JXX",
   "departmentId": "SPY01016",
   "approvalLineId": "U00131"
 }
