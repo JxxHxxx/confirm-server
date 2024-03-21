@@ -94,12 +94,17 @@ public class ApprovalLineService {
 
         boolean finalApproval = approvalLine.isFinalApproval(approvalLines);
 
+        //여기 리팩토링 할 수 있음 일단 GO
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk).orElseThrow();
+        String vacationId = confirmDocument.getConfirmDocumentId().substring(6);
+
         return new ApprovalLineServiceAcceptResponse(
                 approvalLine.getPk(),
                 approvalLine.getApprovalOrder(),
                 approvalLine.getApprovalLineId(),
                 approvalLine.getApproveStatus(),
-                finalApproval);
+                finalApproval,
+                vacationId);
     }
 
     @Transactional

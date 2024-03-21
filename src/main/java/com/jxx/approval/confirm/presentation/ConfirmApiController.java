@@ -101,7 +101,7 @@ public class ConfirmApiController {
         ApprovalLineServiceAcceptResponse response = approvalLineService.accept(confirmDocumentPk, form);
         // 임시
         if (response.finalApproval()) {
-            eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentPk, ConfirmStatus.ACCEPT));
+            eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentPk, response.vacationId(),ConfirmStatus.ACCEPT));
         }
 
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 승인", response));
@@ -116,7 +116,7 @@ public class ConfirmApiController {
         // 결재 문서 반려 로직
         ApprovalLineServiceResponse response = approvalLineService.reject(confirmDocumentPk, form);
 
-        eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentPk, ConfirmStatus.REJECT));
+        eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentPk, "1", ConfirmStatus.REJECT));
 
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 반려", response));
     }

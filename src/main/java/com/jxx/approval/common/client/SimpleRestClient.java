@@ -22,17 +22,11 @@ public class SimpleRestClient {
         this.objectMapper = new ObjectMapper();
     }
 
-    public <T> T post(String url, Object request, Class<T> responseType, Object... uriVariable) throws JsonProcessingException {
-        String stringResponse = null;
-        try {
-            stringResponse = restTemplate.postForObject(url, request, String.class, uriVariable);
-        } catch (RestClientException e) {
-            log.error("결재 서버 연결에 실패했습니다.", e);
-            throw new RuntimeException(e);
-        }
-
-        return objectMapper.readValue(stringResponse, responseType); // 이 메서드가 리턴하는 값을 타입으로 하고 싶음
+    public <T> ResponseEntity<T> postForEntity(String url, Object request, Class<T> responseType, Object... uriVariable) throws JsonProcessingException {
+        ResponseEntity<T> response = restTemplate.postForEntity(url, request, responseType, uriVariable);
+        return response;
     }
+
 
     public <T> T get(String url, Class<T> responseType, Object... uriVariable) throws JsonProcessingException {
         String stringResponse = restTemplate.getForObject(url, String.class, uriVariable);
@@ -42,10 +36,11 @@ public class SimpleRestClient {
 
     public <T> ResponseEntity<T> getForEntity(String url, Class<T> responseType) throws JsonProcessingException {
         ResponseEntity<T> response = restTemplate.getForEntity(url, responseType);
-
-//        if (response.getStatusCode().is4xxClientError()) {
-//            throw new ServerToServerException("서버 통신 중 예외가 발생하였습니다.");
-//        };
         return response;
+    }
+
+    public <T> T patch(String url, Object request, Class<T> responseType, Object... uriVariable) throws JsonProcessingException {
+        String stringResponse = restTemplate.patchForObject(url, request, String.class, uriVariable);
+        return objectMapper.readValue(stringResponse, responseType);
     }
 }
