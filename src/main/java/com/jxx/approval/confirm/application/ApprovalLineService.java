@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jxx.approval.common.client.SimpleRestClient;
 import com.jxx.approval.confirm.domain.*;
 import com.jxx.approval.confirm.dto.request.ApprovalInformationForm;
+import com.jxx.approval.confirm.dto.response.ApprovalLineServiceAcceptResponse;
 import com.jxx.approval.confirm.infra.ConfirmDocumentRepository;
 import com.jxx.approval.confirm.dto.request.ApproverEnrollForm;
 import com.jxx.approval.confirm.dto.response.ApprovalLineServiceResponse;
@@ -24,6 +25,7 @@ public class ApprovalLineService {
 
     private final ApprovalLineRepository approvalLineRepository;
     private final ConfirmDocumentRepository confirmDocumentRepository;
+
     @Transactional
     public List<ApprovalLineServiceResponse> enrollApprovalLines(List<ApproverEnrollForm> enrollForms, String confirmDocumentId) throws JsonProcessingException {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByDocumentConfirmDocumentId(confirmDocumentId)
@@ -33,7 +35,7 @@ public class ApprovalLineService {
         if (confirmDocument.isNotRaiseBefore()) {
             throw new ConfirmDocumentException("해당 결재 문서는 결재선을 수정할 수 없는 상태입니다." + confirmDocument.getConfirmStatus()
                     , confirmDocument.getRequesterId());
-        };
+        }
         // 이미 결재선이 등록되어 있는지 확인
         List<ApprovalLine> approvalLines = approvalLineRepository.findByConfirmDocumentPk(confirmDocument.getPk());
         if (!approvalLines.isEmpty()) {
@@ -75,7 +77,7 @@ public class ApprovalLineService {
     }
 
     @Transactional
-    public ApprovalLineServiceResponse accept(Long confirmDocumentPk, ApprovalInformationForm form) {
+    public ApprovalLineServiceAcceptResponse accept(Long confirmDocumentPk, ApprovalInformationForm form) {
         // 리스너로 ConfirmDocument Status 체킹 해야됨
         List<ApprovalLine> approvalLines = approvalLineRepository.findByConfirmDocumentPk(confirmDocumentPk);
 
@@ -90,11 +92,14 @@ public class ApprovalLineService {
                 .checkApprovalLineOrder()
                 .changeApproveStatus(ApproveStatus.ACCEPT);
 
-        return new ApprovalLineServiceResponse(
+        boolean finalApproval = approvalLine.isFinalApproval(approvalLines);
+
+        return new ApprovalLineServiceAcceptResponse(
                 approvalLine.getPk(),
                 approvalLine.getApprovalOrder(),
                 approvalLine.getApprovalLineId(),
-                approvalLine.getApproveStatus());
+                approvalLine.getApproveStatus(),
+                finalApproval);
     }
 
     @Transactional

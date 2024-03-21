@@ -2,10 +2,11 @@ package com.jxx.approval.confirm.dto.response;
 
 import com.jxx.approval.confirm.domain.ApproveStatus;
 
-public record ApprovalLineServiceResponse(
+public record ApprovalLineServiceAcceptResponse(
         Long approvalLinePk,
         Integer approvalOrder,
         String approvalId,
-        ApproveStatus approveStatus
-) {
+        ApproveStatus approveStatus,
+        boolean finalApproval
+        ) {
 }

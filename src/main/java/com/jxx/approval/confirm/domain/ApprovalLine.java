@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Entity
@@ -60,13 +61,21 @@ public class ApprovalLine {
 
     protected void changeApproveStatus(ApproveStatus approveStatus) {
         this.approveStatus = approveStatus;
+        approveTime = LocalDateTime.now();
     }
 
-    public boolean checkApproveStatus(ApproveStatus approveStatus) {
+    public boolean isApproveStatus(ApproveStatus approveStatus) {
         return this.approveStatus.equals(approveStatus);
+    }
+    public boolean isNotApproveStatus(ApproveStatus approveStatus) {
+        return !this.approveStatus.equals(approveStatus);
     }
 
     public boolean isBeforeOrderThan(ApprovalLine approvalLine) {
         return this.approvalOrder < approvalLine.getApprovalOrder();
+    }
+
+    public boolean isFinalApproval(List<ApprovalLine> approvalLines) {
+        return this.approvalOrder.equals(approvalLines.size());
     }
 }

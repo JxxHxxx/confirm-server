@@ -6,39 +6,39 @@ GET http://localhost:8000/api/confirm-documents?requesterId=U00001&confirmDocume
 
 ### ADD APPROVAL
 
-POST http://localhost:8000/api/confirm-documents/VACSPY4796/approval-lines
+POST http://localhost:8000/api/confirm-documents/VACJXX5821/approval-lines
 Content-Type: application/json
 
 [
 
   {
-    "approvalId": "J20020001",
+    "approvalId": "U00131",
     "approvalOrder": "1"
   },
   {
-    "approvalId": "J19930001",
+    "approvalId": "U00132",
     "approvalOrder": "2"
   }
 ]
 
 ### 결재 상신
-POST http://localhost:8000/api/confirm-documents/4543/raise
+POST http://localhost:8000/api/confirm-documents/VACJXX5821/raise
 Content-Type: application/json
 
 {
-  "requesterId": "SPY00107",
-  "companyId" : "SPY",
-  "departmentId" :"SPY00102"
+  "requesterId": "U00130",
+  "companyId" : "JXX",
+  "departmentId" :"J02030"
 }
 
 ### 결재 수락
-PATCH http://localhost:8000/api/confirm-documents/607/accept
+PATCH http://localhost:8000/api/confirm-documents/49334/accept
 Content-Type: application/json
 
 {
-   "companyId": "",
-   "departmentId": "",
-   "approvalLineId": "J19930001"
+   "companyId": "JXX",
+   "departmentId": "J02030",
+   "approvalLineId": "U00132"
 }
 
 ### 결재 반려

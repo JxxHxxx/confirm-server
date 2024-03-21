@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.jxx.approval.confirm.domain.ApproveStatus.ACCEPT;
 import static com.jxx.approval.confirm.domain.ConfirmStatus.*;
 
 @Getter
@@ -102,8 +103,22 @@ public class ConfirmDocument {
     public boolean confirmStatusNotBelongIn(List<ConfirmStatus> confirmStatuses) {
         return !confirmStatuses.contains(this.confirmStatus);
     }
-
     public boolean isNotRaiseBefore() {
         return !raiseBefore.contains(confirmStatus);
+    }
+
+    public boolean anyApprovalNotAccepted() {
+        return approvalLines.stream()
+                .anyMatch(approvalLine -> approvalLine.isNotApproveStatus(ACCEPT));
+    }
+
+    public List<ApproveStatus> receiveApprovalLinesStatus() {
+        return approvalLines.stream().map(approvalLine -> approvalLine.getApproveStatus())
+                .toList();
+    }
+
+    public List<String> receiveApprovalLinesId() {
+        return approvalLines.stream().map(approvalLine -> approvalLine.getApprovalLineId())
+                .toList();
     }
 }

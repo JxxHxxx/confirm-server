@@ -76,7 +76,7 @@ public class ApprovalLineManager {
                     "checkBelongInApprovalLineFlag : " + checkBelongInApprovalLineFlag +
                     "checkApprovalOrderLineFlag : "  + checkApprovalOrderLineFlag);
         }
-        
+
         approvalLine.changeApproveStatus(approveStatus);
         return approvalLine;
     }
@@ -84,7 +84,7 @@ public class ApprovalLineManager {
     private boolean previousOrderApprovalLine(ApproveStatus approveStatus) {
         return approvalLines.stream()
                 .filter(al -> al.isBeforeOrderThan(approvalLine)) // 이전 결재자 필터링
-                .anyMatch(al -> al.checkApproveStatus(approveStatus));
+                .anyMatch(al -> al.isApproveStatus(approveStatus));
     }
 
     protected List<ApprovalLine> getApprovalLines() {

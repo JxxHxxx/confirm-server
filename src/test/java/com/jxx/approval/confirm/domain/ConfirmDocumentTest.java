@@ -42,7 +42,7 @@ class ConfirmDocumentTest {
     }
 
     @DisplayName(value = "상신 가능한 문서인지를 검증한다." +
-            "ConfirmStatus 상태가 RAISE, CANCEL, ACCEPT 중 하나라면 true 를 반환한다.")
+            "confirmStatus 상태가 RAISE, CANCEL, ACCEPT 중 하나라면 true 를 반환한다.")
     @ParameterizedTest
     @EnumSource(value = ConfirmStatus.class, names = {"RAISE", "CANCEL", "ACCEPT"})
     void raise_impossible_return_true_case(ConfirmStatus confirmStatus) {
@@ -59,7 +59,7 @@ class ConfirmDocumentTest {
     }
 
     @DisplayName(value = "상신 가능한 문서인지를 검증한다." +
-            "ConfirmStatus 상태가 CREATE, UPDATE, REJECT 중 하나라면 false 를 반환한다.")
+            "confirmStatus 상태가 CREATE, UPDATE, REJECT 중 하나라면 false 를 반환한다.")
     @ParameterizedTest
     @EnumSource(value = ConfirmStatus.class, names = {"CREATE", "UPDATE", "REJECT"})
     void raise_impossible_return_false_case(ConfirmStatus confirmStatus) {
@@ -75,7 +75,7 @@ class ConfirmDocumentTest {
         assertThat(isRaiseImpossible).isFalse();
     }
     @DisplayName(value = "파기(리스소 생성자에 의한) 가능한 문서인지를 검증한다." +
-            "ConfirmStatus 상태가 RAISE, CANCEL, ACCEPT 중 하나라면 true 를 반환한다.")
+            "confirmStatus 상태가 RAISE, CANCEL, ACCEPT 중 하나라면 true 를 반환한다.")
     @ParameterizedTest
     @EnumSource(value = ConfirmStatus.class, names = {"RAISE", "CANCEL", "ACCEPT"})
     void cancel_impossible_return_true_case(ConfirmStatus confirmStatus) {
@@ -92,7 +92,7 @@ class ConfirmDocumentTest {
     }
 
     @DisplayName(value = "파기(리스소 생성자에 의한) 가능한 문서인지를 검증한다." +
-            "ConfirmStatus 상태가 CREATE, UPDATE, REJECT 중 하나라면 false 를 반환한다.")
+            "confirmStatus 상태가 CREATE, UPDATE, REJECT 중 하나라면 false 를 반환한다.")
     @ParameterizedTest
     @EnumSource(value = ConfirmStatus.class, names = {"CREATE", "UPDATE", "REJECT"})
     void cancel_impossible_return_false_case(ConfirmStatus confirmStatus) {
@@ -108,7 +108,7 @@ class ConfirmDocumentTest {
         assertThat(isCancelImpossible).isFalse();
     }
 
-    @DisplayName("현재 결재 문서의 상태가 특정 ConfirmStatus 그룹에 속하는지 여부를 판단한다." +
+    @DisplayName("현재 결재 문서의 상태가 특정 confirmStatus 그룹에 속하는지 여부를 판단한다." +
             "속한다면 false" +
             "속하지 않는다면 true 를 반환한다.")
     @Test

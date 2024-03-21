@@ -5,10 +5,16 @@ import lombok.Getter;
 @Getter
 public class ConfirmDocumentException extends  RuntimeException {
 
-    private final String requesterId;
+    private static final String AMBIGUOUS_REQUESTER_ID_VALUE = "";
+    private String requesterId;
     public ConfirmDocumentException(String message, String requesterId) {
         super(message);
         this.requesterId = requesterId;
+    }
+
+    public ConfirmDocumentException(String message) {
+        super(message);
+        requesterId = AMBIGUOUS_REQUESTER_ID_VALUE;
     }
 
     public static final String FAIL_SELF_VERIFICATION = "자기 인증 실패";

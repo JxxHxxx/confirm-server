@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * 결재자의 승인/반려 status 를 변경하려고 할 때 발생하는 이벤트를 처리합니다.
+ */
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
