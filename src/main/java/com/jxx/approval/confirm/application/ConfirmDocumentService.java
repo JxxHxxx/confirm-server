@@ -46,6 +46,7 @@ public class ConfirmDocumentService {
                 .document(document)
                 .requester(requester)
                 .createSystem(form.createSystem())
+                .approvalLineStatus(ApprovalLineStatus.BEFORE_CREATE)
                 .build();
 
         confirmDocumentMapper.save(confirmDocument);

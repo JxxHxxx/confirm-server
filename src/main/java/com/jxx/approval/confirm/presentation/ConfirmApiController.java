@@ -83,7 +83,7 @@ public class ConfirmApiController {
         return ResponseEntity.ok(new ResponseResult(HttpStatus.OK.value(), "결재 문서 상신", response));
     }
 
-    // 결재 문서에 대한 결재자 등록
+    // 결재선 등록
     @PostMapping("/api/confirm-documents/{confirm-document-id}/approval-lines")
     public ResponseEntity<ResponseResult> enrollApprovalLine(@PathVariable(name = "confirm-document-id") String confirmDocumentId,
                                                 @RequestBody List<ApproverEnrollForm> forms) throws JsonProcessingException {

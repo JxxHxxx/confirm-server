@@ -45,17 +45,23 @@ public class ConfirmDocument {
     @OneToMany(mappedBy = "confirmDocument")
     private List<ApprovalLine> approvalLines = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "APPROVAL_LINE_STATUS")
+    @Comment(value = "결재선 상태")
+    private ApprovalLineStatus approvalLineStatus;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CONFIRM_DOCUMENT_CONTENT_PK", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Comment(value = "결재 문서 본문")
     private ConfirmDocumentContent content;
 
     @Builder
-    public ConfirmDocument(Document document, Requester requester, ConfirmStatus confirmStatus, String createSystem) {
+    public ConfirmDocument(Document document, Requester requester, ConfirmStatus confirmStatus, String createSystem, ApprovalLineStatus approvalLineStatus) {
         this.document = document;
         this.requester = requester;
         this.confirmStatus = confirmStatus;
         this.createSystem = createSystem;
+        this.approvalLineStatus = approvalLineStatus;
         this.createTime = LocalDateTime.now();
     }
 
