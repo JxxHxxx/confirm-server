@@ -27,17 +27,6 @@ public class ConfirmDocumentService {
     private final ConfirmDocumentContentRepository contentRepository;
 
     @Transactional
-    public void createAuto(int iter) {
-        List<ConfirmDocument> confirmDocuments = new ArrayList<>();
-        for (int i = 0; i < iter; i++) {
-            ConfirmDocument confirmDocument = ConfirmDocumentGenerator.execute();
-            confirmDocuments.add(confirmDocument);
-        }
-
-        confirmDocumentRepository.saveAll(confirmDocuments);
-    }
-
-    @Transactional
     public void createConfirmDocument(ConfirmCreateForm form) {
         Document document = new Document(form.documentType());
         Requester requester = new Requester(form.companyId(), form.departmentId(), form.requesterId());

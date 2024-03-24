@@ -28,13 +28,6 @@ public class ConfirmApiController {
     private final ApprovalLineService approvalLineService;
     private final ApplicationEventPublisher eventPublisher;
 
-    // 테스트 데이터 푸시
-    @PostMapping("/test/confirm-documents")
-    public ResponseEntity<?> saveAuto(@RequestParam("iter") int iter) {
-        confirmDocumentService.createAuto(iter);
-        return ResponseEntity.ok("생성");
-    }
-
     //결재 문서 생성
     @PostMapping("/api/confirm-documents")
     public ResponseEntity<?> save(@RequestBody ConfirmCreateForm form) {
