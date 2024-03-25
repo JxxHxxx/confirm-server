@@ -6,17 +6,17 @@ GET http://localhost:8000/api/confirm-documents?requesterId=U00001&confirmDocume
 
 ### ADD APPROVAL
 
-POST http://localhost:8000/api/confirm-documents/VACJXX4839/approval-lines
+POST http://localhost:8000/api/confirm-documents/VACSPY4913/approval-lines
 Content-Type: application/json
 
 [
 
   {
-    "approvalId": "U00131",
+    "approvalId": "SPY00430",
     "approvalOrder": "1"
   },
   {
-    "approvalId": "U00132",
+    "approvalId": "SPY00139",
     "approvalOrder": "2"
   }
 ]
@@ -151,7 +151,7 @@ GET localhost:8000/api/confirm-document-forms/2
 Content-Type: application/json
 
 ### 결재선 지정 confirm-document-pk:48311, VACSPY4823
-POST http://localhost:8000/api/confirm-documents/VACSPY4856/approval-lines
+POST http://localhost:8000/api/confirm-documents/VACSPY4837/approval-lines
 Content-Type: application/json
 
 [

@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.*;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -56,7 +58,7 @@ public class ConfirmApiController {
     @GetMapping("/api/confirm-documents")
     public ResponseEntity<ResponseResult> searchConfirmDocument(@ModelAttribute ConfirmDocumentSearchCondition condition) {
         List<ConfirmDocumentServiceResponse> responses = confirmDocumentService.search(condition);
-        return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "검색 조회", responses));
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "검색 조회", responses));
     }
 
     // 결재 문서 PK 조회
@@ -64,7 +66,7 @@ public class ConfirmApiController {
     public ResponseEntity<ResponseResult<?>> readByPk(@PathVariable(value = "confirm-document-pk") Long confirmDocumentPk) {
         ConfirmDocumentServiceResponse response = confirmDocumentService.readByPk(confirmDocumentPk);
 
-        return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 단건 조회", response));
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 단건 조회", response));
     }
 
     // 결재 문서 상신
@@ -73,7 +75,7 @@ public class ConfirmApiController {
                                    @RequestBody ConfirmRaiseForm form) {
         ConfirmServiceResponse response = confirmDocumentService.raise(confirmDocumentId, form);
 
-        return ResponseEntity.ok(new ResponseResult(HttpStatus.OK.value(), "결재 문서 상신", response));
+        return ResponseEntity.ok(new ResponseResult(OK.value(), "결재 문서 상신", response));
     }
 
     // 결재선 등록
@@ -81,7 +83,7 @@ public class ConfirmApiController {
     public ResponseEntity<ResponseResult> enrollApprovalLine(@PathVariable(name = "confirm-document-id") String confirmDocumentId,
                                                 @RequestBody List<ApproverEnrollForm> forms) throws JsonProcessingException {
         List<ApprovalLineServiceResponse> responses = approvalLineService.enrollApprovalLines(forms, confirmDocumentId);
-        return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재자 등록", responses));
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재자 등록", responses));
     }
 
     // 결재 문서 승인
@@ -98,7 +100,7 @@ public class ConfirmApiController {
             eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentPk, response.vacationId(),ConfirmStatus.ACCEPT));
         }
 
-        return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 승인", response));
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 승인", response));
     }
     // 결재 문서 반려
     @Transactional // 안되겠다. 이벤트 퍼블리셔 서비스레이어에 둬야 할듯.
@@ -113,7 +115,7 @@ public class ConfirmApiController {
 
         eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentPk, "1", ConfirmStatus.REJECT));
 
-        return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 반려", response));
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 반려", response));
     }
 
     // 결재 문서 취소 - policy 상신 완료된 문서는 취소 불가능
@@ -122,6 +124,6 @@ public class ConfirmApiController {
                                                    @RequestBody ConfirmDocumentCancelForm form) {
         ConfirmDocumentServiceResponse response = confirmDocumentService.cancelConfirmDocument(confirmDocumentPk, form);
 
-        return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "결재 문서 반려", response));
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 반려", response));
     }
 }

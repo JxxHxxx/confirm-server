@@ -2,7 +2,11 @@ package com.jxx.approval.confirm.domain;
 
 public class ApprovalLineException extends RuntimeException {
 
-    private final String approvalId;
+    private String approvalId;
+
+    public ApprovalLineException(String message) {
+        super(message);
+    }
 
     public ApprovalLineException(String message, String approvalId) {
         super(message);

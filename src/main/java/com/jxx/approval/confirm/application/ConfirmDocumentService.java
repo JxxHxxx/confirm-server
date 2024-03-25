@@ -4,16 +4,15 @@ import com.jxx.approval.confirm.domain.*;
 import com.jxx.approval.confirm.dto.request.*;
 import com.jxx.approval.confirm.dto.response.ConfirmDocumentAndContentServiceResponse;
 import com.jxx.approval.confirm.dto.response.ConfirmServiceResponse;
+import com.jxx.approval.confirm.infra.ApprovalLineRepository;
 import com.jxx.approval.confirm.infra.ConfirmDocumentContentRepository;
 import com.jxx.approval.confirm.infra.ConfirmDocumentMapper;
 import com.jxx.approval.confirm.infra.ConfirmDocumentRepository;
-import com.jxx.approval.confirm.utils.ConfirmDocumentGenerator;
 import com.jxx.approval.confirm.dto.response.ConfirmDocumentServiceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +24,7 @@ public class ConfirmDocumentService {
     private final ConfirmDocumentRepository confirmDocumentRepository;
     private final ConfirmDocumentMapper confirmDocumentMapper;
     private final ConfirmDocumentContentRepository contentRepository;
+    private final ApprovalLineRepository approvalLineRepository;
 
     @Transactional
     public void createConfirmDocument(ConfirmCreateForm form) {
@@ -45,14 +45,14 @@ public class ConfirmDocumentService {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk)
                 .orElseThrow(() -> new IllegalArgumentException("없어요~"));
 
-        return toConfirmServiceDto(confirmDocument);
+        return toConfirmDocumentServiceResponse(confirmDocument);
     }
 
     public List<ConfirmDocumentServiceResponse> readAll() {
         List<ConfirmDocument> confirmDocuments = confirmDocumentRepository.findAll();
 
         return confirmDocuments.stream()
-                .map(confirmDocument -> toConfirmServiceDto(confirmDocument))
+                .map(confirmDocument -> toConfirmDocumentServiceResponse(confirmDocument))
                 .toList();
     }
 
@@ -66,15 +66,21 @@ public class ConfirmDocumentService {
             throw new ConfirmDocumentException(ConfirmDocumentException.FAIL_SELF_VERIFICATION, form.requesterId());
         }
 
+        ConfirmStatus confirmStatus = confirmDocument.getConfirmStatus();
         if (confirmDocument.raiseImpossible()) {
-            throw new ConfirmDocumentException(ConfirmDocumentException.FAIL_RAISE + " 사유 : " + confirmDocument.getConfirmStatus().getDescription(), confirmDocument.getRequesterId());
+            throw new ConfirmDocumentException(ConfirmDocumentException.FAIL_RAISE + " 사유 : " + confirmStatus.getDescription(), confirmDocument.getRequesterId());
         }
 
+        ApprovalLineManager approvalLineManager = ApprovalLineManager.builder()
+                .approvalLines(confirmDocument.getApprovalLines())
+                .build();
+        approvalLineManager.isEmptyApprovalLine();
+
         confirmDocument.changeConfirmStatus(ConfirmStatus.RAISE);
-        return new ConfirmServiceResponse(confirmDocumentId, form.requesterId(), confirmDocument.getConfirmStatus());
+        return new ConfirmServiceResponse(confirmDocumentId, form.requesterId(), confirmStatus);
     }
 
-    private static ConfirmDocumentServiceResponse toConfirmServiceDto(ConfirmDocument confirmDocument) {
+    private static ConfirmDocumentServiceResponse toConfirmDocumentServiceResponse(ConfirmDocument confirmDocument) {
         return new ConfirmDocumentServiceResponse(
                 confirmDocument.getPk(),
                 confirmDocument.getDocument().getConfirmDocumentId(),

@@ -28,7 +28,7 @@ public class ApprovalLineManager {
     
     public ApprovalLineManager isEmptyApprovalLine() {
         if (approvalLines.isEmpty()) {
-            throw new ApprovalLineException(EMPTY_APPROVAL_LINE, approvalLineId);
+            throw new ApprovalLineException(EMPTY_APPROVAL_LINE);
         }
         isEmptyApprovalLineFlag = true;
         return this;
