@@ -94,7 +94,7 @@ public class ConfirmApiController {
         // ConfirmDocument 에서 결재자가 결재 문서를 승인할 수 있는 상태인지 검증
         eventPublisher.publishEvent(ApproveStatusChangedEvent.acceptEvent(confirmDocumentPk, form.approvalLineId()));
         // 결재 문서 승인 로직
-        ApprovalLineServiceAcceptResponse response = approvalLineService.accept(confirmDocumentPk, form);
+        ApprovalLineServiceResponse response = approvalLineService.accept(confirmDocumentPk, form);
         // 임시
         if (response.finalApproval()) {
             eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentPk, response.vacationId(),ConfirmStatus.ACCEPT));
@@ -111,9 +111,9 @@ public class ConfirmApiController {
         // ConfirmDocument 에서 결재자가 결재 문서를 반려할 수 있는 상태인지 검증
         eventPublisher.publishEvent(ApproveStatusChangedEvent.rejectEvent(confirmDocumentPk, form.approvalLineId()));
         // 결재 문서 반려 로직
-        ApprovalLineServiceDto response = approvalLineService.reject(confirmDocumentPk, form);
+        ApprovalLineServiceResponse response = approvalLineService.reject(confirmDocumentPk, form);
 
-        eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentPk, "1", ConfirmStatus.REJECT));
+        eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentPk, response.vacationId(), ConfirmStatus.REJECT));
 
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 반려", response));
     }

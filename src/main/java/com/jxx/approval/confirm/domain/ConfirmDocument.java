@@ -46,9 +46,9 @@ public class ConfirmDocument {
     private List<ApprovalLine> approvalLines = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "APPROVAL_LINE_STATUS")
+    @Column(name = "APPROVAL_LINE_LIFE_CYCLE")
     @Comment(value = "결재선 상태")
-    private ApprovalLineStatus approvalLineStatus;
+    private ApprovalLineLifecycle approvalLineLifecycle;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CONFIRM_DOCUMENT_CONTENT_PK", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
@@ -56,12 +56,12 @@ public class ConfirmDocument {
     private ConfirmDocumentContent content;
 
     @Builder
-    public ConfirmDocument(Document document, Requester requester, ConfirmStatus confirmStatus, String createSystem, ApprovalLineStatus approvalLineStatus) {
+    public ConfirmDocument(Document document, Requester requester, ConfirmStatus confirmStatus, String createSystem, ApprovalLineLifecycle approvalLineLifecycle) {
         this.document = document;
         this.requester = requester;
         this.confirmStatus = confirmStatus;
         this.createSystem = createSystem;
-        this.approvalLineStatus = approvalLineStatus;
+        this.approvalLineLifecycle = approvalLineLifecycle;
         this.createTime = LocalDateTime.now();
     }
 
@@ -126,5 +126,17 @@ public class ConfirmDocument {
     public List<String> receiveApprovalLinesId() {
         return approvalLines.stream().map(approvalLine -> approvalLine.getApprovalLineId())
                 .toList();
+    }
+
+    public String documentTypeString() {
+        return this.getDocumentType().name();
+    }
+
+    public void changeApprovalLineCycle(ApprovalLineLifecycle approvalLineLifecycle) {
+        this.approvalLineLifecycle = approvalLineLifecycle;
+    }
+
+    public boolean approvalLineCreated() {
+        return ApprovalLineLifecycle.CREATED.equals(approvalLineLifecycle);
     }
 }

@@ -5,12 +5,13 @@ import com.jxx.approval.common.client.SimpleRestClient;
 import com.jxx.approval.confirm.domain.*;
 import com.jxx.approval.confirm.dto.request.ApprovalInformationForm;
 import com.jxx.approval.confirm.dto.response.ApprovalLineResponse;
-import com.jxx.approval.confirm.dto.response.ApprovalLineServiceAcceptResponse;
+import com.jxx.approval.confirm.dto.response.ApprovalLineServiceResponse;
 import com.jxx.approval.confirm.dto.response.ConfirmDocumentServiceDto;
 import com.jxx.approval.confirm.infra.ConfirmDocumentRepository;
 import com.jxx.approval.confirm.dto.request.ApproverEnrollForm;
 import com.jxx.approval.confirm.dto.response.ApprovalLineServiceDto;
 import com.jxx.approval.confirm.infra.ApprovalLineRepository;
+import com.jxx.approval.vendor.vacation.VacationIdExtractor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
+
+import static com.jxx.approval.confirm.domain.ApprovalLineLifecycle.*;
 
 @Slf4j
 @Service
@@ -39,8 +42,7 @@ public class ApprovalLineService {
                     , confirmDocument.getRequesterId());
         }
         // 이미 결재선이 등록되어 있는지 확인
-        List<ApprovalLine> approvalLines = approvalLineRepository.findByConfirmDocumentPk(confirmDocument.getPk());
-        if (!approvalLines.isEmpty()) {
+        if (!BEFORE_CREATE.equals(confirmDocument.getApprovalLineLifecycle())) {
             throw new ConfirmDocumentException("이미 결재선이 지정된 결재 문서입니다.", confirmDocument.getRequesterId());
         }
 
@@ -51,8 +53,10 @@ public class ApprovalLineService {
         List<ApprovalLine> requestApprovalLines = enrollForms.stream()
                 .map(form -> new ApprovalLine(form.approvalOrder(), form.approvalId(), confirmDocument))
                 .toList();
-
         List<ApprovalLine> savedApprovalLines = approvalLineRepository.saveAll(requestApprovalLines);
+
+        confirmDocument.changeApprovalLineCycle(CREATED);
+
         return createEnrollApprovalLinesResponse(confirmDocument, savedApprovalLines);
 
     }
@@ -92,7 +96,7 @@ public class ApprovalLineService {
     }
 
     @Transactional
-    public ApprovalLineServiceAcceptResponse accept(Long confirmDocumentPk, ApprovalInformationForm form) {
+    public ApprovalLineServiceResponse accept(Long confirmDocumentPk, ApprovalInformationForm form) {
         // 리스너로 ConfirmDocument Status 체킹 해야됨
         List<ApprovalLine> approvalLines = approvalLineRepository.findByConfirmDocumentPk(confirmDocumentPk);
 
@@ -110,10 +114,10 @@ public class ApprovalLineService {
         boolean finalApproval = approvalLine.isFinalApproval(approvalLines);
 
         //여기 리팩토링 할 수 있음 일단 GO
-        ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk).orElseThrow();
-        String vacationId = confirmDocument.getConfirmDocumentId().substring(6);
+        ConfirmDocument findDocument = confirmDocumentRepository.findByPk(confirmDocumentPk).orElseThrow();
+        Long vacationId = VacationIdExtractor.execute(findDocument);
 
-        return new ApprovalLineServiceAcceptResponse(
+        return new ApprovalLineServiceResponse(
                 approvalLine.getPk(),
                 approvalLine.getApprovalOrder(),
                 approvalLine.getApprovalLineId(),
@@ -123,7 +127,7 @@ public class ApprovalLineService {
     }
 
     @Transactional
-    public ApprovalLineServiceDto reject(Long confirmDocumentPk, ApprovalInformationForm form) {
+    public ApprovalLineServiceResponse reject(Long confirmDocumentPk, ApprovalInformationForm form) {
         // 리스너로 ConfirmDocument Status 체킹 해야됨
 
         // 파기된 문서인지 체크
@@ -142,10 +146,17 @@ public class ApprovalLineService {
                 .checkApprovalLineOrder()
                 .changeApproveStatus(ApproveStatus.REJECT);
 
-        return new ApprovalLineServiceDto(
+        ConfirmDocument findDocument = confirmDocumentRepository.findByPk(confirmDocumentPk).orElseThrow();
+        Long vacationId = VacationIdExtractor.execute(findDocument);
+
+        boolean finalApproval = approvalLine.isFinalApproval(approvalLines);
+
+        return new ApprovalLineServiceResponse(
                 approvalLine.getPk(),
                 approvalLine.getApprovalOrder(),
                 approvalLine.getApprovalLineId(),
-                approvalLine.getApproveStatus());
+                approvalLine.getApproveStatus(),
+                finalApproval,
+                vacationId);
     }
 }

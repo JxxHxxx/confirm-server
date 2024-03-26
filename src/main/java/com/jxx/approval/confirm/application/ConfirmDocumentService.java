@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.jxx.approval.confirm.domain.ApprovalLineException.EMPTY_APPROVAL_LINE;
+
 @Service
 @RequiredArgsConstructor
 public class ConfirmDocumentService {
@@ -24,7 +26,6 @@ public class ConfirmDocumentService {
     private final ConfirmDocumentRepository confirmDocumentRepository;
     private final ConfirmDocumentMapper confirmDocumentMapper;
     private final ConfirmDocumentContentRepository contentRepository;
-    private final ApprovalLineRepository approvalLineRepository;
 
     @Transactional
     public void createConfirmDocument(ConfirmCreateForm form) {
@@ -35,7 +36,7 @@ public class ConfirmDocumentService {
                 .document(document)
                 .requester(requester)
                 .createSystem(form.createSystem())
-                .approvalLineStatus(ApprovalLineStatus.BEFORE_CREATE)
+                .approvalLineLifecycle(ApprovalLineLifecycle.BEFORE_CREATE)
                 .build();
 
         confirmDocumentMapper.save(confirmDocument);
@@ -61,6 +62,7 @@ public class ConfirmDocumentService {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByDocumentConfirmDocumentId(confirmDocumentId)
                 .orElseThrow(() -> new IllegalArgumentException());
 
+        // 요청자 검증
         Requester raiseRequester = new Requester(form.companyId(), form.departmentId(), form.requesterId());
         if (confirmDocument.isNotDocumentOwner(raiseRequester)) {
             throw new ConfirmDocumentException(ConfirmDocumentException.FAIL_SELF_VERIFICATION, form.requesterId());
@@ -70,13 +72,14 @@ public class ConfirmDocumentService {
             // 결재 문서 상태 던져야함
             throw new ConfirmDocumentException("해당 결재 문서를 상신할 수 없는 상태입니다.", confirmDocument.getRequesterId());
         }
-
-        ApprovalLineManager approvalLineManager = ApprovalLineManager.builder()
-                .approvalLines(confirmDocument.getApprovalLines())
-                .build();
-        approvalLineManager.isEmptyApprovalLine();
+        // 결재선 지정 여부
+        if (!confirmDocument.approvalLineCreated()) {
+            throw new ApprovalLineException(EMPTY_APPROVAL_LINE);
+        };
 
         confirmDocument.changeConfirmStatus(ConfirmStatus.RAISE);
+        confirmDocument.changeApprovalLineCycle(ApprovalLineLifecycle.PROCESS_MODIFIABLE);
+
         ConfirmStatus updatedConfirmStatus = confirmDocument.getConfirmStatus();
         return new ConfirmDocumentServiceDto(confirmDocument.getPk(), confirmDocumentId, form.requesterId(), updatedConfirmStatus);
     }
