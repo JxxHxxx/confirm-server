@@ -87,6 +87,7 @@ public class ConfirmApiController {
     }
 
     // 결재 문서 승인
+    @Transactional
     @PatchMapping("/api/confirm-documents/{confirm-document-pk}/accept")
     public ResponseEntity<ResponseResult> acceptConfirmDocument(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk,
                                                    @RequestBody ApprovalInformationForm form) {

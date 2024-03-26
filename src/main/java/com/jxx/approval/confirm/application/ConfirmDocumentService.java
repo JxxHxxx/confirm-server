@@ -66,9 +66,9 @@ public class ConfirmDocumentService {
             throw new ConfirmDocumentException(ConfirmDocumentException.FAIL_SELF_VERIFICATION, form.requesterId());
         }
 
-        ConfirmStatus confirmStatus = confirmDocument.getConfirmStatus();
         if (confirmDocument.raiseImpossible()) {
-            throw new ConfirmDocumentException(ConfirmDocumentException.FAIL_RAISE + " 사유 : " + confirmStatus.getDescription(), confirmDocument.getRequesterId());
+            // 결재 문서 상태 던져야함
+            throw new ConfirmDocumentException("해당 결재 문서를 상신할 수 없는 상태입니다.", confirmDocument.getRequesterId());
         }
 
         ApprovalLineManager approvalLineManager = ApprovalLineManager.builder()
@@ -77,7 +77,8 @@ public class ConfirmDocumentService {
         approvalLineManager.isEmptyApprovalLine();
 
         confirmDocument.changeConfirmStatus(ConfirmStatus.RAISE);
-        return new ConfirmServiceResponse(confirmDocumentId, form.requesterId(), confirmStatus);
+        ConfirmStatus updatedConfirmStatus = confirmDocument.getConfirmStatus();
+        return new ConfirmServiceResponse(confirmDocumentId, form.requesterId(), updatedConfirmStatus);
     }
 
     private static ConfirmDocumentServiceResponse toConfirmDocumentServiceResponse(ConfirmDocument confirmDocument) {

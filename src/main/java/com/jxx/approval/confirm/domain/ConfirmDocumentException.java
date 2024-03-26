@@ -3,7 +3,7 @@ package com.jxx.approval.confirm.domain;
 import lombok.Getter;
 
 @Getter
-public class ConfirmDocumentException extends  RuntimeException {
+public class ConfirmDocumentException extends RuntimeException {
 
     private static final String AMBIGUOUS_REQUESTER_ID_VALUE = "";
     private String requesterId;
