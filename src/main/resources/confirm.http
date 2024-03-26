@@ -21,7 +21,7 @@ Content-Type: application/json
   }
 ]
 
-### 결재 상신
+### 결재 상신 (사용 X, 휴가 서버에서 호출 GO)
 POST http://localhost:8000/api/confirm-documents/VACJXX4840/raise
 Content-Type: application/json
 
@@ -30,17 +30,6 @@ Content-Type: application/json
   "companyId" : "JXX",
   "departmentId" :"J02032"
 }
-
-### 결재 수락
-PATCH http://localhost:8000/api/confirm-documents/48365/accept
-Content-Type: application/json
-
-{
-   "companyId": "JXX",
-   "departmentId": "J02030",
-   "approvalLineId": "U00132"
-}
-
 ### 결재 반려
 PATCH http://localhost:8000/api/confirm-documents/48312/reject
 Content-Type: application/json
@@ -151,7 +140,7 @@ GET localhost:8000/api/confirm-document-forms/2
 Content-Type: application/json
 
 ### 결재선 지정 confirm-document-pk:48311, VACSPY4823
-POST http://localhost:8000/api/confirm-documents/VACSPY4837/approval-lines
+POST http://localhost:8000/api/confirm-documents/VACSPY5680/approval-lines
 Content-Type: application/json
 
 [
@@ -165,3 +154,13 @@ Content-Type: application/json
     "approvalOrder": 2
   }
 ]
+
+### 결재 수락
+PATCH http://localhost:8000/api/confirm-documents/49160/accept
+Content-Type: application/json
+
+{
+  "companyId": "SPY",
+  "departmentId": "J02030",
+  "approvalLineId": "SPY00011"
+}

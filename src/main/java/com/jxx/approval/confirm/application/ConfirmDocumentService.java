@@ -3,7 +3,7 @@ package com.jxx.approval.confirm.application;
 import com.jxx.approval.confirm.domain.*;
 import com.jxx.approval.confirm.dto.request.*;
 import com.jxx.approval.confirm.dto.response.ConfirmDocumentAndContentServiceResponse;
-import com.jxx.approval.confirm.dto.response.ConfirmServiceResponse;
+import com.jxx.approval.confirm.dto.response.ConfirmDocumentServiceDto;
 import com.jxx.approval.confirm.infra.ApprovalLineRepository;
 import com.jxx.approval.confirm.infra.ConfirmDocumentContentRepository;
 import com.jxx.approval.confirm.infra.ConfirmDocumentMapper;
@@ -57,7 +57,7 @@ public class ConfirmDocumentService {
     }
 
     @Transactional
-    public ConfirmServiceResponse raise(String confirmDocumentId, ConfirmRaiseForm form) {
+    public ConfirmDocumentServiceDto raise(String confirmDocumentId, ConfirmRaiseForm form) {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByDocumentConfirmDocumentId(confirmDocumentId)
                 .orElseThrow(() -> new IllegalArgumentException());
 
@@ -78,7 +78,7 @@ public class ConfirmDocumentService {
 
         confirmDocument.changeConfirmStatus(ConfirmStatus.RAISE);
         ConfirmStatus updatedConfirmStatus = confirmDocument.getConfirmStatus();
-        return new ConfirmServiceResponse(confirmDocumentId, form.requesterId(), updatedConfirmStatus);
+        return new ConfirmDocumentServiceDto(confirmDocument.getPk(), confirmDocumentId, form.requesterId(), updatedConfirmStatus);
     }
 
     private static ConfirmDocumentServiceResponse toConfirmDocumentServiceResponse(ConfirmDocument confirmDocument) {

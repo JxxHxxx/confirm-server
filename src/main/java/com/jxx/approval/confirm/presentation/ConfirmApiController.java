@@ -12,7 +12,6 @@ import com.jxx.approval.confirm.listener.ConfirmStatusEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -73,17 +72,17 @@ public class ConfirmApiController {
     @PostMapping("/api/confirm-documents/{confirm-document-id}/raise")
     public ResponseEntity<ResponseResult> raise(@PathVariable(name = "confirm-document-id") String confirmDocumentId,
                                    @RequestBody ConfirmRaiseForm form) {
-        ConfirmServiceResponse response = confirmDocumentService.raise(confirmDocumentId, form);
+        ConfirmDocumentServiceDto response = confirmDocumentService.raise(confirmDocumentId, form);
 
         return ResponseEntity.ok(new ResponseResult(OK.value(), "결재 문서 상신", response));
     }
 
     // 결재선 등록
     @PostMapping("/api/confirm-documents/{confirm-document-id}/approval-lines")
-    public ResponseEntity<ResponseResult> enrollApprovalLine(@PathVariable(name = "confirm-document-id") String confirmDocumentId,
+    public ResponseEntity<ResponseResult<ApprovalLineResponse>> enrollApprovalLine(@PathVariable(name = "confirm-document-id") String confirmDocumentId,
                                                 @RequestBody List<ApproverEnrollForm> forms) throws JsonProcessingException {
-        List<ApprovalLineServiceResponse> responses = approvalLineService.enrollApprovalLines(forms, confirmDocumentId);
-        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재자 등록", responses));
+        ApprovalLineResponse approvalLineResponse = approvalLineService.enrollApprovalLines(forms, confirmDocumentId);
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재자 등록", approvalLineResponse));
     }
 
     // 결재 문서 승인
@@ -112,7 +111,7 @@ public class ConfirmApiController {
         // ConfirmDocument 에서 결재자가 결재 문서를 반려할 수 있는 상태인지 검증
         eventPublisher.publishEvent(ApproveStatusChangedEvent.rejectEvent(confirmDocumentPk, form.approvalLineId()));
         // 결재 문서 반려 로직
-        ApprovalLineServiceResponse response = approvalLineService.reject(confirmDocumentPk, form);
+        ApprovalLineServiceDto response = approvalLineService.reject(confirmDocumentPk, form);
 
         eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentPk, "1", ConfirmStatus.REJECT));
 

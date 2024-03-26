@@ -4,10 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jxx.approval.common.client.SimpleRestClient;
 import com.jxx.approval.confirm.domain.*;
 import com.jxx.approval.confirm.dto.request.ApprovalInformationForm;
+import com.jxx.approval.confirm.dto.response.ApprovalLineResponse;
 import com.jxx.approval.confirm.dto.response.ApprovalLineServiceAcceptResponse;
+import com.jxx.approval.confirm.dto.response.ConfirmDocumentServiceDto;
 import com.jxx.approval.confirm.infra.ConfirmDocumentRepository;
 import com.jxx.approval.confirm.dto.request.ApproverEnrollForm;
-import com.jxx.approval.confirm.dto.response.ApprovalLineServiceResponse;
+import com.jxx.approval.confirm.dto.response.ApprovalLineServiceDto;
 import com.jxx.approval.confirm.infra.ApprovalLineRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +29,7 @@ public class ApprovalLineService {
     private final ConfirmDocumentRepository confirmDocumentRepository;
 
     @Transactional
-    public List<ApprovalLineServiceResponse> enrollApprovalLines(List<ApproverEnrollForm> enrollForms, String confirmDocumentId) throws JsonProcessingException {
+    public ApprovalLineResponse enrollApprovalLines(List<ApproverEnrollForm> enrollForms, String confirmDocumentId) throws JsonProcessingException {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByDocumentConfirmDocumentId(confirmDocumentId)
                 .orElseThrow(() -> new IllegalArgumentException());
 
@@ -49,15 +51,28 @@ public class ApprovalLineService {
         List<ApprovalLine> requestApprovalLines = enrollForms.stream()
                 .map(form -> new ApprovalLine(form.approvalOrder(), form.approvalId(), confirmDocument))
                 .toList();
-        List<ApprovalLine> savedApprovalLines = approvalLineRepository.saveAll(requestApprovalLines);
 
-        return savedApprovalLines.stream()
-                .map(approvalLine -> new ApprovalLineServiceResponse(
-                        approvalLine.getPk(),
-                        approvalLine.getApprovalOrder(),
-                        approvalLine.getApprovalLineId(),
-                        approvalLine.getApproveStatus()))
+        List<ApprovalLine> savedApprovalLines = approvalLineRepository.saveAll(requestApprovalLines);
+        return createEnrollApprovalLinesResponse(confirmDocument, savedApprovalLines);
+
+    }
+
+    private static ApprovalLineResponse createEnrollApprovalLinesResponse(ConfirmDocument confirmDocument, List<ApprovalLine> savedApprovalLines) {
+        List<ApprovalLineServiceDto> approvalLineServiceDtos = savedApprovalLines.stream()
+                .map(ap -> new ApprovalLineServiceDto(
+                        ap.getPk(),
+                        ap.getApprovalOrder(),
+                        ap.getApprovalLineId(),
+                        ap.getApproveStatus()))
                 .toList();
+        return new ApprovalLineResponse(
+                new ConfirmDocumentServiceDto(
+                        confirmDocument.getPk(),
+                        confirmDocument.getConfirmDocumentId(),
+                        confirmDocument.getRequesterId(),
+                        confirmDocument.getConfirmStatus()
+                ),
+                approvalLineServiceDtos);
     }
 
     private static void verifyApprovalMembersAreCompanyMember(String companyId, List<String> membersId) throws JsonProcessingException {
@@ -108,7 +123,7 @@ public class ApprovalLineService {
     }
 
     @Transactional
-    public ApprovalLineServiceResponse reject(Long confirmDocumentPk, ApprovalInformationForm form) {
+    public ApprovalLineServiceDto reject(Long confirmDocumentPk, ApprovalInformationForm form) {
         // 리스너로 ConfirmDocument Status 체킹 해야됨
 
         // 파기된 문서인지 체크
@@ -127,7 +142,7 @@ public class ApprovalLineService {
                 .checkApprovalLineOrder()
                 .changeApproveStatus(ApproveStatus.REJECT);
 
-        return new ApprovalLineServiceResponse(
+        return new ApprovalLineServiceDto(
                 approvalLine.getPk(),
                 approvalLine.getApprovalOrder(),
                 approvalLine.getApprovalLineId(),
