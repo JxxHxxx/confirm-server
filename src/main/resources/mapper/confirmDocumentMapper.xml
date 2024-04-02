@@ -54,29 +54,34 @@
             </if>
         </where>
     </select>
+    
+    <select id="fetchWithApprovalLine"
+            parameterType="com.jxx.approval.confirm.dto.request.ConfirmDocumentForApprovalSearchCondition"
+            resultType="com.jxx.approval.confirm.dto.response.ConfirmDocumentFetchApprovalLineResponse">
+        SELECT  CDM.CONFIRM_DOCUMENT_PK,
+                CDM.CONFIRM_DOCUMENT_ID,
+                CDM.COMPANY_ID,
+                CDM.DEPARTMENT_ID,
+                CDM.CREATE_SYSTEM,
+                CDM.CONFIRM_STATUS,
+                CDM.DOCUMENT_TYPE,
+                CDM.REQUESTER_ID,
+                CDM.CREATE_TIME,
+                ALM.APPROVAL_LINE_PK,
+                ALM.APPROVAL_LINE_ID,
+                ALM.APPROVAL_STATUS,
+                ALM.APPROVAL_TIME
+        FROM JXX_CONFIRM_DOCUMENT_MASTER CDM
+        INNER JOIN JXX_APPROVAL_LINE_MASTER ALM
+        ON ALM.CONFIRM_DOCUMENT_PK = CDM.CONFIRM_DOCUMENT_PK
+        <where>
+            <if test="approvalId !=null and approvalId !=''">
+                AND ALM.APPROVAL_LINE_ID = #{approvalId}
+            </if>
+            <if test="approveStatus !=null and approveStatus !=''">
+                AND ALM.APPROVAL_STATUS = #{approveStatus}
+            </if>
+        </where>
+        ORDER BY CDM.CREATE_TIME DESC
+    </select>
 </mapper>
-
-
-<!--<select id="search"-->
-<!--        parameterType="com.jxx.approval.dto.request.ConfirmDocumentSearchCondition"-->
-<!--        resultType="com.jxx.approval.dto.response.ConfirmDocumentServiceResponseV2">-->
-<!--SELECT CONFIRM_DOCUMENT_PK,-->
-<!--CONFIRM_DOCUMENT_ID,-->
-<!--COMPANY_ID,-->
-<!--DEPARTMENT_ID,-->
-<!--CREATE_SYSTEM,-->
-<!--REQUESTER_ID-->
-
-<!--FROM JXX_CONFIRM_DOCUMENT_MASTER-->
-<!--<where>-->
-<!--    <if test="confirmDocumentId != null and confirmDocumentId != ''">-->
-<!--        AND CONFIRM_DOCUMENT_ID = #{confirmDocumentId}-->
-<!--    </if>-->
-<!--    <if test="confirmStatus != null and confirmStatus != ''">-->
-<!--        AND CONFIRM_STATUS = #{confirmStatus}-->
-<!--    </if>-->
-<!--    <if test="requesterId != null and requesterId != ''">-->
-<!--        AND REQUESTER_ID = #{requesterId}-->
-<!--    </if>-->
-<!--</where>-->
-<!--</select>-->

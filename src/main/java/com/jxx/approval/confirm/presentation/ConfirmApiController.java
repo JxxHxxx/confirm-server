@@ -2,6 +2,7 @@ package com.jxx.approval.confirm.presentation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jxx.approval.confirm.application.ApprovalLineService;
+import com.jxx.approval.confirm.domain.ApproveStatus;
 import com.jxx.approval.confirm.domain.ConfirmStatus;
 import com.jxx.approval.confirm.dto.request.ConfirmDocumentContentRequest;
 import com.jxx.approval.confirm.application.ConfirmDocumentService;
@@ -51,13 +52,20 @@ public class ConfirmApiController {
         return null;
     }
 
-    //결재 문서 업로드
 
     // 결재 문서 검색
     @GetMapping("/api/confirm-documents")
     public ResponseEntity<ResponseResult> searchConfirmDocument(@ModelAttribute ConfirmDocumentSearchCondition condition) {
         List<ConfirmDocumentServiceResponse> responses = confirmDocumentService.search(condition);
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "검색 조회", responses));
+    }
+
+    // 결정권자로 포함되어 있는 결재 문서 보기
+    @GetMapping("/api/confirm-documents/approval")
+    public ResponseEntity<?> findConfirmDocumentForApproval(@ModelAttribute ConfirmDocumentForApprovalSearchCondition condition) {
+
+        List<ConfirmDocumentFetchApprovalLineResponse> responses = confirmDocumentService.findConfirmDocumentForApproval(condition);
+        return ResponseEntity.ok(responses);
     }
 
     // 결재 문서 PK 조회

@@ -140,17 +140,17 @@ GET localhost:8000/api/confirm-document-forms/2
 Content-Type: application/json
 
 ### 결재선 지정 confirm-document-pk:48311, VACSPY4823
-POST http://localhost:8000/api/confirm-documents/VACSPY6/approval-lines
+POST http://localhost:8000/api/confirm-documents/VACSPY15/approval-lines
 Content-Type: application/json
 
 [
   {
-    "approvalId": "SPY00160",
+    "approvalId": "SPY00140",
     "approvalOrder": 1
   }
   ,
   {
-    "approvalId": "SPY00011",
+    "approvalId": "SPY00130",
     "approvalOrder": 2
   }
 ]
@@ -164,3 +164,8 @@ Content-Type: application/json
   "departmentId": "J02030",
   "approvalLineId": "SPY00011"
 }
+
+###
+GET http://localhost:8000/api/confirm-documents/approval?approvalId=SPY00011
+Content-Type: application/json
+

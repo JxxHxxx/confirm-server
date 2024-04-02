@@ -13,12 +13,13 @@ import java.util.List;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "JXX_APPROVAL_LINE_MASTER")
+@Table(name = "JXX_APPROVAL_LINE_MASTER",
+        indexes = @Index(name = "IDX_APPROVAL_LINE_ID", columnList = "APPROVAL_LINE_ID", unique = false))
 public class ApprovalLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "APPROVER_LINE_PK")
+    @Column(name = "APPROVAL_LINE_PK")
     @Comment(value = "결재자 테이블 PK")
     private Long pk;
     @Column(name = "APPROVAL_LINE_ORDER", nullable = false)

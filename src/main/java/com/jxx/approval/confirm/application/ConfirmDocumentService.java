@@ -3,6 +3,7 @@ package com.jxx.approval.confirm.application;
 import com.jxx.approval.confirm.domain.*;
 import com.jxx.approval.confirm.dto.request.*;
 import com.jxx.approval.confirm.dto.response.ConfirmDocumentAndContentServiceResponse;
+import com.jxx.approval.confirm.dto.response.ConfirmDocumentFetchApprovalLineResponse;
 import com.jxx.approval.confirm.dto.response.ConfirmDocumentServiceDto;
 import com.jxx.approval.confirm.infra.ApprovalLineRepository;
 import com.jxx.approval.confirm.infra.ConfirmDocumentContentRepository;
@@ -24,6 +25,7 @@ import static com.jxx.approval.confirm.domain.ApprovalLineException.EMPTY_APPROV
 public class ConfirmDocumentService {
 
     private final ConfirmDocumentRepository confirmDocumentRepository;
+    private final ApprovalLineRepository approvalLineRepository;
     private final ConfirmDocumentMapper confirmDocumentMapper;
     private final ConfirmDocumentContentRepository contentRepository;
 
@@ -165,5 +167,10 @@ public class ConfirmDocumentService {
                 confirmDocument.getConfirmStatus(),
                 confirmDocument.getDocumentType(),
                 confirmDocument.getRequesterId());
+    }
+
+
+    public List<ConfirmDocumentFetchApprovalLineResponse> findConfirmDocumentForApproval(ConfirmDocumentForApprovalSearchCondition condition) {
+        return confirmDocumentMapper.fetchWithApprovalLine(condition);
     }
 }
