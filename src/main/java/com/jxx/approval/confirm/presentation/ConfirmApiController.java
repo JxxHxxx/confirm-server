@@ -65,7 +65,7 @@ public class ConfirmApiController {
     public ResponseEntity<?> findConfirmDocumentForApproval(@ModelAttribute ConfirmDocumentForApprovalSearchCondition condition) {
 
         List<ConfirmDocumentFetchApprovalLineResponse> responses = confirmDocumentService.findConfirmDocumentForApproval(condition);
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재자로 등록되어 있는 결재 문서 조회", responses));
     }
 
     // 결재 문서 PK 조회
