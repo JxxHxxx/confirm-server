@@ -19,10 +19,13 @@ import static com.jxx.approval.confirm.domain.ConfirmStatus.*;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "JXX_CONFIRM_DOCUMENT_MASTER",
-        indexes = @Index(name = "IDX_CONFIRM_DOCUMENT_ID", columnList = "CONFIRM_DOCUMENT_ID", unique = true))
+        indexes = {
+                @Index(name = "IDX_CONFIRM_DOCUMENT_ID", columnList = "CONFIRM_DOCUMENT_ID", unique = true),
+                @Index(name = "IDX_REQUESTER_ID", columnList = "REQUESTER_ID", unique = false)})
 public class ConfirmDocument {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CONFIRM_DOCUMENT_PK")
     @Comment(value = "결재 문서 테이블 PK")
     private Long pk;
@@ -109,6 +112,7 @@ public class ConfirmDocument {
     public boolean confirmStatusNotBelongIn(List<ConfirmStatus> confirmStatuses) {
         return !confirmStatuses.contains(this.confirmStatus);
     }
+
     public boolean isNotRaiseBefore() {
         return !raiseBefore.contains(confirmStatus);
     }
