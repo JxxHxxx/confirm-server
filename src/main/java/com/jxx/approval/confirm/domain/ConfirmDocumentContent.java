@@ -19,15 +19,15 @@ public class ConfirmDocumentContent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CONFIRM_DOCUMENT_CONTNET_PK")
+    @Column(name = "CONFIRM_DOCUMENT_CONTENT_PK")
     @Comment(value = "결재 문서 테이블 PK")
     private Long pk;
 
     @Type(JsonType.class)
-    @Column(name = "CONTENT", columnDefinition = "json")
-    private Map<String, Object> body = new HashMap<>();
+    @Column(name = "CONTENTS", columnDefinition = "json")
+    private Map<String, Object> contents = new HashMap<>();
 
-    public ConfirmDocumentContent(Map<String, Object> body) {
-        this.body = body;
+    public ConfirmDocumentContent(Map<String, Object> content) {
+        this.contents = content;
     }
 }

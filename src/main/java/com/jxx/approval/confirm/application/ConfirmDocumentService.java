@@ -135,7 +135,7 @@ public class ConfirmDocumentService {
                         confirmDocument.getRequesterId());
 
         ConfirmDocumentContent confirmDocumentContent = confirmDocument.getContent();
-        Map<String, Object> contents = confirmDocumentContent.getBody();
+        Map<String, Object> contents = confirmDocumentContent.getContents();
 
         return new ConfirmDocumentAndContentServiceResponse(confirmDocumentServiceResponse, contents);
 
