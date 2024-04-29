@@ -58,19 +58,20 @@
     <select id="fetchWithApprovalLine"
             parameterType="com.jxx.approval.confirm.dto.request.ConfirmDocumentForApprovalSearchCondition"
             resultType="com.jxx.approval.confirm.dto.response.ConfirmDocumentFetchApprovalLineResponse">
-        SELECT  CDM.CONFIRM_DOCUMENT_PK,
-                CDM.CONFIRM_DOCUMENT_ID,
-                CDM.COMPANY_ID,
-                CDM.DEPARTMENT_ID,
-                CDM.CREATE_SYSTEM,
-                CDM.CONFIRM_STATUS,
-                CDM.DOCUMENT_TYPE,
-                CDM.REQUESTER_ID,
-                CDM.CREATE_TIME,
-                ALM.APPROVAL_LINE_PK,
-                ALM.APPROVAL_LINE_ID,
-                ALM.APPROVAL_STATUS,
-                ALM.APPROVAL_TIME
+        SELECT CDM.CONFIRM_DOCUMENT_PK,
+        CDM.CONFIRM_DOCUMENT_ID,
+        CDM.COMPANY_ID,
+        CDM.DEPARTMENT_ID,
+        CDM.CREATE_SYSTEM,
+        CDM.CONFIRM_STATUS,
+        CDM.DOCUMENT_TYPE,
+        CDM.REQUESTER_ID,
+        CDM.CREATE_TIME,
+        CDM.CONFIRM_DOCUMENT_CONTENT_PK,
+        ALM.APPROVAL_LINE_PK,
+        ALM.APPROVAL_LINE_ID,
+        ALM.APPROVAL_STATUS,
+        ALM.APPROVAL_TIME
         FROM JXX_CONFIRM_DOCUMENT_MASTER CDM
         INNER JOIN JXX_APPROVAL_LINE_MASTER ALM
         ON ALM.CONFIRM_DOCUMENT_PK = CDM.CONFIRM_DOCUMENT_PK

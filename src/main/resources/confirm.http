@@ -6,7 +6,7 @@ GET http://localhost:8000/api/confirm-documents?requesterId=U00001&confirmDocume
 
 ### ADD APPROVAL
 
-POST http://localhost:8000/api/confirm-documents/VACSPY4913/approval-lines
+POST http://localhost:8000/api/confirm-documents/VACSPY1037/approval-lines
 Content-Type: application/json
 
 [
@@ -140,32 +140,35 @@ GET localhost:8000/api/confirm-document-forms/2
 Content-Type: application/json
 
 ### 결재선 지정 confirm-document-pk:48311, VACSPY4823
-POST http://localhost:8000/api/confirm-documents/VACSPY15/approval-lines
+POST http://localhost:8000/api/confirm-documents/VACSPY1230/approval-lines
 Content-Type: application/json
 
 [
   {
-    "approvalId": "SPY00140",
+    "approvalId": "SPY00160",
     "approvalOrder": 1
   }
   ,
   {
-    "approvalId": "SPY00130",
+    "approvalId": "SPY00011",
     "approvalOrder": 2
   }
 ]
 
 ### 결재 수락
-PATCH http://localhost:8000/api/confirm-documents/49160/accept
+PATCH http://localhost:8000/api/confirm-documents/4908/accept
 Content-Type: application/json
 
 {
   "companyId": "SPY",
   "departmentId": "J02030",
-  "approvalLineId": "SPY00011"
+  "approvalLineId": "SPY00139"
 }
 
 ###
 GET http://localhost:8000/api/confirm-documents/approval?approvalId=SPY00011
 Content-Type: application/json
 
+### 결재 문서 콘텐츠 조회
+GET http://localhost:8000/api/confirm-documents/contents/105
+Content-Type: application/json

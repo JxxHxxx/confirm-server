@@ -45,7 +45,7 @@ public class ConfirmDocument {
     @Comment(value = "결재 문서 생성 시간")
     private LocalDateTime createTime;
 
-    @OneToMany(mappedBy = "confirmDocument")
+    @OneToMany(mappedBy = "confirmDocument", fetch = FetchType.LAZY)
     private List<ApprovalLine> approvalLines = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)

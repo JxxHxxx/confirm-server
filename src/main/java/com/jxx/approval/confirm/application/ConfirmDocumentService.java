@@ -2,14 +2,11 @@ package com.jxx.approval.confirm.application;
 
 import com.jxx.approval.confirm.domain.*;
 import com.jxx.approval.confirm.dto.request.*;
-import com.jxx.approval.confirm.dto.response.ConfirmDocumentAndContentServiceResponse;
-import com.jxx.approval.confirm.dto.response.ConfirmDocumentFetchApprovalLineResponse;
-import com.jxx.approval.confirm.dto.response.ConfirmDocumentServiceDto;
+import com.jxx.approval.confirm.dto.response.*;
 import com.jxx.approval.confirm.infra.ApprovalLineRepository;
 import com.jxx.approval.confirm.infra.ConfirmDocumentContentRepository;
 import com.jxx.approval.confirm.infra.ConfirmDocumentMapper;
 import com.jxx.approval.confirm.infra.ConfirmDocumentRepository;
-import com.jxx.approval.confirm.dto.response.ConfirmDocumentServiceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.jxx.approval.confirm.domain.ApprovalLineException.EMPTY_APPROVAL_LINE;
 
@@ -122,7 +120,7 @@ public class ConfirmDocumentService {
         }
         ConfirmDocumentContent content = new ConfirmDocumentContent(confirmDocumentContents);
         confirmDocument.setContent(content);
-        contentRepository.save(content);
+        ConfirmDocumentContent savedContent = contentRepository.save(content);
 
         ConfirmDocumentServiceResponse confirmDocumentServiceResponse = new ConfirmDocumentServiceResponse(
                         confirmDocument.getPk(),
@@ -137,7 +135,7 @@ public class ConfirmDocumentService {
         ConfirmDocumentContent confirmDocumentContent = confirmDocument.getContent();
         Map<String, Object> contents = confirmDocumentContent.getContents();
 
-        return new ConfirmDocumentAndContentServiceResponse(confirmDocumentServiceResponse, contents);
+        return new ConfirmDocumentAndContentServiceResponse(confirmDocumentServiceResponse, savedContent.getPk(), contents);
 
     }
 
@@ -172,5 +170,33 @@ public class ConfirmDocumentService {
 
     public List<ConfirmDocumentFetchApprovalLineResponse> findConfirmDocumentForApproval(ConfirmDocumentForApprovalSearchCondition condition) {
         return confirmDocumentMapper.fetchWithApprovalLine(condition);
+    }
+    public ConfirmDocumentAndContentServiceResponse findDocumentContent(Long contentPk) {
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findWithContent(contentPk)
+                .orElseThrow(() -> new IllegalArgumentException("contentPk:" + contentPk + " is not exist"));
+
+        ConfirmDocumentServiceResponse confirmDocumentResponse = new ConfirmDocumentServiceResponse(
+                confirmDocument.getPk(),
+                confirmDocument.getConfirmDocumentId(),
+                confirmDocument.getCompanyId(),
+                confirmDocument.getDepartmentId(),
+                confirmDocument.getCreateSystem(),
+                confirmDocument.getConfirmStatus(),
+                confirmDocument.getDocumentType(),
+                confirmDocument.getRequesterId());
+
+        ConfirmDocumentContent content = confirmDocument.getContent();
+
+        if (Objects.isNull(content)) {
+            return new ConfirmDocumentAndContentServiceResponse(
+                    confirmDocumentResponse,
+                    null,
+                    Map.of());
+        }
+
+        return new ConfirmDocumentAndContentServiceResponse(
+                confirmDocumentResponse,
+                content.getPk(),
+                content.getContents());
     }
 }

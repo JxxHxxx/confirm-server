@@ -16,6 +16,7 @@ public record ConfirmDocumentFetchApprovalLineResponse(
         DocumentType documentType,
         String requesterId,
         LocalDateTime createTime,
+        Long confirmDocumentContentPk,
         Long approvalLinePk,
         String approvalLineId,
         ApproveStatus approveStatus,

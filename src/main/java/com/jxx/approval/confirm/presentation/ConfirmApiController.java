@@ -134,4 +134,11 @@ public class ConfirmApiController {
 
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 반려", response));
     }
+
+    @GetMapping("/api/confirm-documents/contents/{content-pk}")
+    public ResponseEntity<?> findDocumentContent(@PathVariable("content-pk") Long contentPk) {
+        ConfirmDocumentAndContentServiceResponse response = confirmDocumentService.findDocumentContent(contentPk);
+        return ResponseEntity.ok(response);
+
+    }
 }
