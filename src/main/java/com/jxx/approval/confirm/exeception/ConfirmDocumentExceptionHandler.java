@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.Objects;
+
 @Slf4j
 @RestControllerAdvice
 public class ConfirmDocumentExceptionHandler {
@@ -16,9 +18,16 @@ public class ConfirmDocumentExceptionHandler {
     @ExceptionHandler(ConfirmDocumentException.class)
     public ResponseEntity<ResponseResult> handle(ConfirmDocumentException exception) {
         log.info("FAIL MSG : {} REQUESTER ID : {}", exception.getMessage(), exception.getRequesterId(), exception);
+
+        String data = null;
+        String errorCode = exception.getErrorCode();
+        if (Objects.nonNull(errorCode)) {
+            data = errorCode;
+        }
+
         return ResponseEntity
                 .badRequest()
-                .body(new ResponseResult<>(400, exception.getMessage(), null));
+                .body(new ResponseResult<>(400, exception.getMessage(), data));
     }
 
     @ExceptionHandler(ApprovalLineException.class)

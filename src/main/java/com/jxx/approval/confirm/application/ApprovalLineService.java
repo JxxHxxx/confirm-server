@@ -34,7 +34,7 @@ public class ApprovalLineService {
     @Transactional
     public ApprovalLineResponse enrollApprovalLines(List<ApproverEnrollForm> enrollForms, String confirmDocumentId) throws JsonProcessingException {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByDocumentConfirmDocumentId(confirmDocumentId)
-                .orElseThrow(() -> new IllegalArgumentException());
+                .orElseThrow(() -> new IllegalArgumentException("결재 문서 ID " + confirmDocumentId + "가 존재하지 않습니다"));
 
         // 상신 전 상태인지 확인
         if (confirmDocument.isNotRaiseBefore()) {
@@ -43,7 +43,7 @@ public class ApprovalLineService {
         }
         // 이미 결재선이 등록되어 있는지 확인
         if (!BEFORE_CREATE.equals(confirmDocument.getApprovalLineLifecycle())) {
-            throw new ConfirmDocumentException("이미 결재선이 지정된 결재 문서입니다.", confirmDocument.getRequesterId());
+            throw new ConfirmDocumentException("이미 결재선이 지정된 결재 문서입니다.", confirmDocument.getRequesterId(), "AP01");
         }
 
         // 결재선에 지정된 사용자가 사내 구성원인지 검증

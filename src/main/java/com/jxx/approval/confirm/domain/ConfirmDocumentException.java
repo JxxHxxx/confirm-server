@@ -7,9 +7,16 @@ public class ConfirmDocumentException extends RuntimeException {
 
     private static final String AMBIGUOUS_REQUESTER_ID_VALUE = "";
     private String requesterId;
+    private String errorCode;
     public ConfirmDocumentException(String message, String requesterId) {
         super(message);
         this.requesterId = requesterId;
+    }
+
+    public ConfirmDocumentException(String message, String requesterId, String errorCode) {
+        super(message);
+        this.requesterId = requesterId;
+        this.errorCode = errorCode;
     }
 
     public ConfirmDocumentException(String message) {
