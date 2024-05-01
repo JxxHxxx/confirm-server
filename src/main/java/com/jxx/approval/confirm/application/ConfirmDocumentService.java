@@ -59,7 +59,7 @@ public class ConfirmDocumentService {
 
     @Transactional
     public ConfirmDocumentServiceDto raise(String confirmDocumentId, ConfirmRaiseForm form) {
-        ConfirmDocument confirmDocument = confirmDocumentRepository.findByDocumentConfirmDocumentId(confirmDocumentId)
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findByConfirmDocumentId(confirmDocumentId)
                 .orElseThrow(() -> new IllegalArgumentException());
 
         // 요청자 검증
@@ -81,13 +81,13 @@ public class ConfirmDocumentService {
         confirmDocument.changeApprovalLineCycle(ApprovalLineLifecycle.PROCESS_MODIFIABLE);
 
         ConfirmStatus updatedConfirmStatus = confirmDocument.getConfirmStatus();
-        return new ConfirmDocumentServiceDto(confirmDocument.getPk(), confirmDocumentId, form.requesterId(), updatedConfirmStatus);
+        return new ConfirmDocumentServiceDto(confirmDocumentId, form.requesterId(), updatedConfirmStatus);
     }
 
     private static ConfirmDocumentServiceResponse toConfirmDocumentServiceResponse(ConfirmDocument confirmDocument) {
         return new ConfirmDocumentServiceResponse(
                 confirmDocument.getPk(),
-                confirmDocument.getDocument().getConfirmDocumentId(),
+                confirmDocument.getConfirmDocumentId(),
                 confirmDocument.getRequester().getCompanyId(),
                 confirmDocument.getRequester().getDepartmentId(),
                 confirmDocument.getCreateSystem(),
@@ -140,8 +140,8 @@ public class ConfirmDocumentService {
     }
 
     @Transactional
-    public ConfirmDocumentServiceResponse cancelConfirmDocument(Long confirmDocumentPk, ConfirmDocumentCancelForm form) {
-        ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk)
+    public ConfirmDocumentServiceResponse cancelConfirmDocument(String confirmDocumentId, ConfirmDocumentCancelForm form) {
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findByConfirmDocumentId(confirmDocumentId)
                 .orElseThrow();
 
         // 취소 가능한 자인지

@@ -29,6 +29,9 @@ public class ConfirmDocument {
     @Column(name = "CONFIRM_DOCUMENT_PK")
     @Comment(value = "결재 문서 테이블 PK")
     private Long pk;
+    @Column(name = "CONFIRM_DOCUMENT_ID", nullable = false, unique = true)
+    @Comment(value = "결재 문서 ID")
+    private String confirmDocumentId;
     @Embedded
     private Document document;
     @Embedded
@@ -77,7 +80,7 @@ public class ConfirmDocument {
     }
 
     public String getConfirmDocumentId() {
-        return this.document.getConfirmDocumentId();
+        return this.confirmDocumentId;
     }
 
 

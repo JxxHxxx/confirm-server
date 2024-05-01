@@ -13,7 +13,7 @@ import java.util.List;
 @Mapper
 public interface ConfirmDocumentMapper {
 
-    ConfirmDocumentServiceResponse select(@Param("confirmDocumentPk") Long confirmDocumentPk);
+    ConfirmDocumentServiceResponse select(@Param("confirmDocumentId") Long confirmDocumentPk);
 
     void save(ConfirmDocument confirmDocument);
 

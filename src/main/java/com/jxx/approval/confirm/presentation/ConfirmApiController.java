@@ -58,6 +58,13 @@ public class ConfirmApiController {
         List<ConfirmDocumentServiceResponse> responses = confirmDocumentService.search(condition);
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "검색 조회", responses));
     }
+    // 결재 문서 PK 조회
+    @GetMapping("/api/confirm-documents/{confirm-document-pk}")
+    public ResponseEntity<ResponseResult<?>> readByPk(@PathVariable(value = "confirm-document-pk") Long confirmDocumentPk) {
+        ConfirmDocumentServiceResponse response = confirmDocumentService.readByPk(confirmDocumentPk);
+
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 단건 조회", response));
+    }
 
     // 결정권자로 포함되어 있는 결재 문서 보기
     @GetMapping("/api/confirm-documents/approval-lines")
@@ -66,13 +73,11 @@ public class ConfirmApiController {
         List<ConfirmDocumentFetchApprovalLineResponse> responses = confirmDocumentService.findConfirmDocumentForApproval(condition);
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재자로 등록되어 있는 결재 문서 조회", responses));
     }
+    @GetMapping("/api/confirm-documents/{confirm-document-id}/approval-lines")
+    public ResponseEntity<?> findApprovalLines(@PathVariable("confirm-document-id") String confirmDocumentId) {
 
-    // 결재 문서 PK 조회
-    @GetMapping("/api/confirm-documents/{confirm-document-pk}")
-    public ResponseEntity<ResponseResult<?>> readByPk(@PathVariable(value = "confirm-document-pk") Long confirmDocumentPk) {
-        ConfirmDocumentServiceResponse response = confirmDocumentService.readByPk(confirmDocumentPk);
-
-        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 단건 조회", response));
+        List<ApprovalLineServiceDto> responses = approvalLineService.findByConfirmDocumentId(confirmDocumentId);
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재선 조회", responses));
     }
 
     // 결재 문서 상신
@@ -84,8 +89,6 @@ public class ConfirmApiController {
         return ResponseEntity.ok(new ResponseResult(OK.value(), "결재 문서 상신", response));
     }
 
-
-
     // 결재선 등록
     @PostMapping("/api/confirm-documents/{confirm-document-id}/approval-lines")
     public ResponseEntity<ResponseResult<ApprovalLineResponse>> enrollApprovalLine(@PathVariable(name = "confirm-document-id") String confirmDocumentId,
@@ -96,42 +99,42 @@ public class ConfirmApiController {
 
     // 결재 문서 승인
     @Transactional
-    @PatchMapping("/api/confirm-documents/{confirm-document-pk}/accept")
-    public ResponseEntity<ResponseResult> acceptConfirmDocument(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk,
+    @PatchMapping("/api/confirm-documents/{confirm-document-id}/accept")
+    public ResponseEntity<ResponseResult> acceptConfirmDocument(@PathVariable(name = "confirm-document-id") String confirmDocumentId,
                                                    @RequestBody ApprovalInformationForm form) {
 
         // ConfirmDocument 에서 결재자가 결재 문서를 승인할 수 있는 상태인지 검증
-        eventPublisher.publishEvent(ApproveStatusChangedEvent.acceptEvent(confirmDocumentPk, form.approvalLineId()));
+        eventPublisher.publishEvent(ApproveStatusChangedEvent.acceptEvent(confirmDocumentId, form.approvalLineId()));
         // 결재 문서 승인 로직
-        ApprovalLineServiceResponse response = approvalLineService.accept(confirmDocumentPk, form);
+        ApprovalLineServiceResponse response = approvalLineService.accept(confirmDocumentId, form);
         // 임시
         if (response.finalApproval()) {
-            eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentPk, response.vacationId(),ConfirmStatus.ACCEPT));
+            eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentId, response.vacationId(),ConfirmStatus.ACCEPT));
         }
 
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 승인", response));
     }
     // 결재 문서 반려
     @Transactional // 안되겠다. 이벤트 퍼블리셔 서비스레이어에 둬야 할듯.
-    @PatchMapping("/api/confirm-documents/{confirm-document-pk}/reject")
-    public ResponseEntity<ResponseResult> rejectConfirmDocument(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk,
+    @PatchMapping("/api/confirm-documents/{confirm-document-id}/reject")
+    public ResponseEntity<ResponseResult> rejectConfirmDocument(@PathVariable(name = "confirm-document-id") String confirmDocumentId,
                                                    @RequestBody ApprovalInformationForm form) {
 
         // ConfirmDocument 에서 결재자가 결재 문서를 반려할 수 있는 상태인지 검증
-        eventPublisher.publishEvent(ApproveStatusChangedEvent.rejectEvent(confirmDocumentPk, form.approvalLineId()));
+        eventPublisher.publishEvent(ApproveStatusChangedEvent.rejectEvent(confirmDocumentId, form.approvalLineId()));
         // 결재 문서 반려 로직
-        ApprovalLineServiceResponse response = approvalLineService.reject(confirmDocumentPk, form);
+        ApprovalLineServiceResponse response = approvalLineService.reject(confirmDocumentId, form);
 
-        eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentPk, response.vacationId(), ConfirmStatus.REJECT));
+        eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentId, response.vacationId(), ConfirmStatus.REJECT));
 
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 반려", response));
     }
 
     // 결재 문서 취소 - policy 상신 완료된 문서는 취소 불가능
-    @PatchMapping("/api/confirm-documents/{confirm-document-pk}/cancel")
-    public ResponseEntity<ResponseResult> cancelConfirmDocument(@PathVariable(name = "confirm-document-pk") Long confirmDocumentPk,
+    @PatchMapping("/api/confirm-documents/{confirm-document-id}/cancel")
+    public ResponseEntity<ResponseResult> cancelConfirmDocument(@PathVariable(name = "confirm-document-id") String confirmDocumentId,
                                                    @RequestBody ConfirmDocumentCancelForm form) {
-        ConfirmDocumentServiceResponse response = confirmDocumentService.cancelConfirmDocument(confirmDocumentPk, form);
+        ConfirmDocumentServiceResponse response = confirmDocumentService.cancelConfirmDocument(confirmDocumentId, form);
 
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 반려", response));
     }

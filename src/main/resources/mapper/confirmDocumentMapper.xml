@@ -74,7 +74,7 @@
         ALM.APPROVAL_TIME
         FROM JXX_CONFIRM_DOCUMENT_MASTER CDM
         INNER JOIN JXX_APPROVAL_LINE_MASTER ALM
-        ON ALM.CONFIRM_DOCUMENT_PK = CDM.CONFIRM_DOCUMENT_PK
+        ON ALM.CONFIRM_DOCUMENT_ID = CDM.CONFIRM_DOCUMENT_ID
         <where>
             <if test="approvalId !=null and approvalId !=''">
                 AND ALM.APPROVAL_LINE_ID = #{approvalId}

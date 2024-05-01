@@ -16,18 +16,18 @@ import java.util.List;
 @AllArgsConstructor
 public class ApproveStatusChangedEvent {
 
-    private Long confirmDocumentPk;
+    private String confirmDocumentId;
     private String approvalLineId;
     private String requestType;
     private List<ConfirmStatus> confirmStatus;
 
 
-    public static ApproveStatusChangedEvent acceptEvent(Long confirmDocumentPk, String approvalLineId) {
-        return new ApproveStatusChangedEvent(confirmDocumentPk, approvalLineId, "결재 승인", ConfirmStatus.acceptPossibleOfApproval);
+    public static ApproveStatusChangedEvent acceptEvent(String  confirmDocumentId, String approvalLineId) {
+        return new ApproveStatusChangedEvent(confirmDocumentId, approvalLineId, "결재 승인", ConfirmStatus.acceptPossibleOfApproval);
     }
 
 
-    public static ApproveStatusChangedEvent rejectEvent(Long confirmDocumentPk, String approvalLineId) {
-        return new ApproveStatusChangedEvent(confirmDocumentPk, approvalLineId, "결재 승인", ConfirmStatus.rejectPossibleOfApproval);
+    public static ApproveStatusChangedEvent rejectEvent(String confirmDocumentId, String approvalLineId) {
+        return new ApproveStatusChangedEvent(confirmDocumentId, approvalLineId, "결재 승인", ConfirmStatus.rejectPossibleOfApproval);
     }
 }

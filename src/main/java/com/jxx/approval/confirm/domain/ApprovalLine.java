@@ -38,8 +38,8 @@ public class ApprovalLine {
     private LocalDateTime approveTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CONFIRM_DOCUMENT_PK", referencedColumnName = "CONFIRM_DOCUMENT_PK", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @Comment(value = "결재 문서 테이블 PK")
+    @JoinColumn(name = "CONFIRM_DOCUMENT_ID", referencedColumnName = "CONFIRM_DOCUMENT_ID", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment(value = "결재 문서 테이블 ID")
     private ConfirmDocument confirmDocument;
 
     public void setConfirmDocument(ConfirmDocument confirmDocument) {
