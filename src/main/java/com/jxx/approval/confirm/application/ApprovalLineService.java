@@ -55,7 +55,6 @@ public class ApprovalLineService {
         confirmDocument.changeApprovalLineCycle(CREATED);
 
         return createEnrollApprovalLinesResponse(confirmDocument, savedApprovalLines);
-
     }
 
     private static ApprovalLineResponse createEnrollApprovalLinesResponse(ConfirmDocument confirmDocument, List<ApprovalLine> savedApprovalLines) {
@@ -89,6 +88,14 @@ public class ApprovalLineService {
         if (responseEntity.getStatusCode().is4xxClientError()) {
             throw new ConfirmDocumentException("사내 구성원이 아닙니다.", null);
         }
+    }
+
+    // 제거 -> 추가는 다시 ENROLL API 사용하도록
+    @Transactional
+    public void deleteApprovalLines(String confirmDocumentId) {
+        List<ApprovalLine> approvalLines = approvalLineRepository.findByConfirmDocumentId(confirmDocumentId);
+        approvalLineRepository.deleteAll(approvalLines);
+
     }
 
     @Transactional

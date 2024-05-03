@@ -66,6 +66,21 @@ public class ConfirmApiController {
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 단건 조회", response));
     }
 
+    // 결재선 등록
+    @PostMapping("/api/confirm-documents/{confirm-document-id}/approval-lines")
+    public ResponseEntity<ResponseResult<ApprovalLineResponse>> enrollApprovalLine(@PathVariable(name = "confirm-document-id") String confirmDocumentId,
+                                                                                   @RequestBody List<ApproverEnrollForm> forms) throws JsonProcessingException {
+        ApprovalLineResponse approvalLineResponse = approvalLineService.enrollApprovalLines(forms, confirmDocumentId);
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재자 등록", approvalLineResponse));
+    }
+
+    // 결재선 삭제
+    @DeleteMapping("/api/confirm-documents/{confirm-document-id}/approval-lines")
+    public ResponseEntity<?> deleteApprovalLines(@PathVariable(name = "confirm-document-id") String confirmDocumentId){
+        approvalLineService.deleteApprovalLines(confirmDocumentId);
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재선 삭제 완료", null));
+    }
+
     // 결정권자로 포함되어 있는 결재 문서 보기
     @GetMapping("/api/confirm-documents/approval-lines")
     public ResponseEntity<?> findConfirmDocumentForApproval(@ModelAttribute ConfirmDocumentForApprovalSearchCondition condition) {
@@ -88,15 +103,6 @@ public class ConfirmApiController {
 
         return ResponseEntity.ok(new ResponseResult(OK.value(), "결재 문서 상신", response));
     }
-
-    // 결재선 등록
-    @PostMapping("/api/confirm-documents/{confirm-document-id}/approval-lines")
-    public ResponseEntity<ResponseResult<ApprovalLineResponse>> enrollApprovalLine(@PathVariable(name = "confirm-document-id") String confirmDocumentId,
-                                                @RequestBody List<ApproverEnrollForm> forms) throws JsonProcessingException {
-        ApprovalLineResponse approvalLineResponse = approvalLineService.enrollApprovalLines(forms, confirmDocumentId);
-        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재자 등록", approvalLineResponse));
-    }
-
     // 결재 문서 승인
     @Transactional
     @PatchMapping("/api/confirm-documents/{confirm-document-id}/accept")
