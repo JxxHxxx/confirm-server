@@ -62,7 +62,9 @@ public class ConfirmDocument {
     private ConfirmDocumentContent content;
 
     @Builder
-    public ConfirmDocument(Document document, Requester requester, ConfirmStatus confirmStatus, String createSystem, ApprovalLineLifecycle approvalLineLifecycle) {
+    public ConfirmDocument(String confirmDocumentId, Document document, Requester requester, ConfirmStatus confirmStatus, String createSystem,
+                           ApprovalLineLifecycle approvalLineLifecycle) {
+        this.confirmDocumentId = confirmDocumentId;
         this.document = document;
         this.requester = requester;
         this.confirmStatus = confirmStatus;

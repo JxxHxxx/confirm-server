@@ -28,8 +28,8 @@ class ApprovalLineManagerTest {
                 .createSystem("API")
                 .build();
 
-        approvalLine1 = new ApprovalLine(1, "M00001", confirmDocument);
-        approvalLine2 = new ApprovalLine(2, "M00002", confirmDocument);
+        approvalLine1 = new ApprovalLine(1, "M00001", "이재헌","D00001", "IT사업부", confirmDocument);
+        approvalLine2 = new ApprovalLine(2, "M00002", "이유니", "D00001", "IT사업부", confirmDocument);
 
         emptyApprovalLineManager = ApprovalLineManager.builder()
                 .approvalLineId("M00001")

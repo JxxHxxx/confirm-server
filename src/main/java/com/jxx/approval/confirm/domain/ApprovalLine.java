@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "JXX_APPROVAL_LINE_MASTER",
-        indexes = @Index(name = "IDX_APPROVAL_LINE_ID", columnList = "APPROVAL_LINE_ID", unique = false))
+        indexes = @Index(name = "IDX_APPROVAL_ID", columnList = "APPROVAL_ID", unique = false))
 public class ApprovalLine {
 
     @Id
@@ -25,19 +25,18 @@ public class ApprovalLine {
     @Column(name = "APPROVAL_LINE_ORDER", nullable = false)
     @Comment(value = "결재 순서")
     private Integer approvalOrder;
-    @Column(name = "APPROVAL_LINE_ID", nullable = false)
+    @Column(name = "APPROVAL_ID", nullable = false)
     @Comment(value = "결재자 ID")
     private String approvalLineId;
-    // 결재자 정보도 있어야 할 듯
-//    @Column(name = "APPROVAL_NAME", nullable = false)
-//    @Comment(value = "결재자 이름")
-//    private String approvalName;
-//    @Column(name = "APPROVAL_DEPARTMENT_ID", nullable = false)
-//    @Comment(value = "결재자 부서 ID")
-//    private String approvalDepartmentId;
-//    @Column(name = "APPROVAL_DEPARTMENT_NAME", nullable = false)
-//    @Comment(value = "결재자 부서 명")
-//    private String approvalDepartmentName;
+    @Column(name = "APPROVAL_NAME", nullable = false)
+    @Comment(value = "결재자 이름")
+    private String approvalName;
+    @Column(name = "APPROVAL_DEPARTMENT_ID", nullable = false)
+    @Comment(value = "결재자 부서 ID")
+    private String approvalDepartmentId;
+    @Column(name = "APPROVAL_DEPARTMENT_NAME", nullable = false)
+    @Comment(value = "결재자 부서 명")
+    private String approvalDepartmentName;
 
     @Column(name = "APPROVAL_STATUS", nullable = false)
     @Comment(value = "결재 승인 여부")
@@ -59,9 +58,13 @@ public class ApprovalLine {
     }
 
     @Builder
-    public ApprovalLine(Integer approvalOrder, String approvalLineId, ConfirmDocument confirmDocument) {
+    public ApprovalLine(Integer approvalOrder, String approvalLineId, String approvalName, String approvalDepartmentId,
+                        String approvalDepartmentName, ConfirmDocument confirmDocument) {
         this.approvalOrder = approvalOrder;
         this.approvalLineId = approvalLineId;
+        this.approvalName = approvalName;
+        this.approvalDepartmentId = approvalDepartmentId;
+        this.approvalDepartmentName = approvalDepartmentName;
         this.approveTime = null;
         this.approveStatus = ApproveStatus.PENDING;
         this.confirmDocument = confirmDocument;

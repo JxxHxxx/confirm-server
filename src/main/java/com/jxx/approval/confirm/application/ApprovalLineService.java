@@ -6,7 +6,7 @@ import com.jxx.approval.confirm.domain.*;
 import com.jxx.approval.confirm.dto.request.ApprovalInformationForm;
 import com.jxx.approval.confirm.dto.response.*;
 import com.jxx.approval.confirm.infra.ConfirmDocumentRepository;
-import com.jxx.approval.confirm.dto.request.ApproverEnrollForm;
+import com.jxx.approval.confirm.dto.request.ApprovalLineEnrollForm;
 import com.jxx.approval.confirm.infra.ApprovalLineRepository;
 import com.jxx.approval.vendor.vacation.VacationIdExtractor;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class ApprovalLineService {
     private final ConfirmDocumentRepository confirmDocumentRepository;
 
     @Transactional
-    public ApprovalLineResponse enrollApprovalLines(List<ApproverEnrollForm> enrollForms, String confirmDocumentId) throws JsonProcessingException {
+    public ApprovalLineResponse enrollApprovalLines(List<ApprovalLineEnrollForm> enrollForms, String confirmDocumentId) throws JsonProcessingException {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByConfirmDocumentId(confirmDocumentId)
                 .orElseThrow(() -> new IllegalArgumentException("결재 문서 ID " + confirmDocumentId + "가 존재하지 않습니다"));
 
@@ -44,11 +44,17 @@ public class ApprovalLineService {
         }
 
         // 결재선에 지정된 사용자가 사내 구성원인지 검증
-        List<String> approvalMembersId = enrollForms.stream().map(ApproverEnrollForm::approvalId).toList();
+        List<String> approvalMembersId = enrollForms.stream().map(ApprovalLineEnrollForm::approvalId).toList();
         verifyApprovalMembersAreCompanyMember(confirmDocument.getCompanyId(), approvalMembersId);
 
         List<ApprovalLine> requestApprovalLines = enrollForms.stream()
-                .map(form -> new ApprovalLine(form.approvalOrder(), form.approvalId(), confirmDocument))
+                .map(form -> new ApprovalLine(
+                        form.approvalOrder(),
+                        form.approvalId(),
+                        form.approvalName(),
+                        form.approvalDepartmentId(),
+                        form.approvalDepartmentName(),
+                        confirmDocument))
                 .toList();
         List<ApprovalLine> savedApprovalLines = approvalLineRepository.saveAll(requestApprovalLines);
 
