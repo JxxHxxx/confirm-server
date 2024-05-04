@@ -28,6 +28,17 @@ public class ApprovalLine {
     @Column(name = "APPROVAL_LINE_ID", nullable = false)
     @Comment(value = "결재자 ID")
     private String approvalLineId;
+    // 결재자 정보도 있어야 할 듯
+//    @Column(name = "APPROVAL_NAME", nullable = false)
+//    @Comment(value = "결재자 이름")
+//    private String approvalName;
+//    @Column(name = "APPROVAL_DEPARTMENT_ID", nullable = false)
+//    @Comment(value = "결재자 부서 ID")
+//    private String approvalDepartmentId;
+//    @Column(name = "APPROVAL_DEPARTMENT_NAME", nullable = false)
+//    @Comment(value = "결재자 부서 명")
+//    private String approvalDepartmentName;
+
     @Column(name = "APPROVAL_STATUS", nullable = false)
     @Comment(value = "결재 승인 여부")
     @Enumerated(EnumType.STRING)
