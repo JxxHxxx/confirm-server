@@ -23,7 +23,6 @@ import static com.jxx.approval.confirm.domain.ApprovalLineException.EMPTY_APPROV
 public class ConfirmDocumentService {
 
     private final ConfirmDocumentRepository confirmDocumentRepository;
-    private final ApprovalLineRepository approvalLineRepository;
     private final ConfirmDocumentMapper confirmDocumentMapper;
     private final ConfirmDocumentContentRepository contentRepository;
 
@@ -82,6 +81,17 @@ public class ConfirmDocumentService {
 
         ConfirmStatus updatedConfirmStatus = confirmDocument.getConfirmStatus();
         return new ConfirmDocumentServiceDto(confirmDocumentId, form.requesterId(), updatedConfirmStatus);
+    }
+
+    //
+    public ConfirmDocumentServiceDto cancelRaise(String confirmDocumentId) {
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findByConfirmDocumentId(confirmDocumentId)
+                .orElseThrow(() -> new IllegalArgumentException());
+
+        // 이미 반려/승인자가 있을 경우 못함
+
+
+        return null;
     }
 
     private static ConfirmDocumentServiceResponse toConfirmDocumentServiceResponse(ConfirmDocument confirmDocument) {

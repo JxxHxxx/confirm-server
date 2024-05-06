@@ -12,6 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static com.jxx.approval.confirm.domain.ConfirmStatus.*;
+import static com.jxx.approval.confirm.domain.ConfirmStatus.ACCEPT;
 import static com.jxx.approval.confirm.domain.ConfirmStatus.CREATE;
 import static org.assertj.core.api.Assertions.*;
 
@@ -79,5 +83,19 @@ class ApprovalLineServiceTest {
                 (List.of(enrollForm1, enrollForm2), confirmDocumentId, o -> log.info("call verify are they company members?")))
                 .isInstanceOf(ConfirmDocumentException.class)
                 .hasMessageContaining("이미 결재선이 지정된 결재 문서입니다.");
+    }
+
+    @DisplayName("결재선은 상신 전 상태(ConfirmStatus in create, update)에서만 지울 수 있다." +
+            "그 외의 상태일 경우에는 ConfirmDocumentException 이 발생한다.")
+    @ParameterizedTest
+    @EnumSource(value = ConfirmStatus.class, names = {"ACCEPT", "REJECT", "RAISE", "CANCEL"})
+    void name(ConfirmStatus confirmStatus) {
+        //given
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findByConfirmDocumentId(confirmDocumentId).get();
+        confirmDocument.changeConfirmStatus(confirmStatus);
+        confirmDocumentRepository.flush();
+        //when - then
+        assertThatThrownBy(() -> approvalLineService.deleteApprovalLines(confirmDocumentId, confirmDocument.getRequesterId()))
+                .isInstanceOf(ConfirmDocumentException.class);
     }
 }

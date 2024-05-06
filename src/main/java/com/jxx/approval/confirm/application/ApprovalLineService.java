@@ -1,7 +1,6 @@
 package com.jxx.approval.confirm.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.jxx.approval.common.client.SimpleRestClient;
 import com.jxx.approval.confirm.application.server.dto.VerifyCompanyMemberDto;
 import com.jxx.approval.confirm.application.server.function.VerifyCompanyMemberApi;
 import com.jxx.approval.confirm.domain.*;
@@ -67,10 +66,10 @@ public class ApprovalLineService {
 
         confirmDocument.changeApprovalLineCycle(CREATED);
 
-        return createEnrollApprovalLinesResponse(confirmDocument, savedApprovalLines);
+        return approvalLineResponse(confirmDocument, savedApprovalLines);
     }
 
-    private static ApprovalLineResponse createEnrollApprovalLinesResponse(ConfirmDocument confirmDocument, List<ApprovalLine> savedApprovalLines) {
+    private static ApprovalLineResponse approvalLineResponse(ConfirmDocument confirmDocument, List<ApprovalLine> savedApprovalLines) {
         List<ApprovalLineServiceDto> approvalLineServiceDtos = savedApprovalLines.stream()
                 .map(ap -> new ApprovalLineServiceDto(
                         ap.getPk(),
@@ -88,19 +87,30 @@ public class ApprovalLineService {
     }
 
     // 제거 -> 추가는 다시 ENROLL API 사용하도록
+    // 이미 상신된 문서는 결재선 변경 불가능 -> 상신된 문서 결재선을 변경하기 위해서는
+    // 상신된 문서의 상신을 취소하고 -> 결재선 변경을 하도록 해야 한다.
     @Transactional
-    public void deleteApprovalLines(String confirmDocumentId) {
+    public ApprovalLineResponse deleteApprovalLines(String confirmDocumentId, String memberId) {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByConfirmDocumentId(confirmDocumentId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 결재 문서를 찾을 수 없습니다."));
 
+        // 인가 로직 start
+        Requester requester = confirmDocument.getRequester();
+        if (requester.isNotRequester(memberId)) {
+            throw new ConfirmDocumentException("삭제 권한을 가지고 있지 않습니다.");
+        };
+        // 인가 로직 end
         if (confirmDocument.isNotRaiseBefore()) {
             throw new ConfirmDocumentException("해당 결재 문서의 결재선을 결재선을 삭제할 수 없습니다. 결재 문서 상태:" + confirmDocument.getConfirmStatus()
                     , confirmDocument.getRequesterId());
         }
 
+
+        // 추후 history 성 데이터도 넣을 것
         List<ApprovalLine> approvalLines = approvalLineRepository.findByConfirmDocumentId(confirmDocumentId);
         approvalLineRepository.deleteAll(approvalLines);
 
+        return approvalLineResponse(confirmDocument, approvalLines);
     }
 
     @Transactional

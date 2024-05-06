@@ -140,15 +140,26 @@ GET localhost:8000/api/confirm-document-forms/2
 Content-Type: application/json
 
 ### 결재선 지정 confirm-document-pk:48311, VACSPY4823
-POST http://localhost:8000/api/confirm-documents/VACJXX1210/approval-lines
+POST http://localhost:8000/api/confirm-documents/VACSPY8/approval-lines
 Content-Type: application/json
 
 [
   {
-    "approvalId": "U00117",
-    "approvalOrder": 1
+    "approvalId": "SPY00117",
+    "approvalName" : "남윤철",
+    "approvalOrder": 1,
+    "approvalDepartmentId": "SPY08000",
+    "approvalDepartmentName" : "응급의료운영관리팀"
+
   }
 ]
+
+### 결재선 삭제
+DELETE http://localhost:8000/api/confirm-documents/VACSPY8/approval-lines
+Content-Type: application/json
+
+SPY00160
+
 
 ### 결재 수락
 PATCH http://localhost:8000/api/confirm-documents/602/accept

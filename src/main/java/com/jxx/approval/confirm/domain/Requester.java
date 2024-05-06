@@ -30,8 +30,8 @@ public class Requester {
         this.requesterId = requesterId;
     }
 
-    protected boolean isRequester(String requesterId) {
-        return this.requesterId.equals(requesterId);
+    public boolean isNotRequester(String requesterId) {
+        return !this.requesterId.equals(requesterId);
     }
 
     @Override

@@ -76,9 +76,9 @@ public class ConfirmApiController {
 
     // 결재선 삭제
     @DeleteMapping("/api/confirm-documents/{confirm-document-id}/approval-lines")
-    public ResponseEntity<?> deleteApprovalLines(@PathVariable(name = "confirm-document-id") String confirmDocumentId){
-        approvalLineService.deleteApprovalLines(confirmDocumentId);
-        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재선 삭제 완료", null));
+    public ResponseEntity<?> deleteApprovalLines(@PathVariable(name = "confirm-document-id") String confirmDocumentId, @RequestBody String memberId){
+        ApprovalLineResponse response = approvalLineService.deleteApprovalLines(confirmDocumentId, memberId);
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재선 삭제 완료", response));
     }
 
     // 결정권자로 포함되어 있는 결재 문서 보기
