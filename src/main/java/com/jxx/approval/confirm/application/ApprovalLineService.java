@@ -2,6 +2,8 @@ package com.jxx.approval.confirm.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jxx.approval.common.client.SimpleRestClient;
+import com.jxx.approval.confirm.application.server.dto.VerifyCompanyMemberDto;
+import com.jxx.approval.confirm.application.server.function.VerifyCompanyMemberApi;
 import com.jxx.approval.confirm.domain.*;
 import com.jxx.approval.confirm.dto.request.ApprovalInformationForm;
 import com.jxx.approval.confirm.dto.response.*;
@@ -11,12 +13,11 @@ import com.jxx.approval.confirm.infra.ApprovalLineRepository;
 import com.jxx.approval.vendor.vacation.VacationIdExtractor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.jxx.approval.confirm.domain.ApprovalLineLifecycle.*;
 
@@ -30,6 +31,11 @@ public class ApprovalLineService {
 
     @Transactional
     public ApprovalLineResponse enrollApprovalLines(List<ApprovalLineEnrollForm> enrollForms, String confirmDocumentId) throws JsonProcessingException {
+        Consumer<VerifyCompanyMemberDto> verifyCompanyMemberApi = new VerifyCompanyMemberApi();
+        return enrollApprovalLines(enrollForms, confirmDocumentId, verifyCompanyMemberApi);
+    }
+
+    protected ApprovalLineResponse enrollApprovalLines(List<ApprovalLineEnrollForm> enrollForms, String confirmDocumentId, Consumer verifyCompanyMembersApi) throws JsonProcessingException {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByConfirmDocumentId(confirmDocumentId)
                 .orElseThrow(() -> new IllegalArgumentException("결재 문서 ID " + confirmDocumentId + "가 존재하지 않습니다"));
 
@@ -45,7 +51,8 @@ public class ApprovalLineService {
 
         // 결재선에 지정된 사용자가 사내 구성원인지 검증
         List<String> approvalMembersId = enrollForms.stream().map(ApprovalLineEnrollForm::approvalId).toList();
-        verifyApprovalMembersAreCompanyMember(confirmDocument.getCompanyId(), approvalMembersId);
+        VerifyCompanyMemberDto companyMemberDto = new VerifyCompanyMemberDto(confirmDocument.getCompanyId(), approvalMembersId);
+        verifyCompanyMembersApi.accept(companyMemberDto);
 
         List<ApprovalLine> requestApprovalLines = enrollForms.stream()
                 .map(form -> new ApprovalLine(
@@ -80,25 +87,17 @@ public class ApprovalLineService {
                 approvalLineServiceDtos);
     }
 
-    private static void verifyApprovalMembersAreCompanyMember(String companyId, List<String> membersId) throws JsonProcessingException {
-        SimpleRestClient restClient = new SimpleRestClient();
-        String url = UriComponentsBuilder
-                .fromUriString("http://localhost:8080")
-                .path("/api/companies/{company-id}/member-leaves")
-                .queryParam("membersId", membersId)
-                .encode()
-                .buildAndExpand(companyId)
-                .toString();
-
-        ResponseEntity<List> responseEntity = restClient.getForEntity(url, List.class);
-        if (responseEntity.getStatusCode().is4xxClientError()) {
-            throw new ConfirmDocumentException("사내 구성원이 아닙니다.", null);
-        }
-    }
-
     // 제거 -> 추가는 다시 ENROLL API 사용하도록
     @Transactional
     public void deleteApprovalLines(String confirmDocumentId) {
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findByConfirmDocumentId(confirmDocumentId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 결재 문서를 찾을 수 없습니다."));
+
+        if (confirmDocument.isNotRaiseBefore()) {
+            throw new ConfirmDocumentException("해당 결재 문서의 결재선을 결재선을 삭제할 수 없습니다. 결재 문서 상태:" + confirmDocument.getConfirmStatus()
+                    , confirmDocument.getRequesterId());
+        }
+
         List<ApprovalLine> approvalLines = approvalLineRepository.findByConfirmDocumentId(confirmDocumentId);
         approvalLineRepository.deleteAll(approvalLines);
 

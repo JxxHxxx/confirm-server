@@ -1,24 +1,28 @@
 package com.jxx.approval.confirm.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.jxx.approval.confirm.domain.ApprovalLineLifecycle;
-import com.jxx.approval.confirm.domain.ConfirmDocument;
-import com.jxx.approval.confirm.domain.DocumentType;
-import com.jxx.approval.confirm.domain.Requester;
+import com.jxx.approval.confirm.domain.*;
 import com.jxx.approval.confirm.dto.request.ApprovalLineEnrollForm;
 import com.jxx.approval.confirm.dto.request.Document;
+import com.jxx.approval.confirm.dto.response.ApprovalLineResponse;
 import com.jxx.approval.confirm.infra.ConfirmDocumentRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.jxx.approval.confirm.domain.ConfirmStatus.CREATE;
+import static org.assertj.core.api.Assertions.*;
 
+@Slf4j
 @Transactional
 @SpringBootTest
 class ApprovalLineServiceTest {
@@ -45,12 +49,35 @@ class ApprovalLineServiceTest {
         confirmDocumentId = savedConfirmDocument.getConfirmDocumentId();
     }
 
-    @Disabled
+    @DisplayName("결재 문서가 생성된 시점에는 결재선을 지정할 수 있다." +
+            "main 애플리케이션 코드에서는 결재선에 지정된 사용자가 " +
+            "사내 구성원인지 검증하는 consumer 함수형 인터페이스 구현체를 주입한다.")
     @Test
-    void enroll_approvals() throws JsonProcessingException {
+    void enroll_approvals_success_case() throws JsonProcessingException {
         ApprovalLineEnrollForm enrollForm1 = new ApprovalLineEnrollForm("U00001", "이재헌","D00001", "IT사업부",1);
-        ApprovalLineEnrollForm enrollForm2 = new ApprovalLineEnrollForm("U00001", "이유니","D00001", "IT사업부",2);
+        ApprovalLineEnrollForm enrollForm2 = new ApprovalLineEnrollForm("U00002", "이유니","D00001", "IT사업부",2);
 
-        approvalLineService.enrollApprovalLines(List.of(enrollForm1, enrollForm2), confirmDocumentId);
+        ApprovalLineResponse approvalLineResponse = approvalLineService.enrollApprovalLines(
+                List.of(enrollForm1, enrollForm2), confirmDocumentId, o -> log.info("call verify are they company members?"));
+
+        assertThat(approvalLineResponse.approvalLines())
+                .extracting("approvalId").containsExactly("U00001", "U00002");
+    }
+
+    @DisplayName("이미 결재선이 등록된 결재 문서에 결재선을 추가로 지정할 수 없다.")
+    @Test
+    void enroll_approvals_fail_case_already_enrolled() throws JsonProcessingException {
+        //given
+        ApprovalLineEnrollForm enrollForm1 = new ApprovalLineEnrollForm("U00001", "이재헌","D00001", "IT사업부",1);
+        ApprovalLineEnrollForm enrollForm2 = new ApprovalLineEnrollForm("U00002", "이유니","D00001", "IT사업부",2);
+
+        // 한번 결재선을 등록
+        approvalLineService.enrollApprovalLines(
+                List.of(enrollForm1, enrollForm2), confirmDocumentId, o -> log.info("call verify are they company members?"));
+        //when - then
+        assertThatThrownBy(() -> approvalLineService.enrollApprovalLines
+                (List.of(enrollForm1, enrollForm2), confirmDocumentId, o -> log.info("call verify are they company members?")))
+                .isInstanceOf(ConfirmDocumentException.class)
+                .hasMessageContaining("이미 결재선이 지정된 결재 문서입니다.");
     }
 }
