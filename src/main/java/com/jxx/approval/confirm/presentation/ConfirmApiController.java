@@ -51,7 +51,6 @@ public class ConfirmApiController {
         return null;
     }
 
-
     // 결재 문서 검색
     @GetMapping("/api/confirm-documents")
     public ResponseEntity<ResponseResult> searchConfirmDocument(@ModelAttribute ConfirmDocumentSearchCondition condition) {

@@ -19,15 +19,29 @@ public class Requester {
     @Column(name = "DEPARTMENT_ID", nullable = false)
     @Comment(value = "요청자 부서 ID")
     private String departmentId;
+    @Column(name = "DEPARTMENT_NAME", nullable = false)
+    @Comment(value = "요청자 부서 명")
+    private String departmentName;
 
     @Column(name = "REQUESTER_ID", nullable = false)
-    @Comment(value = "결재 요청자 ID")
+    @Comment(value = "기안자 ID")
     private String requesterId;
+    @Column(name = "REQUESTER_NAME", nullable = false)
+    @Comment(value = "결재 요청자명")
+    private String requesterName;
 
     public Requester(String companyId, String departmentId, String requesterId) {
         this.companyId = companyId;
         this.departmentId = departmentId;
         this.requesterId = requesterId;
+    }
+
+    public Requester(String companyId, String departmentId, String departmentName, String requesterId, String requesterName) {
+        this.companyId = companyId;
+        this.departmentId = departmentId;
+        this.departmentName = departmentName;
+        this.requesterId = requesterId;
+        this.requesterName = requesterName;
     }
 
     public boolean isNotRequester(String requesterId) {

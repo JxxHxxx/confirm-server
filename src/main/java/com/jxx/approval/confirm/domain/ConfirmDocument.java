@@ -22,7 +22,8 @@ import static com.jxx.approval.confirm.domain.ConfirmStatus.*;
 @Table(name = "JXX_CONFIRM_DOCUMENT_MASTER",
         indexes = {
                 @Index(name = "IDX_CONFIRM_DOCUMENT_ID", columnList = "CONFIRM_DOCUMENT_ID", unique = true),
-                @Index(name = "IDX_REQUESTER_ID", columnList = "REQUESTER_ID", unique = false)})
+                @Index(name = "IDX_REQUESTER_NAME", columnList = "REQUESTER_NAME", unique = false),
+                @Index(name = "IDX_CPN_ORG_RID", columnList = "COMPANY_ID, DEPARTMENT_ID, REQUESTER_ID", unique = false)})
 public class ConfirmDocument {
 
     @Id
