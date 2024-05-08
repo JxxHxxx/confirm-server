@@ -14,7 +14,9 @@ public interface ConfirmDocumentRepository extends JpaRepository<ConfirmDocument
 
     Optional<ConfirmDocument> findByPk(Long pk);
 
-    Optional<ConfirmDocument> findByConfirmDocumentId(String confirmDocumentId);
+    @Query("select cd from ConfirmDocument cd join fetch cd.content ct " +
+            "where cd.confirmDocumentId =:confirmDocumentId")
+    Optional<ConfirmDocument> findWithContent(@Param("confirmDocumentId") String confirmDocumentId);
 
     @Query("select cd from ConfirmDocument cd join fetch cd.approvalLines al " +
             "where cd.confirmDocumentId =:confirmDocumentId")

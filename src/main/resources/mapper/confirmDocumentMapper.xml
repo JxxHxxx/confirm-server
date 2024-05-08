@@ -31,29 +31,44 @@
     </insert>
     <select id="search"
             parameterType="com.jxx.approval.confirm.dto.request.ConfirmDocumentSearchCondition"
-            resultType="com.jxx.approval.confirm.dto.response.ConfirmDocumentServiceResponse">
-        SELECT CONFIRM_DOCUMENT_PK,
-               CONFIRM_DOCUMENT_ID,
-               COMPANY_ID,
-               DEPARTMENT_ID,
-               CREATE_SYSTEM,
-               CONFIRM_STATUS,
-               DOCUMENT_TYPE,
-               REQUESTER_ID
+            resultMap="confirmDocumentResultMap">
+        SELECT CDM.CONFIRM_DOCUMENT_PK,
+            CDM.CONFIRM_DOCUMENT_ID,
+            CDM.COMPANY_ID,
+            CDM.DEPARTMENT_ID,
+            CDM.CREATE_SYSTEM,
+            CDM.CONFIRM_STATUS,
+            CDM.DOCUMENT_TYPE,
+            CDM.REQUESTER_ID,
+            CCM.CONTENTS
 
-        FROM JXX_CONFIRM_DOCUMENT_MASTER
+        FROM JXX_CONFIRM_DOCUMENT_MASTER CDM
+        JOIN JXX_CONFIRM_DOCUMENT_CONTENT_MASTER CCM
+            ON CDM.CONFIRM_DOCUMENT_CONTENT_PK = CCM.CONFIRM_DOCUMENT_CONTENT_PK
         <where>
             <if test="confirmDocumentId != null and confirmDocumentId != ''">
-                AND CONFIRM_DOCUMENT_ID = #{confirmDocumentId}
+                AND CDM.CONFIRM_DOCUMENT_ID = #{confirmDocumentId}
             </if>
             <if test="confirmStatus != null">
-                AND CONFIRM_STATUS = #{confirmStatus}
+                AND CDM.CONFIRM_STATUS = #{confirmStatus}
             </if>
             <if test="requesterId != null and requesterId != ''">
-                AND REQUESTER_ID = #{requesterId}
+                AND CDM.REQUESTER_ID = #{requesterId}
             </if>
         </where>
     </select>
+
+    <resultMap id="confirmDocumentResultMap" type="com.jxx.approval.confirm.dto.response.ConfirmDocumentServiceResponse">
+        <id property="pk" column="CONFIRM_DOCUMENT_PK"/>
+        <result property="confirmDocumentId" column="CONFIRM_DOCUMENT_ID"/>
+        <result property="companyId" column="COMPANY_ID"/>
+        <result property="departmentId" column="DEPARTMENT_ID"/>
+        <result property="createSystem" column="CREATE_SYSTEM"/>
+        <result property="confirmStatus" column="CONFIRM_STATUS" javaType="com.jxx.approval.confirm.domain.ConfirmStatus"/>
+        <result property="documentType" column="DOCUMENT_TYPE" javaType="com.jxx.approval.confirm.domain.DocumentType"/>
+        <result property="requesterId" column="REQUESTER_ID"/>
+        <result property="contents" column="CONTENTS" javaType="java.util.Map" typeHandler="com.jxx.approval.common.mapper.typehandler.JsonTypeHandler"/>
+    </resultMap>
     
     <select id="fetchWithApprovalLine"
             parameterType="com.jxx.approval.confirm.dto.request.ConfirmDocumentForApprovalSearchCondition"

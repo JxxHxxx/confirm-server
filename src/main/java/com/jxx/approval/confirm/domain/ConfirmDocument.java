@@ -11,6 +11,7 @@ import org.hibernate.annotations.Comment;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.jxx.approval.confirm.domain.ApproveStatus.ACCEPT;
 import static com.jxx.approval.confirm.domain.ConfirmStatus.*;
@@ -147,5 +148,9 @@ public class ConfirmDocument {
 
     public boolean approvalLineCreated() {
         return ApprovalLineLifecycle.CREATED.equals(approvalLineLifecycle);
+    }
+
+    public Map<String, Object> receiveContents() {
+        return this.content.getContents();
     }
 }

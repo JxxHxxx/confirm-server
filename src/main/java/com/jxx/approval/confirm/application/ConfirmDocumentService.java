@@ -3,7 +3,6 @@ package com.jxx.approval.confirm.application;
 import com.jxx.approval.confirm.domain.*;
 import com.jxx.approval.confirm.dto.request.*;
 import com.jxx.approval.confirm.dto.response.*;
-import com.jxx.approval.confirm.infra.ApprovalLineRepository;
 import com.jxx.approval.confirm.infra.ConfirmDocumentContentRepository;
 import com.jxx.approval.confirm.infra.ConfirmDocumentMapper;
 import com.jxx.approval.confirm.infra.ConfirmDocumentRepository;
@@ -58,7 +57,7 @@ public class ConfirmDocumentService {
 
     @Transactional
     public ConfirmDocumentServiceDto raise(String confirmDocumentId, ConfirmRaiseForm form) {
-        ConfirmDocument confirmDocument = confirmDocumentRepository.findByConfirmDocumentId(confirmDocumentId)
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findWithContent(confirmDocumentId)
                 .orElseThrow(() -> new IllegalArgumentException());
 
         // 요청자 검증
@@ -85,7 +84,7 @@ public class ConfirmDocumentService {
 
     //
     public ConfirmDocumentServiceDto cancelRaise(String confirmDocumentId) {
-        ConfirmDocument confirmDocument = confirmDocumentRepository.findByConfirmDocumentId(confirmDocumentId)
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findWithContent(confirmDocumentId)
                 .orElseThrow(() -> new IllegalArgumentException());
 
         // 이미 반려/승인자가 있을 경우 못함
@@ -103,7 +102,8 @@ public class ConfirmDocumentService {
                 confirmDocument.getCreateSystem(),
                 confirmDocument.getConfirmStatus(),
                 confirmDocument.getDocument().getDocumentType(),
-                confirmDocument.getRequester().getRequesterId());
+                confirmDocument.getRequester().getRequesterId(),
+                confirmDocument.receiveContents());
     }
 
     public List<ConfirmDocumentServiceResponse> search(ConfirmDocumentSearchCondition condition) {
@@ -140,18 +140,18 @@ public class ConfirmDocumentService {
                         confirmDocument.getCreateSystem(),
                         confirmDocument.getConfirmStatus(),
                         confirmDocument.getDocumentType(),
-                        confirmDocument.getRequesterId());
+                        confirmDocument.getRequesterId(),
+                confirmDocument.receiveContents());
 
         ConfirmDocumentContent confirmDocumentContent = confirmDocument.getContent();
         Map<String, Object> contents = confirmDocumentContent.getContents();
 
         return new ConfirmDocumentAndContentServiceResponse(confirmDocumentServiceResponse, savedContent.getPk(), contents);
-
     }
 
     @Transactional
     public ConfirmDocumentServiceResponse cancelConfirmDocument(String confirmDocumentId, ConfirmDocumentCancelForm form) {
-        ConfirmDocument confirmDocument = confirmDocumentRepository.findByConfirmDocumentId(confirmDocumentId)
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findWithContent(confirmDocumentId)
                 .orElseThrow();
 
         // 취소 가능한 자인지
@@ -174,7 +174,8 @@ public class ConfirmDocumentService {
                 confirmDocument.getCreateSystem(),
                 confirmDocument.getConfirmStatus(),
                 confirmDocument.getDocumentType(),
-                confirmDocument.getRequesterId());
+                confirmDocument.getRequesterId(),
+                confirmDocument.receiveContents());
     }
 
 
@@ -193,7 +194,8 @@ public class ConfirmDocumentService {
                 confirmDocument.getCreateSystem(),
                 confirmDocument.getConfirmStatus(),
                 confirmDocument.getDocumentType(),
-                confirmDocument.getRequesterId());
+                confirmDocument.getRequesterId(),
+                confirmDocument.receiveContents());
 
         ConfirmDocumentContent content = confirmDocument.getContent();
 

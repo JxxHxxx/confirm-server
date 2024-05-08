@@ -35,7 +35,7 @@ public class ApprovalLineService {
     }
 
     protected ApprovalLineResponse enrollApprovalLines(List<ApprovalLineEnrollForm> enrollForms, String confirmDocumentId, Consumer verifyCompanyMembersApi) throws JsonProcessingException {
-        ConfirmDocument confirmDocument = confirmDocumentRepository.findByConfirmDocumentId(confirmDocumentId)
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findWithContent(confirmDocumentId)
                 .orElseThrow(() -> new IllegalArgumentException("결재 문서 ID " + confirmDocumentId + "가 존재하지 않습니다"));
 
         // 상신 전 상태인지 확인
@@ -91,7 +91,7 @@ public class ApprovalLineService {
     // 상신된 문서의 상신을 취소하고 -> 결재선 변경을 하도록 해야 한다.
     @Transactional
     public ApprovalLineResponse deleteApprovalLines(String confirmDocumentId, String memberId) {
-        ConfirmDocument confirmDocument = confirmDocumentRepository.findByConfirmDocumentId(confirmDocumentId)
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findWithContent(confirmDocumentId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 결재 문서를 찾을 수 없습니다."));
 
         // 인가 로직 start
@@ -132,7 +132,7 @@ public class ApprovalLineService {
         boolean finalApproval = approvalLine.isFinalApproval(approvalLines);
 
         //여기 리팩토링 할 수 있음 일단 GO
-        ConfirmDocument findDocument = confirmDocumentRepository.findByConfirmDocumentId(confirmDocumentId).orElseThrow();
+        ConfirmDocument findDocument = confirmDocumentRepository.findWithContent(confirmDocumentId).orElseThrow();
         Long vacationId = VacationIdExtractor.execute(findDocument);
 
         return new ApprovalLineServiceResponse(
@@ -164,7 +164,7 @@ public class ApprovalLineService {
                 .checkApprovalLineOrder()
                 .changeApproveStatus(ApproveStatus.REJECT);
 
-        ConfirmDocument findDocument = confirmDocumentRepository.findByConfirmDocumentId(confirmDocumentId).orElseThrow();
+        ConfirmDocument findDocument = confirmDocumentRepository.findWithContent(confirmDocumentId).orElseThrow();
         Long vacationId = VacationIdExtractor.execute(findDocument);
 
         boolean finalApproval = approvalLine.isFinalApproval(approvalLines);

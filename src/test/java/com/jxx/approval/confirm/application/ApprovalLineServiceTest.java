@@ -7,9 +7,7 @@ import com.jxx.approval.confirm.dto.request.Document;
 import com.jxx.approval.confirm.dto.response.ApprovalLineResponse;
 import com.jxx.approval.confirm.infra.ConfirmDocumentRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,10 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.function.Consumer;
 
-import static com.jxx.approval.confirm.domain.ConfirmStatus.*;
-import static com.jxx.approval.confirm.domain.ConfirmStatus.ACCEPT;
 import static com.jxx.approval.confirm.domain.ConfirmStatus.CREATE;
 import static org.assertj.core.api.Assertions.*;
 
@@ -91,7 +86,7 @@ class ApprovalLineServiceTest {
     @EnumSource(value = ConfirmStatus.class, names = {"ACCEPT", "REJECT", "RAISE", "CANCEL"})
     void name(ConfirmStatus confirmStatus) {
         //given
-        ConfirmDocument confirmDocument = confirmDocumentRepository.findByConfirmDocumentId(confirmDocumentId).get();
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findWithContent(confirmDocumentId).get();
         confirmDocument.changeConfirmStatus(confirmStatus);
         confirmDocumentRepository.flush();
         //when - then

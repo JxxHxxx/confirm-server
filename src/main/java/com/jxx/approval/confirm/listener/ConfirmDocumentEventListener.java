@@ -21,7 +21,7 @@ public class ConfirmDocumentEventListener {
     @TransactionalEventListener(value = ApproveStatusChangedEvent.class, phase = TransactionPhase.BEFORE_COMMIT)
     public void handle(ApproveStatusChangedEvent event) {
         // 로깅 작업 해야함
-        ConfirmDocument confirmDocument = confirmDocumentRepository.findByConfirmDocumentId(event.getConfirmDocumentId())
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findWithContent(event.getConfirmDocumentId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문서입니다."));
 
         if (confirmDocument.confirmStatusNotBelongIn(event.getConfirmStatus())) {
@@ -32,7 +32,7 @@ public class ConfirmDocumentEventListener {
     @TransactionalEventListener(value = ConfirmStatusEvent.class, phase = TransactionPhase.BEFORE_COMMIT)
     public void handle(ConfirmStatusEvent event) throws JsonProcessingException {
         log.info("cdp:{} eventType:{}", event.confirmDocumentId(), event.confirmStatusToChange());
-        ConfirmDocument confirmDocument = confirmDocumentRepository.findByConfirmDocumentId(event.confirmDocumentId())
+        ConfirmDocument confirmDocument = confirmDocumentRepository.findWithContent(event.confirmDocumentId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문서입니다."));
 
         SimpleRestClient simpleRestClient = new SimpleRestClient();
