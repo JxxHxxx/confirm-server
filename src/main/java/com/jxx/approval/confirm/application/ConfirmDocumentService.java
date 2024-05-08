@@ -99,10 +99,12 @@ public class ConfirmDocumentService {
                 confirmDocument.getConfirmDocumentId(),
                 confirmDocument.getRequester().getCompanyId(),
                 confirmDocument.getRequester().getDepartmentId(),
+                confirmDocument.getRequester().getDepartmentName(),
                 confirmDocument.getCreateSystem(),
                 confirmDocument.getConfirmStatus(),
                 confirmDocument.getDocument().getDocumentType(),
                 confirmDocument.getRequester().getRequesterId(),
+                confirmDocument.getRequester().getRequesterName(),
                 confirmDocument.receiveContents());
     }
 
@@ -132,16 +134,7 @@ public class ConfirmDocumentService {
         confirmDocument.setContent(content);
         ConfirmDocumentContent savedContent = contentRepository.save(content);
 
-        ConfirmDocumentServiceResponse confirmDocumentServiceResponse = new ConfirmDocumentServiceResponse(
-                        confirmDocument.getPk(),
-                        confirmDocument.getConfirmDocumentId(),
-                        confirmDocument.getCompanyId(),
-                        confirmDocument.getDepartmentId(),
-                        confirmDocument.getCreateSystem(),
-                        confirmDocument.getConfirmStatus(),
-                        confirmDocument.getDocumentType(),
-                        confirmDocument.getRequesterId(),
-                confirmDocument.receiveContents());
+        ConfirmDocumentServiceResponse confirmDocumentServiceResponse = toConfirmDocumentServiceResponse(confirmDocument);
 
         ConfirmDocumentContent confirmDocumentContent = confirmDocument.getContent();
         Map<String, Object> contents = confirmDocumentContent.getContents();
@@ -166,16 +159,7 @@ public class ConfirmDocumentService {
         }
         // 결재 문서 상태 변경
         confirmDocument.changeConfirmStatus(ConfirmStatus.CANCEL);
-        return new ConfirmDocumentServiceResponse(
-                confirmDocument.getPk(),
-                confirmDocument.getConfirmDocumentId(),
-                confirmDocument.getCompanyId(),
-                confirmDocument.getDepartmentId(),
-                confirmDocument.getCreateSystem(),
-                confirmDocument.getConfirmStatus(),
-                confirmDocument.getDocumentType(),
-                confirmDocument.getRequesterId(),
-                confirmDocument.receiveContents());
+        return toConfirmDocumentServiceResponse(confirmDocument);
     }
 
 
@@ -186,16 +170,7 @@ public class ConfirmDocumentService {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findWithContent(contentPk)
                 .orElseThrow(() -> new IllegalArgumentException("contentPk:" + contentPk + " is not exist"));
 
-        ConfirmDocumentServiceResponse confirmDocumentResponse = new ConfirmDocumentServiceResponse(
-                confirmDocument.getPk(),
-                confirmDocument.getConfirmDocumentId(),
-                confirmDocument.getCompanyId(),
-                confirmDocument.getDepartmentId(),
-                confirmDocument.getCreateSystem(),
-                confirmDocument.getConfirmStatus(),
-                confirmDocument.getDocumentType(),
-                confirmDocument.getRequesterId(),
-                confirmDocument.receiveContents());
+        ConfirmDocumentServiceResponse confirmDocumentResponse = toConfirmDocumentServiceResponse(confirmDocument);
 
         ConfirmDocumentContent content = confirmDocument.getContent();
 

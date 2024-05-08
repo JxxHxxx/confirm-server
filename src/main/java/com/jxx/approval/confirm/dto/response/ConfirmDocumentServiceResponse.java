@@ -17,9 +17,11 @@ public class ConfirmDocumentServiceResponse {
     private String confirmDocumentId;
     private String companyId;
     private String departmentId;
+    private String departmentName;
     private String createSystem;
     private ConfirmStatus confirmStatus;
     private DocumentType documentType;
     private String requesterId;
+    private String requesterName;
     private Map<String, Object> contents;
 }

@@ -33,18 +33,20 @@
             parameterType="com.jxx.approval.confirm.dto.request.ConfirmDocumentSearchCondition"
             resultMap="confirmDocumentResultMap">
         SELECT CDM.CONFIRM_DOCUMENT_PK,
-            CDM.CONFIRM_DOCUMENT_ID,
-            CDM.COMPANY_ID,
-            CDM.DEPARTMENT_ID,
-            CDM.CREATE_SYSTEM,
-            CDM.CONFIRM_STATUS,
-            CDM.DOCUMENT_TYPE,
-            CDM.REQUESTER_ID,
-            CCM.CONTENTS
+        CDM.CONFIRM_DOCUMENT_ID,
+        CDM.COMPANY_ID,
+        CDM.DEPARTMENT_ID,
+        CDM.DEPARTMENT_NAME,
+        CDM.CREATE_SYSTEM,
+        CDM.CONFIRM_STATUS,
+        CDM.DOCUMENT_TYPE,
+        CDM.REQUESTER_ID,
+        CDM.REQUESTER_NAME,
+        CCM.CONTENTS
 
         FROM JXX_CONFIRM_DOCUMENT_MASTER CDM
         JOIN JXX_CONFIRM_DOCUMENT_CONTENT_MASTER CCM
-            ON CDM.CONFIRM_DOCUMENT_CONTENT_PK = CCM.CONFIRM_DOCUMENT_CONTENT_PK
+        ON CDM.CONFIRM_DOCUMENT_CONTENT_PK = CCM.CONFIRM_DOCUMENT_CONTENT_PK
         <where>
             <if test="confirmDocumentId != null and confirmDocumentId != ''">
                 AND CDM.CONFIRM_DOCUMENT_ID = #{confirmDocumentId}
@@ -63,10 +65,12 @@
         <result property="confirmDocumentId" column="CONFIRM_DOCUMENT_ID"/>
         <result property="companyId" column="COMPANY_ID"/>
         <result property="departmentId" column="DEPARTMENT_ID"/>
+        <result property="departmentName" column="DEPARTMENT_NAME"/>
         <result property="createSystem" column="CREATE_SYSTEM"/>
         <result property="confirmStatus" column="CONFIRM_STATUS" javaType="com.jxx.approval.confirm.domain.ConfirmStatus"/>
         <result property="documentType" column="DOCUMENT_TYPE" javaType="com.jxx.approval.confirm.domain.DocumentType"/>
         <result property="requesterId" column="REQUESTER_ID"/>
+        <result property="requesterId" column="REQUESTER_NAME"/>
         <result property="contents" column="CONTENTS" javaType="java.util.Map" typeHandler="com.jxx.approval.common.mapper.typehandler.JsonTypeHandler"/>
     </resultMap>
     
