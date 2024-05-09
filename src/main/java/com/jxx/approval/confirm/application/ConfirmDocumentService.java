@@ -97,6 +97,7 @@ public class ConfirmDocumentService {
         return new ConfirmDocumentServiceResponse(
                 confirmDocument.getPk(),
                 confirmDocument.getConfirmDocumentId(),
+                confirmDocument.getCreateTime(),
                 confirmDocument.getRequester().getCompanyId(),
                 confirmDocument.getRequester().getDepartmentId(),
                 confirmDocument.getRequester().getDepartmentName(),
@@ -105,13 +106,9 @@ public class ConfirmDocumentService {
                 confirmDocument.getDocument().getDocumentType(),
                 confirmDocument.getRequester().getRequesterId(),
                 confirmDocument.getRequester().getRequesterName(),
+                confirmDocument.receiveContentPk(),
                 confirmDocument.receiveContents());
     }
-
-    public List<ConfirmDocumentServiceResponse> search(ConfirmDocumentSearchCondition condition) {
-        return confirmDocumentMapper.search(condition);
-    }
-
     @Transactional
     public ConfirmDocumentServiceResponse updateConfirmDocument(Long confirmDocumentPk, ConfirmDocumentUpdateForm form) {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk)
@@ -163,7 +160,7 @@ public class ConfirmDocumentService {
     }
 
 
-    public List<ConfirmDocumentFetchApprovalLineResponse> findConfirmDocumentForApproval(ConfirmDocumentForApprovalSearchCondition condition) {
+    public List<ConfirmDocumentWithApprovalLineResponse> fetchWithApprovalLines(ConfirmDocumentSearchConditionQueryString condition) {
         return confirmDocumentMapper.fetchWithApprovalLine(condition);
     }
     public ConfirmDocumentAndContentServiceResponse findDocumentContent(Long contentPk) {
@@ -185,5 +182,13 @@ public class ConfirmDocumentService {
                 confirmDocumentResponse,
                 content.getPk(),
                 content.getContents());
+    }
+
+    public List<ConfirmDocumentServiceResponse> findDepartmentConfirmDocument(String companyId, String departmentId) {
+        List<ConfirmDocument> confirmDocuments = confirmDocumentRepository.findWithContent(companyId, departmentId);
+
+        return confirmDocuments.stream()
+                .map(ConfirmDocumentService::toConfirmDocumentServiceResponse)
+                .toList();
     }
 }

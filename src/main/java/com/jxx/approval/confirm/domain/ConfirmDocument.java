@@ -154,4 +154,8 @@ public class ConfirmDocument {
     public Map<String, Object> receiveContents() {
         return this.content.getContents();
     }
+
+    public Long receiveContentPk() {
+        return this.content.getPk();
+    }
 }

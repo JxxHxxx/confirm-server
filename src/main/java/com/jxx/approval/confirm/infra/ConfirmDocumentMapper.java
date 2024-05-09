@@ -1,9 +1,8 @@
 package com.jxx.approval.confirm.infra;
 
 import com.jxx.approval.confirm.domain.ConfirmDocument;
-import com.jxx.approval.confirm.dto.request.ConfirmDocumentForApprovalSearchCondition;
-import com.jxx.approval.confirm.dto.request.ConfirmDocumentSearchCondition;
-import com.jxx.approval.confirm.dto.response.ConfirmDocumentFetchApprovalLineResponse;
+import com.jxx.approval.confirm.dto.request.ConfirmDocumentSearchConditionQueryString;
+import com.jxx.approval.confirm.dto.response.ConfirmDocumentWithApprovalLineResponse;
 import com.jxx.approval.confirm.dto.response.ConfirmDocumentServiceResponse;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -17,7 +16,5 @@ public interface ConfirmDocumentMapper {
 
     void save(ConfirmDocument confirmDocument);
 
-    List<ConfirmDocumentServiceResponse> search(ConfirmDocumentSearchCondition condition);
-
-    List<ConfirmDocumentFetchApprovalLineResponse> fetchWithApprovalLine(ConfirmDocumentForApprovalSearchCondition condition);
+    List<ConfirmDocumentWithApprovalLineResponse> fetchWithApprovalLine(ConfirmDocumentSearchConditionQueryString condition);
 }

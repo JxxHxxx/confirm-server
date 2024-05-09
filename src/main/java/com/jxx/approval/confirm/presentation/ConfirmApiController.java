@@ -51,12 +51,20 @@ public class ConfirmApiController {
         return null;
     }
 
-    // 결재 문서 검색
+    // 결재 문서 + 결재 라인 + 컨텐츠 검색
     @GetMapping("/api/confirm-documents")
-    public ResponseEntity<ResponseResult> searchConfirmDocument(@ModelAttribute ConfirmDocumentSearchCondition condition) {
-        List<ConfirmDocumentServiceResponse> responses = confirmDocumentService.search(condition);
-        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "검색 조회", responses));
+    public ResponseEntity<?> findWithApprovalLines(@ModelAttribute ConfirmDocumentSearchConditionQueryString condition) {
+        List<ConfirmDocumentWithApprovalLineResponse> responses = confirmDocumentService.fetchWithApprovalLines(condition);
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 검색", responses));
     }
+
+    @GetMapping("/api/confirm-documents/search-my-department")
+    public ResponseEntity<?> findDepartmentConfirmDocument(@RequestParam(name = "companyId") String companyId,
+                                                           @RequestParam(name = "departmentId") String departmentId) {
+        List<ConfirmDocumentServiceResponse> responses = confirmDocumentService.findDepartmentConfirmDocument(companyId, departmentId);
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "부서 결재함 조회", responses));
+    }
+
     // 결재 문서 PK 조회
     @GetMapping("/api/confirm-documents/{confirm-document-pk}")
     public ResponseEntity<ResponseResult<?>> readByPk(@PathVariable(value = "confirm-document-pk") Long confirmDocumentPk) {
@@ -78,14 +86,6 @@ public class ConfirmApiController {
     public ResponseEntity<?> deleteApprovalLines(@PathVariable(name = "confirm-document-id") String confirmDocumentId, @RequestBody String memberId){
         ApprovalLineResponse response = approvalLineService.deleteApprovalLines(confirmDocumentId, memberId);
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재선 삭제 완료", response));
-    }
-
-    // 결정권자로 포함되어 있는 결재 문서 보기
-    @GetMapping("/api/confirm-documents/approval-lines")
-    public ResponseEntity<?> findConfirmDocumentForApproval(@ModelAttribute ConfirmDocumentForApprovalSearchCondition condition) {
-
-        List<ConfirmDocumentFetchApprovalLineResponse> responses = confirmDocumentService.findConfirmDocumentForApproval(condition);
-        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재자로 등록되어 있는 결재 문서 조회", responses));
     }
     @GetMapping("/api/confirm-documents/{confirm-document-id}/approval-lines")
     public ResponseEntity<?> findApprovalLines(@PathVariable("confirm-document-id") String confirmDocumentId) {
