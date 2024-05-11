@@ -54,7 +54,7 @@ public class ConfirmDocumentEventListener {
             case REJECT -> {
                 // TODO 여기 결재 반려/최종승신 이벤트와 트랜잭션 묶어줘야 함 위에도 마찬가지
                 confirmDocument.changeConfirmStatus(event.confirmStatusToChange());
-                simpleRestClient.patch("http://localhost:8080/api/vacations/{vacation-id}/vacation-status",
+                simpleRestClient.postForEntity("http://localhost:8080/api/vacations/{vacation-id}/vacation-status",
                         new ConfirmStatusChangeRequest("confirm-server", "REJECT"),
                         String.class,
                         event.vacationId());
