@@ -75,7 +75,9 @@ public class ApprovalLineService {
                         ap.getPk(),
                         ap.getApprovalOrder(),
                         ap.getApprovalLineId(),
-                        ap.getApproveStatus()))
+                        ap.getApproveStatus(),
+                        ap.getApprovalName(),
+                        ap.getApproveTime()))
                 .toList();
         return new ApprovalLineResponse(
                 new ConfirmDocumentServiceDto(
@@ -183,7 +185,13 @@ public class ApprovalLineService {
         List<ApprovalLine> approvalLines = approvalLineRepository.findByConfirmDocumentConfirmDocumentId(confirmDocumentId);
 
         return approvalLines.stream()
-                .map(ap -> new ApprovalLineServiceDto(ap.getPk(),ap.getApprovalOrder(), ap.getApprovalLineId(), ap.getApproveStatus()))
+                .map(ap -> new ApprovalLineServiceDto(
+                        ap.getPk(),
+                        ap.getApprovalOrder(),
+                        ap.getApprovalLineId(),
+                        ap.getApproveStatus(),
+                        ap.getApprovalName(),
+                        ap.getApproveTime()))
                 .toList();
     }
 }
