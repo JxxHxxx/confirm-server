@@ -22,6 +22,12 @@ public interface ConfirmDocumentRepository extends JpaRepository<ConfirmDocument
             "where cd.requester.companyId =:companyId and cd.requester.departmentId =:departmentId")
     List<ConfirmDocument> findWithContent(@Param("companyId") String companyId, @Param("departmentId") String departmentId);
 
+    @Query("select cd from ConfirmDocument cd join fetch cd.content ct " +
+            "where cd.requester.companyId =:companyId " +
+            "and cd.requester.departmentId =:departmentId " +
+            "and cd.confirmStatus not in ('CREATE', 'UPDATE')")
+    List<ConfirmDocument> findWithContentAfterRaise(@Param("companyId") String companyId, @Param("departmentId") String departmentId);
+
     @Query("select cd from ConfirmDocument cd join fetch cd.approvalLines al " +
             "where cd.confirmDocumentId =:confirmDocumentId")
     List<ConfirmDocument> findWithApprovalLines(@Param("confirmDocumentId") String confirmDocumentId);

@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.jxx.approval.confirm.domain.ApprovalLineException.EMPTY_APPROVAL_LINE;
+import static com.jxx.approval.confirm.domain.ConfirmStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -75,7 +76,7 @@ public class ConfirmDocumentService {
             throw new ApprovalLineException(EMPTY_APPROVAL_LINE);
         };
 
-        confirmDocument.changeConfirmStatus(ConfirmStatus.RAISE);
+        confirmDocument.changeConfirmStatus(RAISE);
         confirmDocument.changeApprovalLineCycle(ApprovalLineLifecycle.PROCESS_MODIFIABLE);
 
         ConfirmStatus updatedConfirmStatus = confirmDocument.getConfirmStatus();
@@ -155,7 +156,7 @@ public class ConfirmDocumentService {
             throw new ConfirmDocumentException(ConfirmDocumentException.FAIL_CANCEL + " 사유 : " + confirmDocument.getConfirmStatus().getDescription(),confirmDocument.getRequesterId());
         }
         // 결재 문서 상태 변경
-        confirmDocument.changeConfirmStatus(ConfirmStatus.CANCEL);
+        confirmDocument.changeConfirmStatus(CANCEL);
         return toConfirmDocumentServiceResponse(confirmDocument);
     }
 
@@ -185,7 +186,7 @@ public class ConfirmDocumentService {
     }
 
     public List<ConfirmDocumentServiceResponse> findDepartmentConfirmDocument(String companyId, String departmentId) {
-        List<ConfirmDocument> confirmDocuments = confirmDocumentRepository.findWithContent(companyId, departmentId);
+        List<ConfirmDocument> confirmDocuments = confirmDocumentRepository.findWithContentAfterRaise(companyId, departmentId);
 
         return confirmDocuments.stream()
                 .map(ConfirmDocumentService::toConfirmDocumentServiceResponse)
