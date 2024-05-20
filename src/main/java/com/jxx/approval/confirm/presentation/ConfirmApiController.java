@@ -52,10 +52,19 @@ public class ConfirmApiController {
     }
 
     // 결재 문서 + 결재 라인 + 컨텐츠 검색
-    @GetMapping("/api/confirm-documents")
+    @GetMapping("/api/confirm-documents/fetch-approval-lines")
     public ResponseEntity<?> findWithApprovalLines(@ModelAttribute ConfirmDocumentSearchConditionQueryString condition) {
         List<ConfirmDocumentWithApprovalLineResponse> responses = confirmDocumentService.fetchWithApprovalLines(condition);
-        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 검색", responses));
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서, 결재 라인 조회", responses));
+    }
+
+    @GetMapping("/api/confirm-documents")
+    public ResponseEntity<?> findConfirmDocuments(@RequestParam(name = "companyId") String companyId,
+                                                  @RequestParam(name = "departmentId") String departmentId,
+                                                  @RequestParam(name = "requesterId") String requesterId) {
+        List<ConfirmDocumentServiceResponse> responses = confirmDocumentService
+                .findSelfDraftConfirmDocuments(companyId, departmentId, requesterId);
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 조회", responses));
     }
 
     @GetMapping("/api/confirm-documents/search-my-department")

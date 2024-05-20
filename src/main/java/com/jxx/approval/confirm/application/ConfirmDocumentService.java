@@ -161,6 +161,7 @@ public class ConfirmDocumentService {
     }
 
 
+    // 결재 문서, 결재선 함께 조회
     public List<ConfirmDocumentWithApprovalLineResponse> fetchWithApprovalLines(ConfirmDocumentSearchConditionQueryString condition) {
         return confirmDocumentMapper.fetchWithApprovalLine(condition);
     }
@@ -183,6 +184,12 @@ public class ConfirmDocumentService {
                 confirmDocumentResponse,
                 content.getPk(),
                 content.getContents());
+    }
+    public List <ConfirmDocumentServiceResponse> findSelfDraftConfirmDocuments(String companyId, String departmentId, String memberId) {
+        List<ConfirmDocument> confirmDocuments = confirmDocumentRepository.findSelfDraftWithContentAfterRaise(companyId, departmentId, memberId);
+        return confirmDocuments.stream()
+                .map(ConfirmDocumentService::toConfirmDocumentServiceResponse)
+                .toList();
     }
 
     public List<ConfirmDocumentServiceResponse> findDepartmentConfirmDocument(String companyId, String departmentId) {
