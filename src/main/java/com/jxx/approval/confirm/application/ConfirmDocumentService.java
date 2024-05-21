@@ -104,6 +104,7 @@ public class ConfirmDocumentService {
                 confirmDocument.getRequester().getDepartmentName(),
                 confirmDocument.getCreateSystem(),
                 confirmDocument.getConfirmStatus(),
+                confirmDocument.getCompletedTime(),
                 confirmDocument.getDocument().getDocumentType(),
                 confirmDocument.getRequester().getRequesterId(),
                 confirmDocument.getRequester().getRequesterName(),

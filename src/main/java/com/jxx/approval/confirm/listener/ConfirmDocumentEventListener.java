@@ -35,6 +35,7 @@ public class ConfirmDocumentEventListener {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findWithContent(event.confirmDocumentId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문서입니다."));
 
+
         SimpleRestClient simpleRestClient = new SimpleRestClient();
 
         switch (event.confirmStatusToChange()) {
@@ -43,8 +44,10 @@ public class ConfirmDocumentEventListener {
                     log.warn("cdp:{} something wrong", confirmDocument.getPk());
                     throw new ConfirmDocumentException("잘못된 접근입니다. 관리자에게 문의하세요.");
                 }
-
+                // 결재 문서 상태 변경 및 최종 승인/반려 시간 지정
                 confirmDocument.changeConfirmStatus(event.confirmStatusToChange());
+                confirmDocument.setCompletedTime(event.completedTime());
+
                 simpleRestClient.postForEntity("http://localhost:8080/api/vacations/{vacation-id}/vacation-status",
                         new ConfirmStatusChangeRequest("confirm-server", "APPROVED"),
                         String.class,

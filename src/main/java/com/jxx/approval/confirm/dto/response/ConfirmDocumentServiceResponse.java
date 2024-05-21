@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.Objects;
 
 @Getter
 @NoArgsConstructor
@@ -22,6 +21,7 @@ public class ConfirmDocumentServiceResponse {
     private String departmentName;
     private String createSystem;
     private ConfirmStatus confirmStatus;
+    private LocalDateTime completedTime;
     private DocumentType documentType;
     private String requesterId;
     private String requesterName;

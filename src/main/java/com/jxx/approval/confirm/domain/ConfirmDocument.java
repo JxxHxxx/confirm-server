@@ -57,6 +57,10 @@ public class ConfirmDocument {
     @Column(name = "APPROVAL_LINE_LIFE_CYCLE")
     @Comment(value = "결재선 상태")
     private ApprovalLineLifecycle approvalLineLifecycle;
+    // TODO 문서 최종 결정 시간 반려 or 최종 승인 필드
+    @Column(name = "COMPLETED_TIME", nullable = true)
+    @Comment(value = "결재 문서가 최종 승인/반려된 시간")
+    private LocalDateTime completedTime;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CONFIRM_DOCUMENT_CONTENT_PK", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
@@ -81,6 +85,10 @@ public class ConfirmDocument {
 
     public void changeConfirmStatus(ConfirmStatus confirmStatus) {
         this.confirmStatus = confirmStatus;
+    }
+
+    public void setCompletedTime(LocalDateTime completedTime) {
+        this.completedTime = completedTime;
     }
 
     public String getConfirmDocumentId() {

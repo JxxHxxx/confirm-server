@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.*;
@@ -123,7 +124,7 @@ public class ConfirmApiController {
         ApprovalLineServiceResponse response = approvalLineService.accept(confirmDocumentId, form);
         // 임시
         if (response.finalApproval()) {
-            eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentId, response.vacationId(),ConfirmStatus.ACCEPT));
+            eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentId, response.vacationId(),ConfirmStatus.ACCEPT, LocalDateTime.now()));
         }
 
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 승인", response));
@@ -139,7 +140,7 @@ public class ConfirmApiController {
         // 결재 문서 반려 로직
         ApprovalLineServiceResponse response = approvalLineService.reject(confirmDocumentId, form);
 
-        eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentId, response.vacationId(), ConfirmStatus.REJECT));
+        eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentId, response.vacationId(), ConfirmStatus.REJECT, LocalDateTime.now()));
 
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 반려", response));
     }
