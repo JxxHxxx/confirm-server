@@ -17,16 +17,25 @@ public class ConfirmDocumentElement {
     @Column(name = "CONFIRM_DOCUMENT_ELEMENT_PK")
     @Comment(value = "결재 문서 요소 테이블 PK")
     private Long pk;
-
-    @Column(name = "CONFIRM_DOCUMENT_ELEMENT_KEY", nullable = false, unique = true)
+    // ID, KEY 만 있으면 될듯
+    @Column(name = "CONFIRM_DOCUMENT_ELEMENT_KEY", nullable = false)
     @Comment(value = "결재 문서 요소 KEY")
-    private String key;
+    private String elementKey;
     @Column(name = "CONFIRM_DOCUMENT_ELEMENT_NAME", nullable = false)
-    @Comment(value = "결재 문서 요소 이름")
-    private String name;
+    @Comment(value = "결재 문서 요소 KEY")
+    private String ElementName;
 
-    public ConfirmDocumentElement(String key, String name) {
-        this.key = key;
-        this.name = name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CONFIRM_DOCUMENT_FORM_ID", referencedColumnName = "CONFIRM_DOCUMENT_FORM_ID", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment(value = "결재 문서 양식")
+    private ConfirmDocumentForm confirmDocumentForm;
+
+    public ConfirmDocumentElement(String elementKey, String elementName) {
+        this.elementKey = elementKey;
+        this.ElementName = elementName;
+    }
+
+    public void mappingDocumentForm(ConfirmDocumentForm confirmDocumentForm) {
+        this.confirmDocumentForm = confirmDocumentForm;
     }
 }

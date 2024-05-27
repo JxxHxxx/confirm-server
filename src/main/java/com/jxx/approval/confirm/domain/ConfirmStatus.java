@@ -4,6 +4,8 @@ import lombok.Getter;
 
 import java.util.List;
 
+
+// 선결 - 먼저 결재 가능, 후결, 대결, 전결
 @Getter
 public enum ConfirmStatus {
     CREATE("결재 생성"), // 200

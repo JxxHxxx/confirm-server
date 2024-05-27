@@ -1,0 +1,37 @@
+### 결재 문서 양식 생성
+
+POST http://localhost:8000/admin/confirm-document-forms
+Content-Type: application/json
+
+{
+   "formId" :  "TEST",
+   "formName" : "요청 부서 승인 문서",
+   "companyId" : "SPY"
+}
+###
+
+POST http://localhost:8000/admin/confirm-document-forms/TEST/elements
+Content-Type: application/json
+
+[
+  {
+     "elementKey" :  "request_title",
+     "elementName" : "요청 제목"
+  },
+  {
+    "elementKey" :  "requester",
+    "elementName" : "요청자"
+  },
+  {
+    "elementKey" :  "request_department_name",
+    "elementName" : "요청 부서"
+  },
+  {
+    "elementKey" :  "request_content",
+    "elementName" : "요청 내용"
+  },
+  {
+    "elementKey" :  "complete_hope_date",
+    "elementName" : "완료 희망 일시"
+  }
+]

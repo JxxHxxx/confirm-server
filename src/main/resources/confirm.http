@@ -2,7 +2,7 @@
 POST http://localhost:8000/test/confirm-documents?iter=1000
 
 ### SEARCH
-GET http://localhost:8000/api/confirm-documents?companyId=SPY&departmentId=SPY00205
+GET http://localhost:8000/api/confirm-documents?companyId=BNG&departmentId=BNG20401&requesterId=BNG00066
 
 ### DEPARTMENT CONFIRM DOCUMENT
 GET http://localhost:8000/api/confirm-documents/search-my-department?departmentId=SPY00205&companyId=SPY

@@ -36,12 +36,4 @@ public class ConfirmDocumentFormElement {
         this.confirmDocumentForm = confirmDocumentForm;
         this.createTime = LocalDateTime.now();
     }
-
-    public String getFormElementKey() {
-        return this.confirmDocumentElement.getKey();
-    }
-
-    public String getFormElementName() {
-       return this.confirmDocumentElement.getName();
-    }
 }

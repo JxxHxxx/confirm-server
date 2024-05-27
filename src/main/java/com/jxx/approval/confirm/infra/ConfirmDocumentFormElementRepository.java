@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ConfirmDocumentFormElementRepository extends JpaRepository<ConfirmDocumentFormElement, Long> {
 
-    List<ConfirmDocumentFormElement> findByConfirmDocumentFormPk(Long formPk);
+    List<ConfirmDocumentFormElement> findByConfirmDocumentForm(String confirmDocumentId);
 
 
 }
