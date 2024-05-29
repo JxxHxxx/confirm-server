@@ -36,7 +36,7 @@ class ConfirmDocumentTest {
                 .confirmStatus(CREATE)
                 .build();
         //when
-        Requester requester = new Requester("JXX", "J00001", "테스트부서", "U00001", "테스터");
+        Requester requester = new Requester(companyId, departmentId, "테스트부서", requesterId, "테스터");
 
         //than
         assertThat(confirmDocument.isNotDocumentOwner(requester)).isEqualTo(isNotDocumentOwner);

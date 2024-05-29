@@ -6,6 +6,7 @@ import com.jxx.approval.confirm.domain.line.ApprovalLineLifecycle;
 import com.jxx.approval.confirm.dto.request.ApprovalLineEnrollForm;
 import com.jxx.approval.confirm.domain.document.Document;
 import com.jxx.approval.confirm.dto.response.ApprovalLineResponse;
+import com.jxx.approval.confirm.infra.ConfirmDocumentContentRepository;
 import com.jxx.approval.confirm.infra.ConfirmDocumentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.jxx.approval.confirm.domain.document.ConfirmStatus.CREATE;
 import static org.assertj.core.api.Assertions.*;
@@ -31,6 +33,8 @@ class ApprovalLineServiceTest {
     ApprovalLineService approvalLineService;
     @Autowired
     ConfirmDocumentRepository confirmDocumentRepository;
+    @Autowired
+    ConfirmDocumentContentRepository confirmDocumentContentRepository;
 
     // 결재 라인 테스트에 사용될 결재 문서 ID - beforeEach 를 통해 필드 값 초기화
     String confirmDocumentId;
@@ -45,7 +49,11 @@ class ApprovalLineServiceTest {
                 .confirmStatus(CREATE)
                 .build();
 
+        ConfirmDocumentContent content = new ConfirmDocumentContent(Map.of("key", "value"));
+        confirmDocument.setContent(content);
+
         ConfirmDocument savedConfirmDocument = confirmDocumentRepository.save(confirmDocument);
+        confirmDocumentContentRepository.save(content);
         confirmDocumentId = savedConfirmDocument.getConfirmDocumentId();
     }
 
