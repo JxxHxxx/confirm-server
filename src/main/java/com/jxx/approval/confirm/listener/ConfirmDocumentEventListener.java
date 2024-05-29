@@ -2,7 +2,8 @@ package com.jxx.approval.confirm.listener;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jxx.approval.common.client.SimpleRestClient;
-import com.jxx.approval.confirm.domain.*;
+import com.jxx.approval.confirm.domain.document.ConfirmDocument;
+import com.jxx.approval.confirm.domain.document.ConfirmDocumentException;
 import com.jxx.approval.confirm.dto.request.ConfirmStatusChangeRequest;
 import com.jxx.approval.confirm.infra.ConfirmDocumentRepository;
 import lombok.RequiredArgsConstructor;

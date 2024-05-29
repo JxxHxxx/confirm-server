@@ -1,6 +1,6 @@
 package com.jxx.approval.confirm.dto.response;
 
-import com.jxx.approval.confirm.domain.ApproveStatus;
+import com.jxx.approval.confirm.domain.line.ApproveStatus;
 import org.springframework.lang.Nullable;
 
 public record ApprovalLineServiceResponse(

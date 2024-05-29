@@ -1,9 +1,9 @@
 package com.jxx.approval.confirm.domain;
 
-import com.jxx.approval.confirm.domain.ConfirmDocument;
-import com.jxx.approval.confirm.domain.ConfirmStatus;
-import com.jxx.approval.confirm.domain.DocumentType;
-import com.jxx.approval.confirm.domain.Requester;
+import com.jxx.approval.confirm.domain.document.ConfirmDocument;
+import com.jxx.approval.confirm.domain.document.ConfirmStatus;
+import com.jxx.approval.confirm.domain.document.DocumentType;
+import com.jxx.approval.confirm.domain.document.Requester;
 import com.jxx.approval.confirm.dto.request.Document;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 import java.util.List;
 
-import static com.jxx.approval.confirm.domain.ConfirmStatus.*;
+import static com.jxx.approval.confirm.domain.document.ConfirmStatus.*;
 import static org.assertj.core.api.Assertions.*;
 
 class ConfirmDocumentTest {

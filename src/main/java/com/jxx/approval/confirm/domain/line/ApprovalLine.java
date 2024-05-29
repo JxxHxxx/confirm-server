@@ -1,5 +1,6 @@
-package com.jxx.approval.confirm.domain;
+package com.jxx.approval.confirm.domain.line;
 
+import com.jxx.approval.confirm.domain.document.ConfirmDocument;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

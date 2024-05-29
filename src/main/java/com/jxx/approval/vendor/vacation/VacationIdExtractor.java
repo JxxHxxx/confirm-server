@@ -1,6 +1,6 @@
 package com.jxx.approval.vendor.vacation;
 
-import com.jxx.approval.confirm.domain.ConfirmDocument;
+import com.jxx.approval.confirm.domain.document.ConfirmDocument;
 
 public class VacationIdExtractor {
 

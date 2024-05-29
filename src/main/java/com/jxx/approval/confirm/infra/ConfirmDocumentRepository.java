@@ -1,6 +1,6 @@
 package com.jxx.approval.confirm.infra;
 
-import com.jxx.approval.confirm.domain.ConfirmDocument;
+import com.jxx.approval.confirm.domain.document.ConfirmDocument;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

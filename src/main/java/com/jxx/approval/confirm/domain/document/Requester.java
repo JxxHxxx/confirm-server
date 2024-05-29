@@ -1,4 +1,4 @@
-package com.jxx.approval.confirm.domain;
+package com.jxx.approval.confirm.domain.document;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

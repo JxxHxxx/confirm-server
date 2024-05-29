@@ -1,4 +1,4 @@
-package com.jxx.approval.confirm.domain;
+package com.jxx.approval.confirm.domain.document;
 
 public enum DocumentType {
     VAC("VACATION", "휴가 신청"),

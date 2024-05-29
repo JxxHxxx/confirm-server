@@ -3,7 +3,7 @@ package com.jxx.approval.confirm.application.server.function;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jxx.approval.common.client.SimpleRestClient;
 import com.jxx.approval.confirm.application.server.dto.VerifyCompanyMemberDto;
-import com.jxx.approval.confirm.domain.ConfirmDocumentException;
+import com.jxx.approval.confirm.domain.document.ConfirmDocumentException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 

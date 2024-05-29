@@ -1,8 +1,8 @@
 package com.jxx.approval.confirm.dto.response;
 
-import com.jxx.approval.confirm.domain.ApproveStatus;
-import com.jxx.approval.confirm.domain.ConfirmStatus;
-import com.jxx.approval.confirm.domain.DocumentType;
+import com.jxx.approval.confirm.domain.line.ApproveStatus;
+import com.jxx.approval.confirm.domain.document.ConfirmStatus;
+import com.jxx.approval.confirm.domain.document.DocumentType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

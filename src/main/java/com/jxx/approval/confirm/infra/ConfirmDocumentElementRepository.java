@@ -1,6 +1,6 @@
 package com.jxx.approval.confirm.infra;
 
-import com.jxx.approval.confirm.domain.ConfirmDocumentElement;
+import com.jxx.approval.confirm.domain.form.ConfirmDocumentElement;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

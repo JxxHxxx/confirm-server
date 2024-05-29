@@ -1,7 +1,7 @@
 package com.jxx.approval.confirm.application;
 
-import com.jxx.approval.confirm.domain.ConfirmDocumentElement;
-import com.jxx.approval.confirm.domain.ConfirmDocumentForm;
+import com.jxx.approval.confirm.domain.form.ConfirmDocumentElement;
+import com.jxx.approval.confirm.domain.form.ConfirmDocumentForm;
 import com.jxx.approval.confirm.dto.request.ConfirmDocumentElementForm;
 import com.jxx.approval.confirm.dto.request.ConfirmDocumentFormRequest;
 import com.jxx.approval.confirm.dto.response.ConfirmDocumentElementServiceResponse;

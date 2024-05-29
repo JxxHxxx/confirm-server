@@ -10,7 +10,7 @@
         WHERE CONFIRM_DOCUMENT_PK = #{confirmDocumentPk}
     </select>
 
-    <insert id="save" useGeneratedKeys="true" parameterType="com.jxx.approval.confirm.domain.ConfirmDocument">
+    <insert id="save" useGeneratedKeys="true" parameterType="com.jxx.approval.confirm.domain.document.ConfirmDocument">
         INSERT INTO JXX_CONFIRM_DOCUMENT_MASTER
         (CONFIRM_STATUS,
          CREATE_SYSTEM,
@@ -86,15 +86,15 @@
         <result property="companyId" column="COMPANY_ID"/>
         <result property="departmentId" column="DEPARTMENT_ID"/>
         <result property="createSystem" column="CREATE_SYSTEM"/>
-        <result property="confirmStatus" column="CONFIRM_STATUS" javaType="com.jxx.approval.confirm.domain.ConfirmStatus"/>
-        <result property="documentType" column="DOCUMENT_TYPE" javaType="com.jxx.approval.confirm.domain.DocumentType"/>
+        <result property="confirmStatus" column="CONFIRM_STATUS" javaType="com.jxx.approval.confirm.domain.document.ConfirmStatus"/>
+        <result property="documentType" column="DOCUMENT_TYPE" javaType="com.jxx.approval.confirm.domain.document.DocumentType"/>
         <result property="requesterId" column="REQUESTER_ID"/>
         <result property="createTime" column="CREATE_TIME"/>
         <result property="confirmDocumentContentPk" column="CONFIRM_DOCUMENT_CONTENT_PK"/>
         <result property="contents" column="CONTENTS" javaType="java.util.Map" typeHandler="com.jxx.approval.common.mapper.typehandler.JsonTypeHandler"/>
         <result property="approvalLinePk" column="APPROVAL_LINE_PK"/>
         <result property="approvalId" column="APPROVAL_ID"/>
-        <result property="approvalStatus" column="APPROVAL_STATUS" javaType="com.jxx.approval.confirm.domain.ApproveStatus"/>
+        <result property="approvalStatus" column="APPROVAL_STATUS" javaType="com.jxx.approval.confirm.domain.line.ApproveStatus"/>
         <result property="approvalTime" column="APPROVAL_TIME"/>
     </resultMap>
 </mapper>

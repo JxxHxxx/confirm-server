@@ -1,6 +1,6 @@
 package com.jxx.approval.confirm.dto.request;
 
-import com.jxx.approval.confirm.domain.DocumentType;
+import com.jxx.approval.confirm.domain.document.DocumentType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -9,8 +9,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
-
-import java.util.UUID;
 
 @Getter
 @Embeddable

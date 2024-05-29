@@ -1,7 +1,8 @@
 package com.jxx.approval.confirm.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.jxx.approval.confirm.domain.*;
+import com.jxx.approval.confirm.domain.document.*;
+import com.jxx.approval.confirm.domain.line.ApprovalLineLifecycle;
 import com.jxx.approval.confirm.dto.request.ApprovalLineEnrollForm;
 import com.jxx.approval.confirm.dto.request.Document;
 import com.jxx.approval.confirm.dto.response.ApprovalLineResponse;
@@ -18,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.jxx.approval.confirm.domain.ConfirmStatus.CREATE;
+import static com.jxx.approval.confirm.domain.document.ConfirmStatus.CREATE;
 import static org.assertj.core.api.Assertions.*;
 
 @Slf4j

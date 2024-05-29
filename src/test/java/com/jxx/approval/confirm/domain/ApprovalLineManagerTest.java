@@ -1,6 +1,13 @@
 package com.jxx.approval.confirm.domain;
 
-import com.jxx.approval.confirm.domain.*;
+import com.jxx.approval.confirm.domain.document.ConfirmDocument;
+import com.jxx.approval.confirm.domain.document.ConfirmStatus;
+import com.jxx.approval.confirm.domain.document.DocumentType;
+import com.jxx.approval.confirm.domain.document.Requester;
+import com.jxx.approval.confirm.domain.line.ApprovalLine;
+import com.jxx.approval.confirm.domain.line.ApprovalLineException;
+import com.jxx.approval.confirm.domain.line.ApprovalLineManager;
+import com.jxx.approval.confirm.domain.line.IllegalOrderMethodInvokeException;
 import com.jxx.approval.confirm.dto.request.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -8,8 +15,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static com.jxx.approval.confirm.domain.ApprovalLineException.EMPTY_APPROVAL_LINE;
-import static com.jxx.approval.confirm.domain.ApproveStatus.*;
+import static com.jxx.approval.confirm.domain.line.ApprovalLineException.EMPTY_APPROVAL_LINE;
+import static com.jxx.approval.confirm.domain.line.ApproveStatus.*;
 import static org.assertj.core.api.Assertions.*;
 
 class ApprovalLineManagerTest {

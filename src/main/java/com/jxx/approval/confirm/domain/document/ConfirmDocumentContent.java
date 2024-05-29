@@ -1,4 +1,4 @@
-package com.jxx.approval.confirm.domain;
+package com.jxx.approval.confirm.domain.document;
 
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;

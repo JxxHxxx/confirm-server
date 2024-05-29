@@ -2,7 +2,7 @@ package com.jxx.approval.confirm.presentation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jxx.approval.confirm.application.ApprovalLineService;
-import com.jxx.approval.confirm.domain.ConfirmStatus;
+import com.jxx.approval.confirm.domain.document.ConfirmStatus;
 import com.jxx.approval.confirm.dto.request.ConfirmDocumentContentRequest;
 import com.jxx.approval.confirm.application.ConfirmDocumentService;
 import com.jxx.approval.confirm.dto.request.*;
@@ -24,7 +24,7 @@ import static org.springframework.http.HttpStatus.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class ConfirmApiController {
+public class ConfirmDocumentApiController {
 
     private final ConfirmDocumentService confirmDocumentService;
     private final ApprovalLineService approvalLineService;

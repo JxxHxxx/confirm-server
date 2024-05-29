@@ -1,5 +1,8 @@
-package com.jxx.approval.confirm.domain;
+package com.jxx.approval.confirm.domain.document;
 
+import com.jxx.approval.confirm.domain.line.ApprovalLine;
+import com.jxx.approval.confirm.domain.line.ApprovalLineLifecycle;
+import com.jxx.approval.confirm.domain.line.ApproveStatus;
 import com.jxx.approval.confirm.dto.request.Document;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -13,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.jxx.approval.confirm.domain.ApproveStatus.ACCEPT;
-import static com.jxx.approval.confirm.domain.ConfirmStatus.*;
+import static com.jxx.approval.confirm.domain.line.ApproveStatus.ACCEPT;
+import static com.jxx.approval.confirm.domain.document.ConfirmStatus.*;
 
 @Getter
 @Entity

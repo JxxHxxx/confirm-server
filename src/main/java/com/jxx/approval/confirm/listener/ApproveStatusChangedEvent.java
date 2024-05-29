@@ -1,6 +1,6 @@
 package com.jxx.approval.confirm.listener;
 
-import com.jxx.approval.confirm.domain.ConfirmStatus;
+import com.jxx.approval.confirm.domain.document.ConfirmStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

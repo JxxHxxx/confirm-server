@@ -1,13 +1,14 @@
-package com.jxx.approval.confirm.exeception;
+package com.jxx.approval.confirm.presentation;
 
-import com.jxx.approval.confirm.domain.ConfirmDocumentException;
-import com.jxx.approval.confirm.domain.ApprovalLineException;
-import com.jxx.approval.confirm.domain.IllegalOrderMethodInvokeException;
+import com.jxx.approval.confirm.domain.document.ConfirmDocumentException;
+import com.jxx.approval.confirm.domain.line.ApprovalLineException;
+import com.jxx.approval.confirm.domain.line.IllegalOrderMethodInvokeException;
 import com.jxx.approval.confirm.dto.response.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Objects;
 
@@ -44,6 +45,12 @@ public class ConfirmDocumentExceptionHandler {
         return ResponseEntity
                 .internalServerError()
                 .body(new ResponseResult(500, "서버 에러입니다. 관리자에게 문의하십시오", null));
+    }
+
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<?> handleHttpClientErrorException(HttpClientErrorException exception) {
+        ResponseResult response = exception.getResponseBodyAs(ResponseResult.class);
+        return ResponseEntity.badRequest().body(response);
     }
 }
 

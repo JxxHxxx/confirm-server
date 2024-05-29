@@ -3,7 +3,12 @@ package com.jxx.approval.confirm.application;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jxx.approval.confirm.application.server.dto.VerifyCompanyMemberDto;
 import com.jxx.approval.confirm.application.server.function.VerifyCompanyMemberApi;
-import com.jxx.approval.confirm.domain.*;
+import com.jxx.approval.confirm.domain.document.ConfirmDocument;
+import com.jxx.approval.confirm.domain.document.ConfirmDocumentException;
+import com.jxx.approval.confirm.domain.document.Requester;
+import com.jxx.approval.confirm.domain.line.ApprovalLine;
+import com.jxx.approval.confirm.domain.line.ApprovalLineManager;
+import com.jxx.approval.confirm.domain.line.ApproveStatus;
 import com.jxx.approval.confirm.dto.request.ApprovalInformationForm;
 import com.jxx.approval.confirm.dto.response.*;
 import com.jxx.approval.confirm.infra.ConfirmDocumentRepository;
@@ -18,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static com.jxx.approval.confirm.domain.ApprovalLineLifecycle.*;
+import static com.jxx.approval.confirm.domain.line.ApprovalLineLifecycle.*;
 
 @Slf4j
 @Service

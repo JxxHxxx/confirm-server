@@ -1,11 +1,11 @@
-package com.jxx.approval.confirm.domain;
+package com.jxx.approval.confirm.domain.line;
 
 
 import lombok.Builder;
 
 import java.util.List;
 
-import static com.jxx.approval.confirm.domain.ApprovalLineException.*;
+import static com.jxx.approval.confirm.domain.line.ApprovalLineException.*;
 
 public class ApprovalLineManager {
 

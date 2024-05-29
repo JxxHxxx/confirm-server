@@ -1,6 +1,8 @@
 package com.jxx.approval.confirm.application;
 
-import com.jxx.approval.confirm.domain.*;
+import com.jxx.approval.confirm.domain.document.*;
+import com.jxx.approval.confirm.domain.line.ApprovalLineException;
+import com.jxx.approval.confirm.domain.line.ApprovalLineLifecycle;
 import com.jxx.approval.confirm.dto.request.*;
 import com.jxx.approval.confirm.dto.response.*;
 import com.jxx.approval.confirm.infra.ConfirmDocumentContentRepository;
@@ -15,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.jxx.approval.confirm.domain.ApprovalLineException.EMPTY_APPROVAL_LINE;
-import static com.jxx.approval.confirm.domain.ConfirmStatus.*;
+import static com.jxx.approval.confirm.domain.line.ApprovalLineException.EMPTY_APPROVAL_LINE;
+import static com.jxx.approval.confirm.domain.document.ConfirmStatus.*;
 
 @Service
 @RequiredArgsConstructor
