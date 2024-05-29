@@ -14,7 +14,5 @@ public interface ConfirmDocumentMapper {
 
     ConfirmDocumentServiceResponse select(@Param("confirmDocumentId") Long confirmDocumentPk);
 
-    void save(ConfirmDocument confirmDocument);
-
     List<ConfirmDocumentWithApprovalLineResponse> fetchWithApprovalLine(ConfirmDocumentSearchConditionQueryString condition);
 }

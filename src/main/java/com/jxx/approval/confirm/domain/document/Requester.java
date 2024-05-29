@@ -30,12 +30,6 @@ public class Requester {
     @Comment(value = "결재 요청자명")
     private String requesterName;
 
-    public Requester(String companyId, String departmentId, String requesterId) {
-        this.companyId = companyId;
-        this.departmentId = departmentId;
-        this.requesterId = requesterId;
-    }
-
     public Requester(String companyId, String departmentId, String departmentName, String requesterId, String requesterName) {
         this.companyId = companyId;
         this.departmentId = departmentId;

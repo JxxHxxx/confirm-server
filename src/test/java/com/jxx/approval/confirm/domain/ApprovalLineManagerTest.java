@@ -8,7 +8,7 @@ import com.jxx.approval.confirm.domain.line.ApprovalLine;
 import com.jxx.approval.confirm.domain.line.ApprovalLineException;
 import com.jxx.approval.confirm.domain.line.ApprovalLineManager;
 import com.jxx.approval.confirm.domain.line.IllegalOrderMethodInvokeException;
-import com.jxx.approval.confirm.dto.request.Document;
+import com.jxx.approval.confirm.domain.document.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ class ApprovalLineManagerTest {
     @BeforeEach
     void initialize() {
         ConfirmDocument confirmDocument = ConfirmDocument.builder()
-                .requester(new Requester("JXX", "D00001", "U00001"))
+                .requester(new Requester("JXX", "J00001", "테스트부서","U00001", "테스터"))
                 .document(new Document(DocumentType.VAC))
                 .confirmStatus(ConfirmStatus.CREATE)
                 .createSystem("API")

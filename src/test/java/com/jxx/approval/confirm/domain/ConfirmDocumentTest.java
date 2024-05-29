@@ -4,7 +4,7 @@ import com.jxx.approval.confirm.domain.document.ConfirmDocument;
 import com.jxx.approval.confirm.domain.document.ConfirmStatus;
 import com.jxx.approval.confirm.domain.document.DocumentType;
 import com.jxx.approval.confirm.domain.document.Requester;
-import com.jxx.approval.confirm.dto.request.Document;
+import com.jxx.approval.confirm.domain.document.Document;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -30,13 +30,14 @@ class ConfirmDocumentTest {
     void is_not_document_owner(String companyId, String departmentId, String requesterId, boolean isNotDocumentOwner) {
         //given
         ConfirmDocument confirmDocument = ConfirmDocument.builder()
-                .requester(new Requester("JXX", "J00001", "U00001"))
+                .requester(new Requester("JXX", "J00001", "테스트부서", "U00001", "테스터"))
                 .document(new Document(DocumentType.VAC))
                 .createSystem("API")
                 .confirmStatus(CREATE)
                 .build();
         //when
-        Requester requester = new Requester(companyId, departmentId, requesterId);
+        Requester requester = new Requester("JXX", "J00001", "테스트부서", "U00001", "테스터");
+
         //than
         assertThat(confirmDocument.isNotDocumentOwner(requester)).isEqualTo(isNotDocumentOwner);
     }
@@ -47,7 +48,7 @@ class ConfirmDocumentTest {
     @EnumSource(value = ConfirmStatus.class, names = {"RAISE", "CANCEL", "ACCEPT"})
     void raise_impossible_return_true_case(ConfirmStatus confirmStatus) {
         ConfirmDocument confirmDocument = ConfirmDocument.builder()
-                .requester(new Requester("JXX", "J00001", "U00001"))
+                .requester(new Requester("JXX", "J00001", "테스트부서", "U00001", "테스터"))
                 .document(new Document(DocumentType.VAC))
                 .createSystem("API")
                 .confirmStatus(confirmStatus)
@@ -64,7 +65,7 @@ class ConfirmDocumentTest {
     @EnumSource(value = ConfirmStatus.class, names = {"CREATE", "UPDATE", "REJECT"})
     void raise_impossible_return_false_case(ConfirmStatus confirmStatus) {
         ConfirmDocument confirmDocument = ConfirmDocument.builder()
-                .requester(new Requester("JXX", "J00001", "U00001"))
+                .requester(new Requester("JXX", "J00001", "테스트부서", "U00001", "테스터"))
                 .document(new Document(DocumentType.VAC))
                 .createSystem("API")
                 .confirmStatus(confirmStatus)
@@ -74,13 +75,14 @@ class ConfirmDocumentTest {
 
         assertThat(isRaiseImpossible).isFalse();
     }
+
     @DisplayName(value = "파기(리스소 생성자에 의한) 가능한 문서인지를 검증한다." +
             "confirmStatus 상태가 RAISE, CANCEL, ACCEPT 중 하나라면 true 를 반환한다.")
     @ParameterizedTest
     @EnumSource(value = ConfirmStatus.class, names = {"RAISE", "CANCEL", "ACCEPT"})
     void cancel_impossible_return_true_case(ConfirmStatus confirmStatus) {
         ConfirmDocument confirmDocument = ConfirmDocument.builder()
-                .requester(new Requester("JXX", "J00001", "U00001"))
+                .requester(new Requester("JXX", "J00001", "테스트부서", "U00001", "테스터"))
                 .document(new Document(DocumentType.VAC))
                 .createSystem("API")
                 .confirmStatus(confirmStatus)
@@ -97,7 +99,7 @@ class ConfirmDocumentTest {
     @EnumSource(value = ConfirmStatus.class, names = {"CREATE", "UPDATE", "REJECT"})
     void cancel_impossible_return_false_case(ConfirmStatus confirmStatus) {
         ConfirmDocument confirmDocument = ConfirmDocument.builder()
-                .requester(new Requester("JXX", "J00001", "U00001"))
+                .requester(new Requester("JXX", "J00001", "테스트부서", "U00001", "테스터"))
                 .document(new Document(DocumentType.VAC))
                 .createSystem("API")
                 .confirmStatus(confirmStatus)
@@ -114,7 +116,7 @@ class ConfirmDocumentTest {
     @Test
     void confirm_status_belong_in() {
         ConfirmDocument confirmDocument = ConfirmDocument.builder()
-                .requester(new Requester("JXX", "J00001", "U00001"))
+                .requester(new Requester("JXX", "J00001", "테스트부서", "U00001", "테스터"))
                 .document(new Document(DocumentType.VAC))
                 .createSystem("API")
                 .confirmStatus(CREATE)

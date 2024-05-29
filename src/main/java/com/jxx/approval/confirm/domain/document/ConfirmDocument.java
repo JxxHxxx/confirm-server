@@ -3,7 +3,6 @@ package com.jxx.approval.confirm.domain.document;
 import com.jxx.approval.confirm.domain.line.ApprovalLine;
 import com.jxx.approval.confirm.domain.line.ApprovalLineLifecycle;
 import com.jxx.approval.confirm.domain.line.ApproveStatus;
-import com.jxx.approval.confirm.dto.request.Document;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -34,7 +33,7 @@ public class ConfirmDocument {
     @Column(name = "CONFIRM_DOCUMENT_PK")
     @Comment(value = "결재 문서 테이블 PK")
     private Long pk;
-    @Column(name = "CONFIRM_DOCUMENT_ID", nullable = false, unique = true)
+    @Column(name = "CONFIRM_DOCUMENT_ID", unique = true)
     @Comment(value = "결재 문서 ID")
     private String confirmDocumentId;
     @Embedded
@@ -82,6 +81,9 @@ public class ConfirmDocument {
         this.createTime = LocalDateTime.now();
     }
 
+    public void setConfirmDocumentId(String confirmDocumentId) {
+        this.confirmDocumentId = confirmDocumentId;
+    }
     public void setContent(ConfirmDocumentContent content) {
         this.content = content;
     }

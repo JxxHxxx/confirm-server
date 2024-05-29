@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jxx.approval.confirm.domain.document.*;
 import com.jxx.approval.confirm.domain.line.ApprovalLineLifecycle;
 import com.jxx.approval.confirm.dto.request.ApprovalLineEnrollForm;
-import com.jxx.approval.confirm.dto.request.Document;
+import com.jxx.approval.confirm.domain.document.Document;
 import com.jxx.approval.confirm.dto.response.ApprovalLineResponse;
 import com.jxx.approval.confirm.infra.ConfirmDocumentRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ class ApprovalLineServiceTest {
     void beforeEach() {
         ConfirmDocument confirmDocument = ConfirmDocument.builder()
                 .confirmDocumentId("VACJXX1")
-                .requester(new Requester("JXX", "J00001", "U00001"))
+                .requester(new Requester("JXX", "J00001", "테스트부서","U00001", "테스터"))
                 .document(new Document(DocumentType.VAC))
                 .createSystem("API")
                 .approvalLineLifecycle(ApprovalLineLifecycle.BEFORE_CREATE)

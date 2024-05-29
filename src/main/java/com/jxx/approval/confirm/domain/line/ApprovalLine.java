@@ -75,7 +75,7 @@ public class ApprovalLine {
         return this.approvalLineId.equals(approvalId);
     }
 
-    protected void changeApproveStatus(ApproveStatus approveStatus) {
+    public void changeApproveStatus(ApproveStatus approveStatus) {
         this.approveStatus = approveStatus;
         approveTime = LocalDateTime.now();
     }

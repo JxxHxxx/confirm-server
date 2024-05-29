@@ -87,7 +87,7 @@ public class ApprovalLineManager {
                 .anyMatch(al -> al.isApproveStatus(approveStatus));
     }
 
-    protected List<ApprovalLine> getApprovalLines() {
+    public List<ApprovalLine> getApprovalLines() {
         return approvalLines;
     }
 
@@ -95,19 +95,19 @@ public class ApprovalLineManager {
         return approvalLineId;
     }
 
-    protected ApprovalLine getApprovalLine() {
+    public ApprovalLine getApprovalLine() {
         return approvalLine;
     }
 
-    protected boolean isEmptyApprovalLineFlag() {
+    public boolean isEmptyApprovalLineFlag() {
         return isEmptyApprovalLineFlag;
     }
 
-    protected boolean isCheckBelongInApprovalLineFlag() {
+    public boolean isCheckBelongInApprovalLineFlag() {
         return checkBelongInApprovalLineFlag;
     }
 
-    protected boolean isCheckApprovalOrderLineFlag() {
+    public boolean isCheckApprovalOrderLineFlag() {
         return checkApprovalOrderLineFlag;
     }
 }

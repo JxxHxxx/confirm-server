@@ -162,9 +162,6 @@ Content-Type: application/json
 DELETE http://localhost:8000/api/confirm-documents/VACSPY8/approval-lines
 Content-Type: application/json
 
-SPY00160
-
-
 ### 결재 수락
 PATCH http://localhost:8000/api/confirm-documents/602/accept
 Content-Type: application/json

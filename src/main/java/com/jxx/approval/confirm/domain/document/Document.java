@@ -1,4 +1,4 @@
-package com.jxx.approval.confirm.dto.request;
+package com.jxx.approval.confirm.domain.document;
 
 import com.jxx.approval.confirm.domain.document.DocumentType;
 import jakarta.persistence.Column;

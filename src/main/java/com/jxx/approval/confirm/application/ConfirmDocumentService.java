@@ -3,6 +3,7 @@ package com.jxx.approval.confirm.application;
 import com.jxx.approval.confirm.domain.document.*;
 import com.jxx.approval.confirm.domain.line.ApprovalLineException;
 import com.jxx.approval.confirm.domain.line.ApprovalLineLifecycle;
+import com.jxx.approval.confirm.domain.service.ConfirmDocumentIdGenerator;
 import com.jxx.approval.confirm.dto.request.*;
 import com.jxx.approval.confirm.dto.response.*;
 import com.jxx.approval.confirm.infra.ConfirmDocumentContentRepository;
@@ -31,16 +32,23 @@ public class ConfirmDocumentService {
     @Transactional
     public void createConfirmDocument(ConfirmCreateForm form) {
         Document document = new Document(form.documentType());
-        Requester requester = new Requester(form.companyId(), form.departmentId(), form.requesterId());
+        Requester requester = new Requester(
+                form.companyId(),
+                form.departmentId(),
+                form.departmentName(),
+                form.requesterId(),
+                form.requesterName());
 
         ConfirmDocument confirmDocument = ConfirmDocument.builder()
+                .confirmStatus(CREATE)
+                .approvalLineLifecycle(ApprovalLineLifecycle.BEFORE_CREATE)
+                .confirmDocumentId(ConfirmDocumentIdGenerator.generate(form.companyId()))
                 .document(document)
                 .requester(requester)
                 .createSystem(form.createSystem())
-                .approvalLineLifecycle(ApprovalLineLifecycle.BEFORE_CREATE)
                 .build();
 
-        confirmDocumentMapper.save(confirmDocument);
+        ConfirmDocument savedConfirmDocument = confirmDocumentRepository.save(confirmDocument);
     }
 
     public ConfirmDocumentServiceResponse readByPk(Long confirmDocumentPk) {
@@ -64,7 +72,8 @@ public class ConfirmDocumentService {
                 .orElseThrow(() -> new IllegalArgumentException());
 
         // 요청자 검증
-        Requester raiseRequester = new Requester(form.companyId(), form.departmentId(), form.requesterId());
+        Requester raiseRequester = new Requester(form.companyId(), form.departmentId(),
+                null, form.requesterId(), null);
         if (confirmDocument.isNotDocumentOwner(raiseRequester)) {
             throw new ConfirmDocumentException(ConfirmDocumentException.FAIL_SELF_VERIFICATION, form.requesterId());
         }
@@ -76,7 +85,8 @@ public class ConfirmDocumentService {
         // 결재선 지정 여부
         if (!confirmDocument.approvalLineCreated()) {
             throw new ApprovalLineException(EMPTY_APPROVAL_LINE);
-        };
+        }
+        ;
 
         confirmDocument.changeConfirmStatus(RAISE);
         confirmDocument.changeApprovalLineCycle(ApprovalLineLifecycle.PROCESS_MODIFIABLE);
@@ -113,6 +123,7 @@ public class ConfirmDocumentService {
                 confirmDocument.receiveContentPk(),
                 confirmDocument.receiveContents());
     }
+
     @Transactional
     public ConfirmDocumentServiceResponse updateConfirmDocument(Long confirmDocumentPk, ConfirmDocumentUpdateForm form) {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findByPk(confirmDocumentPk)
@@ -149,14 +160,15 @@ public class ConfirmDocumentService {
                 .orElseThrow();
 
         // 취소 가능한 자인지
-        Requester cancelRequester = new Requester(form.companyId(), form.departmentId(), form.requesterId());
+        Requester cancelRequester = new Requester(form.companyId(), form.departmentId(),
+                null, form.requesterId(), null);
         if (confirmDocument.isNotDocumentOwner(cancelRequester)) {
             throw new ConfirmDocumentException(ConfirmDocumentException.FAIL_SELF_VERIFICATION, form.requesterId());
         }
 
         // 취소 가능한 상태인지
         if (confirmDocument.cancelImpossible()) {
-            throw new ConfirmDocumentException(ConfirmDocumentException.FAIL_CANCEL + " 사유 : " + confirmDocument.getConfirmStatus().getDescription(),confirmDocument.getRequesterId());
+            throw new ConfirmDocumentException(ConfirmDocumentException.FAIL_CANCEL + " 사유 : " + confirmDocument.getConfirmStatus().getDescription(), confirmDocument.getRequesterId());
         }
         // 결재 문서 상태 변경
         confirmDocument.changeConfirmStatus(CANCEL);
@@ -168,6 +180,7 @@ public class ConfirmDocumentService {
     public List<ConfirmDocumentWithApprovalLineResponse> fetchWithApprovalLines(ConfirmDocumentSearchConditionQueryString condition) {
         return confirmDocumentMapper.fetchWithApprovalLine(condition);
     }
+
     public ConfirmDocumentAndContentServiceResponse findDocumentContent(Long contentPk) {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findWithContent(contentPk)
                 .orElseThrow(() -> new IllegalArgumentException("contentPk:" + contentPk + " is not exist"));
@@ -188,7 +201,8 @@ public class ConfirmDocumentService {
                 content.getPk(),
                 content.getContents());
     }
-    public List <ConfirmDocumentServiceResponse> findSelfDraftConfirmDocuments(String companyId, String departmentId, String memberId) {
+
+    public List<ConfirmDocumentServiceResponse> findSelfDraftConfirmDocuments(String companyId, String departmentId, String memberId) {
         List<ConfirmDocument> confirmDocuments = confirmDocumentRepository.findSelfDraftWithContentAfterRaise(companyId, departmentId, memberId);
         return confirmDocuments.stream()
                 .map(ConfirmDocumentService::toConfirmDocumentServiceResponse)
