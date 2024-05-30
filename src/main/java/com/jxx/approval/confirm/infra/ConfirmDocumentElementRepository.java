@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface ConfirmDocumentElementRepository extends JpaRepository<ConfirmDocumentElement, Long> {
 
+    @Query("select cdf from ConfirmDocumentForm cdf where cdf.companyId=:companyId and cdf.formId=:formId")
     List<ConfirmDocumentElement> findByConfirmDocumentForm(String companyId, String formId);
 }
