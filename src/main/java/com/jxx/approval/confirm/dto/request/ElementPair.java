@@ -1,6 +1,6 @@
 package com.jxx.approval.confirm.dto.request;
 
-public record ConfirmDocumentElementForm(
+public record ElementPair (
         String elementKey,
         String elementName
 ) {

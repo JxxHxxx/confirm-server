@@ -39,9 +39,10 @@ public class ApprovalLineService {
         return enrollApprovalLines(enrollForms, confirmDocumentId, verifyCompanyMemberApi);
     }
 
+    /* CONTENTS 없으면 DB에서 못가져옴*/
     protected ApprovalLineResponse enrollApprovalLines(List<ApprovalLineEnrollForm> enrollForms, String confirmDocumentId, Consumer verifyCompanyMembersApi) throws JsonProcessingException {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findWithContent(confirmDocumentId)
-                .orElseThrow(() -> new IllegalArgumentException("결재 문서 ID " + confirmDocumentId + "가 존재하지 않습니다"));
+                .orElseThrow(() -> new IllegalArgumentException("결재 문서 ID " + confirmDocumentId + "를 가져올 수 없습니다."));
 
         // 상신 전 상태인지 확인
         if (confirmDocument.isNotRaiseBefore()) {

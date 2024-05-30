@@ -1,0 +1,100 @@
+### 결재 문서 양식 메타 정보 생성 1
+POST http://localhost:8000/admin/confirm-document-forms
+Content-Type: application/json
+
+{
+  "formId": "COST",
+  "formName": "경비 사용 내역서",
+  "companyId": "SPY"
+}
+
+### 결재 문서 양식 요소 생성 1
+POST http://localhost:8000/admin/confirm-document-forms/COST/elements
+Content-Type: application/json
+
+[
+  {
+    "elementKey" : "title",
+    "elementName" : "문서 제목"
+  },
+  {
+    "elementKey" : "writer",
+    "elementName" : "작성자"
+  },
+  {
+    "elementKey" : "write_time",
+    "elementName" : "작성일시"
+  },
+  {
+    "elementKey" : "writer_department_name",
+    "elementName" : "작성자 부서"
+  },
+  {
+    "elementKey" : "expense_user",
+    "elementName" : "경비 사용자"
+  },
+  {
+    "elementKey" : "expense_duration",
+    "elementName" : "경비 사용 기간"
+  },
+  {
+    "elementKey" : "expense_date",
+    "elementName" : "경비 사용 날짜"
+  },
+  {
+    "elementKey" : "where_to_use",
+    "elementName" : "사용처"
+  },
+  {
+    "elementKey" : "cost",
+    "elementName" : "금액"
+  }
+]
+
+### 결재 문서 양식 메타 정보 생성 2
+POST http://localhost:8000/admin/confirm-document-forms
+Content-Type: application/json
+
+{
+  "formId": "DEPARTMENT_REQUEST",
+  "formName": "요청부서 승인 요청",
+  "companyId": "SPY"
+}
+
+### 결재 문서 양식 요소 생성 2
+POST http://localhost:8000/admin/confirm-document-forms/DEPARTMENT_REQUEST/elements
+Content-Type: application/json
+
+[
+  {
+    "elementKey": "document_title",
+    "elementName": "문서 제목"
+  },
+  {
+    "elementKey": "request_title",
+    "elementName": "요청 제목"
+  },
+  {
+    "elementKey": "requester_name",
+    "elementName": "요청자"
+  },
+  {
+    "elementKey": "requester_department_name",
+    "elementName": "요청 부서"
+  },
+  {
+    "elementKey": "service_name",
+    "elementName": "서비스 대상"
+  },
+  {
+    "elementKey": "complete_hope_date",
+    "elementName": "완료 희망 일시"
+  },
+  {
+    "elementKey": "request_content",
+    "elementName": "요청 내용"
+  }
+]
+
+### 결재 문서 양식 조회 API
+GET http://localhost:8000/api/confirm-document-forms?companyId=SPY

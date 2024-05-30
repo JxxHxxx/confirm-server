@@ -1,0 +1,14 @@
+
+###
+POST http://localhost:8000/api/confirm-documents/CONSPY1716958027680/approval-lines
+Content-Type: application/json
+
+[
+  {
+    "approvalId": "SPY00020",
+    "approvalName" :  "김태희",
+    "approvalDepartmentId" :  "SPY00204",
+    "approvalDepartmentName" : "응급의료정보화팀",
+    "approvalOrder" : 1
+  }
+]

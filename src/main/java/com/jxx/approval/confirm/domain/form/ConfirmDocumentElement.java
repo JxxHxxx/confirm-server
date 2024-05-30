@@ -26,7 +26,12 @@ public class ConfirmDocumentElement {
     private String ElementName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CONFIRM_DOCUMENT_FORM_ID", referencedColumnName = "CONFIRM_DOCUMENT_FORM_ID", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @JoinColumns({
+            @JoinColumn(
+                    name = "CONFIRM_DOCUMENT_FORM_ID", referencedColumnName = "CONFIRM_DOCUMENT_FORM_ID",
+                    foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)),
+            @JoinColumn(name = "CONFIRM_DOCUMENT_FORM_COMPANY_ID", referencedColumnName = "CONFIRM_DOCUMENT_FORM_COMPANY_ID",
+                    foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))})
     @Comment(value = "결재 문서 양식")
     private ConfirmDocumentForm confirmDocumentForm;
 

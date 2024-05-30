@@ -29,6 +29,7 @@ public class ConfirmDocumentService {
     private final ConfirmDocumentMapper confirmDocumentMapper;
     private final ConfirmDocumentContentRepository contentRepository;
 
+    /*여기서 Content 까지 같이 만들어야 함 */
     @Transactional
     public void createConfirmDocument(ConfirmCreateForm form) {
         Document document = new Document(form.documentType());
@@ -49,6 +50,14 @@ public class ConfirmDocumentService {
                 .build();
 
         ConfirmDocument savedConfirmDocument = confirmDocumentRepository.save(confirmDocument);
+
+        // case null contents defense
+        Map<String, Object> documentContents = Objects.isNull(form.contents()) ? new HashMap<>() : form.contents();
+        ConfirmDocumentContent confirmDocumentContent = new ConfirmDocumentContent(documentContents);
+
+        savedConfirmDocument.setContent(confirmDocumentContent);
+
+        contentRepository.save(confirmDocumentContent);
     }
 
     public ConfirmDocumentServiceResponse readByPk(Long confirmDocumentPk) {
