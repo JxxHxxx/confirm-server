@@ -22,7 +22,7 @@ public class ConfirmDocumentElement {
     @Comment(value = "결재 문서 요소 KEY")
     private String elementKey;
     @Column(name = "CONFIRM_DOCUMENT_ELEMENT_NAME", nullable = false)
-    @Comment(value = "결재 문서 요소 KEY")
+    @Comment(value = "결재 문서 요소 이름")
     private String ElementName;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,7 +32,7 @@ public class ConfirmDocumentElement {
                     foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)),
             @JoinColumn(name = "CONFIRM_DOCUMENT_FORM_COMPANY_ID", referencedColumnName = "CONFIRM_DOCUMENT_FORM_COMPANY_ID",
                     foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))})
-    @Comment(value = "결재 문서 양식")
+    @Comment(value = "결재 문서 양식 FK(물리적 외래키 X)")
     private ConfirmDocumentForm confirmDocumentForm;
 
     public ConfirmDocumentElement(String elementKey, String elementName) {
