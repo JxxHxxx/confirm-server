@@ -30,6 +30,11 @@ VALUES ('title', '결재 문서 제목', 'HEADER'),
 INSERT INTO jxx_confirm_document_element
 (CONFIRM_DOCUMENT_ELEMENT_NAME, CONFIRM_DOCUMENT_ELEMENT_KEY,
  CONFIRM_DOCUMENT_FORM_ID, CONFIRM_DOCUMENT_FORM_COMPANY_ID, CONFIRM_DOCUMENT_ELEMENT_GROUP)
-VALUES('요청자','requester_name','vac','COM','요청 정보'),('요청부서','request_department','vac','COM','요청 정보'),
+VALUES('요청자','requester_name','vac','COM','요청 정보'),('요청부서','department_name','vac','COM','요청 정보'),
+      ('사유','reason','vac','COM','요청 정보'),
       ('시작일','start_date_time','vac','COM','휴가 기간'),('종료일','end_date_time','vac','COM','휴가 기간'),
       ('직무대행자','delegator_name','vac','COM','그 외');
+
+INSERT INTO jxx_approval.jxx_confirm_document_form
+(CONFIRM_DOCUMENT_FORM_COMPANY_ID, CONFIRM_DOCUMENT_FORM_ID, CONFIRM_DOCUMENT_FORM_NAME)
+VALUES('COM', 'vac', '휴가신청서');
