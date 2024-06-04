@@ -17,7 +17,9 @@ public class ConfirmDocumentElement {
     @Column(name = "CONFIRM_DOCUMENT_ELEMENT_PK")
     @Comment(value = "결재 문서 요소 테이블 PK")
     private Long pk;
-    // ID, KEY 만 있으면 될듯
+    @Column(name = "CONFIRM_DOCUMENT_ELEMENT_GROUP")
+    @Comment(value = "결재 문서 요소 그룹 명")
+    private String elementGroupName;
     @Column(name = "CONFIRM_DOCUMENT_ELEMENT_KEY", nullable = false)
     @Comment(value = "결재 문서 요소 KEY")
     private String elementKey;

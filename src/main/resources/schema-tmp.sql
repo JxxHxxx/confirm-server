@@ -11,6 +11,7 @@ CREATE TABLE `jxx_confirm_document_element_code`
         PRIMARY KEY (`CONFIRM_DOCUMENT_ELEMENT_CODE_PK`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- 이거 필요한거 맞는지 고민
 INSERT INTO jxx_confirm.jxx_confirm_document_element_code
     (ELEMENT_CODE_KEY, ELEMENT_CODE_NAME, ELEMENT_LOCATION)
 VALUES ('title', '결재 문서 제목', 'HEADER'),
@@ -24,3 +25,11 @@ VALUES ('title', '결재 문서 제목', 'HEADER'),
        ('end_date_time', '종료일자', 'MAIN'),
        ('delegator_id', '직무대행자 ID', 'MAIN'),
        ('delegator_name', '직무대행자 명', 'MAIN');
+
+
+INSERT INTO jxx_confirm_document_element
+(CONFIRM_DOCUMENT_ELEMENT_NAME, CONFIRM_DOCUMENT_ELEMENT_KEY,
+ CONFIRM_DOCUMENT_FORM_ID, CONFIRM_DOCUMENT_FORM_COMPANY_ID, CONFIRM_DOCUMENT_ELEMENT_GROUP)
+VALUES('요청자','requester_name','vac','COM','요청 정보'),('요청부서','request_department','vac','COM','요청 정보'),
+      ('시작일','start_date_time','vac','COM','휴가 기간'),('종료일','end_date_time','vac','COM','휴가 기간'),
+      ('직무대행자','delegator_name','vac','COM','그 외');

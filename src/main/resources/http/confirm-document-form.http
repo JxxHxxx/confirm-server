@@ -98,3 +98,6 @@ Content-Type: application/json
 
 ### 결재 문서 양식 조회 API
 GET http://localhost:8000/api/confirm-document-forms?companyId=SPY
+
+### 결재 문서 양식 요소 조회 API
+GET http://localhost:8000/api/confirm-document-forms/vac/elements?companyId=COM

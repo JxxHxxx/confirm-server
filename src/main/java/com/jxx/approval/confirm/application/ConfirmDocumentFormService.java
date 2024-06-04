@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -57,7 +57,9 @@ public class ConfirmDocumentFormService {
     public List<ElementPair> findConfirmDocumentFormElement(String companyId, String confirmDocumentFormId) {
         List<ConfirmDocumentElement> confirmDocumentFormElements = elementRepository.findByConfirmDocumentForm(companyId, confirmDocumentFormId);
         return confirmDocumentFormElements.stream()
-                .map(element -> new ElementPair(element.getElementKey(), element.getElementName()))
+                .map(element -> new ElementPair(element.getElementGroupName(),element.getElementKey(), element.getElementName()))
                 .toList();
     }
+
+
 }

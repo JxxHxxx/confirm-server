@@ -1,4 +1,4 @@
-### 결재 문서 생성
+### 결재 문서 생성 1
 POST http://localhost:8000/api/confirm-documents
 Content-Type: application/json
 
@@ -10,4 +10,18 @@ Content-Type: application/json
   "documentType" : "DCR",
   "requesterId": "SPY00050",
   "requesterName" : "박지현"
+}
+
+### 결재 문서 생성 2
+POST http://localhost:8000/api/confirm-documents
+Content-Type: application/json
+
+{
+  "companyId" : "SPY",
+  "departmentId" : "SPY00204",
+  "departmentName" : "응급의료정보화팀",
+  "createSystem" : "CONFIRM",
+  "documentType" : "DCR",
+  "requesterId": "SPY00030",
+  "requesterName" : "이종석"
 }
