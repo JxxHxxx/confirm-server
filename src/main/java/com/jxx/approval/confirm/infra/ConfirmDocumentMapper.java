@@ -1,6 +1,5 @@
 package com.jxx.approval.confirm.infra;
 
-import com.jxx.approval.confirm.domain.document.ConfirmDocument;
 import com.jxx.approval.confirm.dto.request.ConfirmDocumentSearchConditionQueryString;
 import com.jxx.approval.confirm.dto.response.ConfirmDocumentWithApprovalLineResponse;
 import com.jxx.approval.confirm.dto.response.ConfirmDocumentServiceResponse;

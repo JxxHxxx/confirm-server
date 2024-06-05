@@ -21,6 +21,7 @@
         CDM.CONFIRM_STATUS,
         CDM.DOCUMENT_TYPE,
         CDM.REQUESTER_ID,
+        CDM.REQUESTER_NAME,
         CDM.CREATE_TIME,
         CDM.CONFIRM_DOCUMENT_CONTENT_PK,
         CDCM.CONTENTS,
@@ -69,6 +70,7 @@
         <result property="confirmStatus" column="CONFIRM_STATUS" javaType="com.jxx.approval.confirm.domain.document.ConfirmStatus"/>
         <result property="documentType" column="DOCUMENT_TYPE" javaType="com.jxx.approval.confirm.domain.document.DocumentType"/>
         <result property="requesterId" column="REQUESTER_ID"/>
+        <result property="requesterName" column="REQUESTER_NAME"/>
         <result property="createTime" column="CREATE_TIME"/>
         <result property="confirmDocumentContentPk" column="CONFIRM_DOCUMENT_CONTENT_PK"/>
         <result property="contents" column="CONTENTS" javaType="java.util.Map" typeHandler="com.jxx.approval.common.mapper.typehandler.JsonTypeHandler"/>

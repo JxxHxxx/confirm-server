@@ -7,7 +7,7 @@ CREATE TABLE `jxx_confirm_document_element_code`
     `ELEMENT_CODE_NAME`                varchar(32) NOT NULL COMMENT '결재 문서 요소 이름',
     `ELEMENT_LOCATION`                 ENUM('HEADER', 'MAIN', 'FOOTER') COMMENT '요소의 위치',
     `ELEMENT_TYPE`                     ENUM('USER_NAME', 'USER_ID','DEPARTMENT_NAME', 'DEPARTMENT_ID'
-                                            'DATETIME', 'EXPENSE','')
+        'DATETIME', 'EXPENSE','')
         PRIMARY KEY (`CONFIRM_DOCUMENT_ELEMENT_CODE_PK`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -30,11 +30,16 @@ VALUES ('title', '결재 문서 제목', 'HEADER'),
 INSERT INTO jxx_confirm_document_element
 (CONFIRM_DOCUMENT_ELEMENT_NAME, CONFIRM_DOCUMENT_ELEMENT_KEY,
  CONFIRM_DOCUMENT_FORM_ID, CONFIRM_DOCUMENT_FORM_COMPANY_ID, CONFIRM_DOCUMENT_ELEMENT_GROUP)
-VALUES('요청자','requester_name','vac','COM','요청 정보'),('요청부서','department_name','vac','COM','요청 정보'),
-      ('사유','reason','vac','COM','요청 정보'),
-      ('시작일','start_date_time','vac','COM','휴가 기간'),('종료일','end_date_time','vac','COM','휴가 기간'),
-      ('직무대행자','delegator_name','vac','COM','그 외');
+VALUES ('요청자', 'requester_name', 'vac', 'COM', '요청 정보'),
+       ('요청부서', 'department_name', 'vac', 'COM', '요청 정보'),
+       ('사유', 'reason', 'vac', 'COM', '요청 정보'),
+       ('시작일', 'vacation_durations.startDateTime', 'vac', 'COM', '휴가 기간'),
+       ('종료일', 'vacation_durations.endDateTime', 'vac', 'COM', '휴가 기간'),
+       ('직무대행자', 'delegator_name', 'vac', 'COM', '그 외'),
+       ('품목 명', 'item_name', 'cost', 'COM','지출 내역'),
+       ('지출액', 'item_price', 'cost', 'COM','지출 내역');
 
 INSERT INTO jxx_approval.jxx_confirm_document_form
 (CONFIRM_DOCUMENT_FORM_COMPANY_ID, CONFIRM_DOCUMENT_FORM_ID, CONFIRM_DOCUMENT_FORM_NAME)
-VALUES('COM', 'vac', '휴가신청서');
+VALUES ('COM', 'vac', '휴가신청서'),
+       ('COM', 'cost', '지출내역서');
