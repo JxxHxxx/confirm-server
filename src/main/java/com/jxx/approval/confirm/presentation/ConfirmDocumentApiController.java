@@ -65,7 +65,7 @@ public class ConfirmDocumentApiController {
                                                   @RequestParam(name = "requesterId") String requesterId) {
         List<ConfirmDocumentServiceResponse> responses = confirmDocumentService
                 .findSelfDraftConfirmDocuments(companyId, departmentId, requesterId);
-        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 조회", responses));
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "내가 기안한 결재 문서 조회", responses));
     }
 
     @GetMapping("/api/confirm-documents/search-my-department")

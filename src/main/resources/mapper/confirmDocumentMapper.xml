@@ -72,7 +72,7 @@
         <result property="requesterId" column="REQUESTER_ID"/>
         <result property="requesterName" column="REQUESTER_NAME"/>
         <result property="createTime" column="CREATE_TIME"/>
-        <result property="confirmDocumentContentPk" column="CONFIRM_DOCUMENT_CONTENT_PK"/>
+        <result property="contentPk" column="CONFIRM_DOCUMENT_CONTENT_PK"/>
         <result property="contents" column="CONTENTS" javaType="java.util.Map" typeHandler="com.jxx.approval.common.mapper.typehandler.JsonTypeHandler"/>
         <result property="approvalLinePk" column="APPROVAL_LINE_PK"/>
         <result property="approvalId" column="APPROVAL_ID"/>

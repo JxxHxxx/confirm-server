@@ -24,7 +24,7 @@ public class ConfirmDocumentWithApprovalLineResponse {
     private String requesterId;
     private String requesterName;
     private LocalDateTime createTime;
-    private Long confirmDocumentContentPk;
+    private Long contentPk;
     private Map<String, Object> contents;
     private Long approvalLinePk;
     private String approvalId;
