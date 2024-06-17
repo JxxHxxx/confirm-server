@@ -88,8 +88,10 @@ public class ConfirmDocumentService {
         }
 
         if (confirmDocument.raiseImpossible()) {
-            // 결재 문서 상태 던져야함
-            throw new ConfirmDocumentException("해당 결재 문서를 상신할 수 없는 상태입니다.", confirmDocument.getRequesterId());
+            // 결재 문서의 상태를 던짐, exceptionHandler 의 data 필드에 매핑
+            throw new ConfirmDocumentException("해당 결재 문서를 상신할 수 없는 상태입니다.",
+                    confirmDocument.getRequesterId(),
+                    confirmDocument.getConfirmStatus().name());
         }
         // 결재선 지정 여부
         if (!confirmDocument.approvalLineCreated()) {
