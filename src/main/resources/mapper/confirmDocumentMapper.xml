@@ -27,6 +27,7 @@
         CDCM.CONTENTS,
         ALM.APPROVAL_LINE_PK,
         ALM.APPROVAL_ID,
+        ALM.APPROVAL_NAME,
         ALM.APPROVAL_STATUS,
         ALM.APPROVAL_TIME
         FROM JXX_CONFIRM_DOCUMENT_MASTER CDM
@@ -50,8 +51,14 @@
             <if test="requesterId !=null and requesterId !=''">
                 AND CDM.REQUESTER_ID = #{requesterId}
             </if>
+            <if test="requesterName !=null and requesterName !=''">
+                AND CDM.REQUESTER_NAME = #{requesterName}
+            </if>
             <if test="approvalId !=null and approvalId !=''">
                 AND ALM.APPROVAL_ID = #{approvalId}
+            </if>
+            <if test="approvalName !=null and approvalName !=''">
+                AND ALM.APPROVAL_NAME = #{approvalName}
             </if>
             <if test="approveStatus !=null and approveStatus !=''">
                 AND ALM.APPROVAL_STATUS = #{approveStatus}
@@ -76,6 +83,7 @@
         <result property="contents" column="CONTENTS" javaType="java.util.Map" typeHandler="com.jxx.approval.common.mapper.typehandler.JsonTypeHandler"/>
         <result property="approvalLinePk" column="APPROVAL_LINE_PK"/>
         <result property="approvalId" column="APPROVAL_ID"/>
+        <result property="approvalName" column="APPROVAL_NAME"/>
         <result property="approvalStatus" column="APPROVAL_STATUS" javaType="com.jxx.approval.confirm.domain.line.ApproveStatus"/>
         <result property="approvalTime" column="APPROVAL_TIME"/>
     </resultMap>

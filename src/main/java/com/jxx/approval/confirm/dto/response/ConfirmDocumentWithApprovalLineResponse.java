@@ -28,6 +28,7 @@ public class ConfirmDocumentWithApprovalLineResponse {
     private Map<String, Object> contents;
     private Long approvalLinePk;
     private String approvalId;
+    private String approvalName;
     private ApproveStatus approvalStatus;
     private LocalDateTime approvalTime;
 }

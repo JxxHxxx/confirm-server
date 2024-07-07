@@ -26,13 +26,13 @@ Content-Type: application/json
 ]
 
 ### 결재 상신 (사용 X, 휴가 서버에서 호출 GO)
-POST http://localhost:8000/api/confirm-documents/VACJXX4840/raise
+POST http://localhost:8000/api/confirm-documents/VACJXX5/raise
 Content-Type: application/json
 
 {
-  "requesterId": "U00113",
+  "requesterId": "U00038",
   "companyId" : "JXX",
-  "departmentId" :"J02032"
+  "departmentId" :"J01001"
 }
 ### 결재 반려
 PATCH http://localhost:8000/api/confirm-documents/48312/reject
@@ -93,6 +93,14 @@ Content-Type: application/json
 "formName" : "기본 결재 양식",
 "companyId" : "JXX"
 }
+
+###
+GET http://localhost:8000/api/confirm-documents/search-my-department?companyId=JXX&departmentId=J01001
+Content-Type: application/json
+
+###
+GET http://localhost:8000/api/confirm-documents/search-my-department?companyId=SPY&departmentId=SPY01004
+Content-Type: application/json
 
 ###
 POST http://localhost:8000/api/confirm-documents/500/contents

@@ -6,7 +6,9 @@ public record ConfirmDocumentSearchConditionQueryString(
         String companyId,
         String departmentId,
         String requesterId,
+        String requesterName,
         String approvalId,
+        String approvalName,
         String approveStatus
 ) {
 }
