@@ -4,14 +4,15 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- id=인터페이스 내 정의된 메서드 명 namespace = 패키지.인터페이스 명, parameterType 인자로 들어가는 타입, resultType 조회 결과 매핑 해줄 클래스-->
 <mapper namespace="com.jxx.approval.confirm.infra.ConfirmDocumentMapper">
-    <select id="select" parameterType="Long" resultType="com.jxx.approval.confirm.dto.response.ConfirmDocumentServiceResponse">
+    <select id="select" parameterType="Long"
+            resultType="com.jxx.approval.confirm.dto.response.ConfirmDocumentServiceResponse">
         SELECT *
         FROM JXX_CONFIRM_DOCUMENT_MASTER
         WHERE CONFIRM_DOCUMENT_PK = #{confirmDocumentPk}
     </select>
 
     <select id="fetchWithApprovalLine"
-            parameterType="com.jxx.approval.confirm.dto.request.ConfirmDocumentSearchConditionQueryString"
+            parameterType="com.jxx.approval.confirm.dto.request.ConfirmDocumentSearchCondition"
             resultMap="confirmDocumentWithApprovalLineResultMap">
         SELECT CDM.CONFIRM_DOCUMENT_PK,
         CDM.CONFIRM_DOCUMENT_ID,
@@ -74,17 +75,96 @@
         <result property="companyId" column="COMPANY_ID"/>
         <result property="departmentId" column="DEPARTMENT_ID"/>
         <result property="createSystem" column="CREATE_SYSTEM"/>
-        <result property="confirmStatus" column="CONFIRM_STATUS" javaType="com.jxx.approval.confirm.domain.document.ConfirmStatus"/>
-        <result property="documentType" column="DOCUMENT_TYPE" javaType="com.jxx.approval.confirm.domain.document.DocumentType"/>
+        <result property="confirmStatus" column="CONFIRM_STATUS"
+                javaType="com.jxx.approval.confirm.domain.document.ConfirmStatus"/>
+        <result property="documentType" column="DOCUMENT_TYPE"
+                javaType="com.jxx.approval.confirm.domain.document.DocumentType"/>
         <result property="requesterId" column="REQUESTER_ID"/>
         <result property="requesterName" column="REQUESTER_NAME"/>
         <result property="createTime" column="CREATE_TIME"/>
         <result property="contentPk" column="CONFIRM_DOCUMENT_CONTENT_PK"/>
-        <result property="contents" column="CONTENTS" javaType="java.util.Map" typeHandler="com.jxx.approval.common.mapper.typehandler.JsonTypeHandler"/>
+        <result property="contents" column="CONTENTS" javaType="java.util.Map"
+                typeHandler="com.jxx.approval.common.mapper.typehandler.JsonTypeHandler"/>
         <result property="approvalLinePk" column="APPROVAL_LINE_PK"/>
         <result property="approvalId" column="APPROVAL_ID"/>
         <result property="approvalName" column="APPROVAL_NAME"/>
-        <result property="approvalStatus" column="APPROVAL_STATUS" javaType="com.jxx.approval.confirm.domain.line.ApproveStatus"/>
+        <result property="approvalStatus" column="APPROVAL_STATUS"
+                javaType="com.jxx.approval.confirm.domain.line.ApproveStatus"/>
         <result property="approvalTime" column="APPROVAL_TIME"/>
+    </resultMap>
+
+    <select id="search"
+            parameterType="com.jxx.approval.confirm.dto.request.ConfirmDocumentSearchCondition"
+            resultMap="confirmDocumentWithContents">
+        SELECT CDM.CONFIRM_DOCUMENT_PK,
+        CDM.CONFIRM_DOCUMENT_ID,
+        CDM.CREATE_TIME,
+        CDM.COMPANY_ID,
+        CDM.DEPARTMENT_ID,
+        CDM.DEPARTMENT_NAME,
+        CDM.CREATE_SYSTEM,
+        CDM.CONFIRM_STATUS,
+        CDM.COMPLETED_TIME,
+        CDM.DOCUMENT_TYPE,
+        CDM.REQUESTER_ID,
+        CDM.REQUESTER_NAME,
+        CDCM.CONFIRM_DOCUMENT_CONTENT_PK,
+        CDCM.CONTENTS
+        FROM JXX_CONFIRM_DOCUMENT_MASTER CDM
+        INNER JOIN JXX_CONFIRM_DOCUMENT_CONTENT_MASTER CDCM
+        ON CDM.CONFIRM_DOCUMENT_PK = CDCM.CONFIRM_DOCUMENT_CONTENT_PK
+        INNER JOIN JXX_APPROVAL_LINE_MASTER ALM
+        ON ALM.CONFIRM_DOCUMENT_ID = CDM.CONFIRM_DOCUMENT_ID
+        <where>
+            <if test="companyId !=null and companyId !=''">
+                AND CDM.COMPANY_ID = #{companyId}
+            </if>
+            <if test="departmentId !=null and departmentId !=''">
+                AND CDM.DEPARTMENT_ID = #{departmentId}
+            </if>
+            <if test="confirmDocumentPk !=null and confirmDocumentPk !=''">
+                AND CDM.CONFIRM_DOCUMENT_PK = #{confirmDocumentPk}
+            </if>
+            <if test="confirmDocumentId !=null and confirmDocumentId !=''">
+                AND CDM.CONFIRM_DOCUMENT_ID = #{confirmDocumentId}
+            </if>
+            <if test="requesterId !=null and requesterId !=''">
+                AND CDM.REQUESTER_ID = #{requesterId}
+            </if>
+            <if test="requesterName !=null and requesterName !=''">
+                AND CDM.REQUESTER_NAME = #{requesterName}
+            </if>
+            <if test="approvalId !=null and approvalId !=''">
+                AND ALM.APPROVAL_ID = #{approvalId}
+            </if>
+            <if test="approvalName !=null and approvalName !=''">
+                AND ALM.APPROVAL_NAME = #{approvalName}
+            </if>
+            <if test="approveStatus !=null and approveStatus !=''">
+                AND ALM.APPROVAL_STATUS = #{approveStatus}
+            </if>
+        </where>
+        ORDER BY CDM.CREATE_TIME DESC
+    </select>
+
+    <resultMap id="confirmDocumentWithContents"
+               type="com.jxx.approval.confirm.dto.response.ConfirmDocumentServiceResponse">
+        <id property="pk" column="CONFIRM_DOCUMENT_PK"/>
+        <result property="confirmDocumentId" column="CONFIRM_DOCUMENT_ID"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="companyId" column="COMPANY_ID"/>
+        <result property="departmentId" column="DEPARTMENT_ID"/>
+        <result property="departmentName" column="DEPARTMENT_NAME"/>
+        <result property="createSystem" column="CREATE_SYSTEM"/>
+        <result property="confirmStatus" column="CONFIRM_STATUS"
+                javaType="com.jxx.approval.confirm.domain.document.ConfirmStatus"/>
+        <result property="completedTime" column="COMPLETED_TIME"/>
+        <result property="documentType" column="DOCUMENT_TYPE"
+                javaType="com.jxx.approval.confirm.domain.document.DocumentType"/>
+        <result property="requesterId" column="REQUESTER_ID"/>
+        <result property="requesterName" column="REQUESTER_NAME"/>
+        <result property="contentPk" column="CONFIRM_DOCUMENT_CONTENT_PK"/>
+        <result property="contents" column="CONTENTS" javaType="java.util.Map"
+                typeHandler="com.jxx.approval.common.mapper.typehandler.JsonTypeHandler"/>
     </resultMap>
 </mapper>

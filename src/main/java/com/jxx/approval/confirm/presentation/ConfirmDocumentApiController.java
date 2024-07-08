@@ -37,6 +37,12 @@ public class ConfirmDocumentApiController {
         return ResponseEntity.ok("생성");
     }
 
+    @GetMapping("/api/confirm-documents")
+    public ResponseEntity<?> searchDocuments(@ModelAttribute ConfirmDocumentSearchCondition condition) {
+        List<ConfirmDocumentServiceResponse> responses = confirmDocumentService.searchDocuments(condition);
+        return ResponseEntity.ok((new ResponseResult<>(200, "결재 문서 검색 완료",  responses)));
+    }
+
     // 결재 양식 내 본문 생성
     @PostMapping("/api/confirm-documents/{confirm-document-pk}/contents")
     public ResponseEntity<ResponseResult> createContent(@PathVariable(value = "confirm-document-pk")Long confirmDocumentPk ,@RequestBody List<ConfirmDocumentContentRequest> requests) {
@@ -54,12 +60,12 @@ public class ConfirmDocumentApiController {
 
     // 결재 문서 + 결재 라인 + 컨텐츠 검색
     @GetMapping("/api/confirm-documents/fetch-approval-lines")
-    public ResponseEntity<?> findWithApprovalLines(@ModelAttribute ConfirmDocumentSearchConditionQueryString condition) {
+    public ResponseEntity<?> findWithApprovalLines(@ModelAttribute ConfirmDocumentSearchCondition condition) {
         List<ConfirmDocumentWithApprovalLineResponse> responses = confirmDocumentService.fetchWithApprovalLines(condition);
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서, 결재 라인 조회", responses));
     }
 
-    @GetMapping("/api/confirm-documents")
+    @GetMapping("/api/confirm-documents/written-self")
     public ResponseEntity<?> findConfirmDocuments(@RequestParam(name = "companyId") String companyId,
                                                   @RequestParam(name = "departmentId") String departmentId,
                                                   @RequestParam(name = "requesterId") String requesterId) {

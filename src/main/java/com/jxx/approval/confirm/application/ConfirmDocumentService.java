@@ -13,10 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static com.jxx.approval.confirm.domain.line.ApprovalLineException.EMPTY_APPROVAL_LINE;
 import static com.jxx.approval.confirm.domain.document.ConfirmStatus.*;
@@ -188,7 +185,7 @@ public class ConfirmDocumentService {
 
 
     // 결재 문서, 결재선 함께 조회
-    public List<ConfirmDocumentWithApprovalLineResponse> fetchWithApprovalLines(ConfirmDocumentSearchConditionQueryString condition) {
+    public List<ConfirmDocumentWithApprovalLineResponse> fetchWithApprovalLines(ConfirmDocumentSearchCondition condition) {
         return confirmDocumentMapper.fetchWithApprovalLine(condition);
     }
 
@@ -226,5 +223,23 @@ public class ConfirmDocumentService {
         return confirmDocuments.stream()
                 .map(ConfirmDocumentService::toConfirmDocumentServiceResponse)
                 .toList();
+    }
+
+    public List<ConfirmDocumentServiceResponse> searchDocuments(ConfirmDocumentSearchCondition condition) {
+        List<ConfirmDocumentServiceResponse> VanillaResponses = confirmDocumentMapper.search(condition);
+        List<ConfirmDocumentServiceResponse> filteredResponses = new ArrayList<>();
+
+        for (ConfirmDocumentServiceResponse vResponse : VanillaResponses) {
+            // 응답에 중복된 결재 문서가 존재할 수 있다. 결재 문서:결재 선 = 1:N 구조라서 JOIN해서 가져올 때 여러개를 가져오게 됨
+            boolean duplicated = filteredResponses.stream()
+                    .anyMatch(fr -> Objects.equals(vResponse.getConfirmDocumentId(), fr.getConfirmDocumentId()));
+
+            // 중복 데이터가 아니면 넣는다.
+            if (!duplicated) {
+                filteredResponses.add(vResponse);
+            }
+        }
+
+        return filteredResponses;
     }
 }

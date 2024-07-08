@@ -1,6 +1,6 @@
 package com.jxx.approval.confirm.dto.request;
 
-public record ConfirmDocumentSearchConditionQueryString(
+public record ConfirmDocumentSearchCondition(
         Long confirmDocumentPk,
         String confirmDocumentId,
         String companyId,
