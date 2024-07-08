@@ -28,6 +28,6 @@ public class ApproveStatusChangedEvent {
 
 
     public static ApproveStatusChangedEvent rejectEvent(String confirmDocumentId, String approvalLineId) {
-        return new ApproveStatusChangedEvent(confirmDocumentId, approvalLineId, "결재 승인", ConfirmStatus.rejectPossibleOfApproval);
+        return new ApproveStatusChangedEvent(confirmDocumentId, approvalLineId, "결재 반려", ConfirmStatus.rejectPossibleOfApproval);
     }
 }

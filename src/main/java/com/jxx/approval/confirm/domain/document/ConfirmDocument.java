@@ -2,7 +2,6 @@ package com.jxx.approval.confirm.domain.document;
 
 import com.jxx.approval.confirm.domain.line.ApprovalLine;
 import com.jxx.approval.confirm.domain.line.ApprovalLineLifecycle;
-import com.jxx.approval.confirm.domain.line.ApproveStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.jxx.approval.confirm.domain.line.ApproveStatus.ACCEPT;
 import static com.jxx.approval.confirm.domain.document.ConfirmStatus.*;
@@ -84,6 +84,7 @@ public class ConfirmDocument {
     public void setConfirmDocumentId(String confirmDocumentId) {
         this.confirmDocumentId = confirmDocumentId;
     }
+
     public void setContent(ConfirmDocumentContent content) {
         this.content = content;
     }
@@ -92,8 +93,22 @@ public class ConfirmDocument {
         this.confirmStatus = confirmStatus;
     }
 
-    public void setCompletedTime(LocalDateTime completedTime) {
+    private void setCompletedTime(LocalDateTime completedTime) {
         this.completedTime = completedTime;
+    }
+
+    private void setApprovalLineLifecycle(ApprovalLineLifecycle approvalLineLifecycle) {
+        this.approvalLineLifecycle = approvalLineLifecycle;
+    }
+
+    /**
+     * 종료 상태가 된 결재 문서 후속 처리
+     * 결재 문서의 종료 상태란, 최종 결정권자의 승인, 중도 반려 등이 존재한다.
+     **/
+    public void processCompletedConfirmDocument(ConfirmStatus confirmStatus, LocalDateTime completedTime) {
+        changeConfirmStatus(confirmStatus);
+        setCompletedTime(completedTime);
+        setApprovalLineLifecycle(ApprovalLineLifecycle.PROCESS_UNMODIFIABLE);
     }
 
     public String getConfirmDocumentId() {
@@ -137,19 +152,10 @@ public class ConfirmDocument {
         return !raiseBefore.contains(confirmStatus);
     }
 
+    // NULL 체크 추가
     public boolean anyApprovalNotAccepted() {
         return approvalLines.stream()
-                .anyMatch(approvalLine -> approvalLine.isNotApproveStatus(ACCEPT));
-    }
-
-    public List<ApproveStatus> receiveApprovalLinesStatus() {
-        return approvalLines.stream().map(approvalLine -> approvalLine.getApproveStatus())
-                .toList();
-    }
-
-    public List<String> receiveApprovalLinesId() {
-        return approvalLines.stream().map(approvalLine -> approvalLine.getApprovalLineId())
-                .toList();
+                .anyMatch(approvalLine -> (approvalLine.isNotApproveStatus(ACCEPT) || Objects.isNull(approvalLine.getApproveStatus())));
     }
 
     public String documentTypeString() {
