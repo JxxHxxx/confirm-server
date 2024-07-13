@@ -4,13 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- id=인터페이스 내 정의된 메서드 명 namespace = 패키지.인터페이스 명, parameterType 인자로 들어가는 타입, resultType 조회 결과 매핑 해줄 클래스-->
 <mapper namespace="com.jxx.approval.confirm.infra.ConfirmDocumentMapper">
-    <select id="select" parameterType="Long"
-            resultType="com.jxx.approval.confirm.dto.response.ConfirmDocumentServiceResponse">
-        SELECT *
-        FROM JXX_CONFIRM_DOCUMENT_MASTER
-        WHERE CONFIRM_DOCUMENT_PK = #{confirmDocumentPk}
-    </select>
-
     <select id="fetchWithApprovalLine"
             parameterType="com.jxx.approval.confirm.dto.request.ConfirmDocumentSearchCondition"
             resultMap="confirmDocumentWithApprovalLineResultMap">
@@ -116,17 +109,16 @@
         INNER JOIN JXX_APPROVAL_LINE_MASTER ALM
         ON ALM.CONFIRM_DOCUMENT_ID = CDM.CONFIRM_DOCUMENT_ID
         <where>
+            <if test="startDate !='' and startDate !=null and endDate !='' and endDate !=null ">
+                <![CDATA[
+                AND CDM.CREATE_TIME >= #{startDate} AND CDM.CREATE_TIME <= DATE_ADD(#{endDate}, INTERVAL 1 DAY)
+               ]]>
+            </if>
             <if test="companyId !=null and companyId !=''">
                 AND CDM.COMPANY_ID = #{companyId}
             </if>
             <if test="departmentId !=null and departmentId !=''">
                 AND CDM.DEPARTMENT_ID = #{departmentId}
-            </if>
-            <if test="confirmDocumentPk !=null and confirmDocumentPk !=''">
-                AND CDM.CONFIRM_DOCUMENT_PK = #{confirmDocumentPk}
-            </if>
-            <if test="confirmDocumentId !=null and confirmDocumentId !=''">
-                AND CDM.CONFIRM_DOCUMENT_ID = #{confirmDocumentId}
             </if>
             <if test="requesterId !=null and requesterId !=''">
                 AND CDM.REQUESTER_ID = #{requesterId}
@@ -145,6 +137,32 @@
             </if>
         </where>
         ORDER BY CDM.CREATE_TIME DESC
+    </select>
+
+    <select id="findByConfirmDocumentId"
+            parameterType="string"
+            resultMap="confirmDocumentWithContents">
+        SELECT CDM.CONFIRM_DOCUMENT_PK,
+        CDM.CONFIRM_DOCUMENT_ID,
+        CDM.CREATE_TIME,
+        CDM.COMPANY_ID,
+        CDM.DEPARTMENT_ID,
+        CDM.DEPARTMENT_NAME,
+        CDM.CREATE_SYSTEM,
+        CDM.CONFIRM_STATUS,
+        CDM.COMPLETED_TIME,
+        CDM.DOCUMENT_TYPE,
+        CDM.REQUESTER_ID,
+        CDM.REQUESTER_NAME,
+        CDCM.CONFIRM_DOCUMENT_CONTENT_PK,
+        CDCM.CONTENTS
+        FROM JXX_CONFIRM_DOCUMENT_MASTER CDM
+        INNER JOIN JXX_CONFIRM_DOCUMENT_CONTENT_MASTER CDCM
+        ON CDM.CONFIRM_DOCUMENT_PK = CDCM.CONFIRM_DOCUMENT_CONTENT_PK
+        INNER JOIN JXX_APPROVAL_LINE_MASTER ALM
+        ON ALM.CONFIRM_DOCUMENT_ID = CDM.CONFIRM_DOCUMENT_ID
+        WHERE CDM.CONFIRM_DOCUMENT_ID = #{confirmDocumentId}
+        ORDER BY CDM.CREATE_TIME DESC;
     </select>
 
     <resultMap id="confirmDocumentWithContents"

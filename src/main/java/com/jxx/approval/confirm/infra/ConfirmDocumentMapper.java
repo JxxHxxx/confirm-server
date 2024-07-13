@@ -11,9 +11,9 @@ import java.util.List;
 @Mapper
 public interface ConfirmDocumentMapper {
 
-    ConfirmDocumentServiceResponse select(@Param("confirmDocumentId") Long confirmDocumentPk);
-
     List<ConfirmDocumentServiceResponse> search(ConfirmDocumentSearchCondition condition);
+
+    List<ConfirmDocumentServiceResponse> findByConfirmDocumentId(@Param("confirmDocumentId") String confirmDocumentId);
 
     List<ConfirmDocumentWithApprovalLineResponse> fetchWithApprovalLine(ConfirmDocumentSearchCondition condition);
 }

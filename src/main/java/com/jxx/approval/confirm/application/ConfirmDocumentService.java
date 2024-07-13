@@ -227,19 +227,27 @@ public class ConfirmDocumentService {
 
     public List<ConfirmDocumentServiceResponse> searchDocuments(ConfirmDocumentSearchCondition condition) {
         List<ConfirmDocumentServiceResponse> VanillaResponses = confirmDocumentMapper.search(condition);
-        List<ConfirmDocumentServiceResponse> filteredResponses = new ArrayList<>();
+        List<ConfirmDocumentServiceResponse> filteredResponses = filterDuplication(VanillaResponses);
+        return filteredResponses;
+    }
 
+    public List<ConfirmDocumentServiceResponse> findByConfirmDocumentId(String confirmDocumentId) {
+        List<ConfirmDocumentServiceResponse> VanillaResponses = confirmDocumentMapper.findByConfirmDocumentId(confirmDocumentId);
+        List<ConfirmDocumentServiceResponse> filteredResponses = filterDuplication(VanillaResponses);
+        return filteredResponses;
+    }
+
+    private static List<ConfirmDocumentServiceResponse> filterDuplication(List<ConfirmDocumentServiceResponse> VanillaResponses) {
+        List<ConfirmDocumentServiceResponse> filteredResponses = new ArrayList<>();
         for (ConfirmDocumentServiceResponse vResponse : VanillaResponses) {
             // 응답에 중복된 결재 문서가 존재할 수 있다. 결재 문서:결재 선 = 1:N 구조라서 JOIN해서 가져올 때 여러개를 가져오게 됨
             boolean duplicated = filteredResponses.stream()
                     .anyMatch(fr -> Objects.equals(vResponse.getConfirmDocumentId(), fr.getConfirmDocumentId()));
-
             // 중복 데이터가 아니면 넣는다.
             if (!duplicated) {
                 filteredResponses.add(vResponse);
             }
         }
-
         return filteredResponses;
     }
 }

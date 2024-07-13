@@ -15,7 +15,10 @@ import java.util.List;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "JXX_APPROVAL_LINE_MASTER",
-        indexes = @Index(name = "IDX_APPROVAL_ID", columnList = "APPROVAL_ID", unique = false))
+        indexes = {
+                @Index(name = "IDX_APPROVAL_ID", columnList = "APPROVAL_ID", unique = false),
+                @Index(name = "IDX_CONFIRM_DOCUMENT_ID_LGFK", columnList = "CONFIRM_DOCUMENT_ID", unique = false)
+        })
 public class ApprovalLine {
 
     @Id
@@ -83,6 +86,7 @@ public class ApprovalLine {
     public boolean isApproveStatus(ApproveStatus approveStatus) {
         return this.approveStatus.equals(approveStatus);
     }
+
     public boolean isNotApproveStatus(ApproveStatus approveStatus) {
         return !this.approveStatus.equals(approveStatus);
     }

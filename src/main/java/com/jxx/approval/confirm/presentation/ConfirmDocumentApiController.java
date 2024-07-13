@@ -2,6 +2,7 @@ package com.jxx.approval.confirm.presentation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jxx.approval.confirm.application.ApprovalLineService;
+import com.jxx.approval.confirm.domain.document.ConfirmDocumentException;
 import com.jxx.approval.confirm.domain.document.ConfirmStatus;
 import com.jxx.approval.confirm.dto.request.ConfirmDocumentContentRequest;
 import com.jxx.approval.confirm.application.ConfirmDocumentService;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -30,6 +32,8 @@ public class ConfirmDocumentApiController {
     private final ApprovalLineService approvalLineService;
     private final ApplicationEventPublisher eventPublisher;
 
+    private final static String WHITE_SPACE = "";
+
     //결재 문서 생성
     @PostMapping("/api/confirm-documents")
     public ResponseEntity<?> save(@RequestBody ConfirmCreateForm form) {
@@ -37,11 +41,29 @@ public class ConfirmDocumentApiController {
         return ResponseEntity.ok("생성");
     }
 
-    @GetMapping("/api/confirm-documents")
+    @GetMapping("/api/confirm-documents/{confirm-document-id}")
+    public ResponseEntity<ResponseResult<?>> findByConfirmDocumentId(@PathVariable(value = "confirm-document-id") String confirmDocumentId) {
+        if (Objects.equals(confirmDocumentId.trim(), WHITE_SPACE) || Objects.isNull(confirmDocumentId)) {
+            throw new ConfirmDocumentException("결재 문서 ID 는 NULL, 공백일 수 없습니다");
+        }
+        List<ConfirmDocumentServiceResponse> response = confirmDocumentService.findByConfirmDocumentId(confirmDocumentId);
+
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 단건 조회", response));
+    }
+
+    @GetMapping("/api/confirm-documents/search")
     public ResponseEntity<?> searchDocuments(@ModelAttribute ConfirmDocumentSearchCondition condition) {
         List<ConfirmDocumentServiceResponse> responses = confirmDocumentService.searchDocuments(condition);
         return ResponseEntity.ok((new ResponseResult<>(200, "결재 문서 검색 완료",  responses)));
     }
+
+    // 결재 문서 PK 조회
+//    @GetMapping("/api/confirm-documents/{confirm-document-pk}")
+//    public ResponseEntity<ResponseResult<?>> readByPk(@PathVariable(value = "confirm-document-pk") Long confirmDocumentPk) {
+//        ConfirmDocumentServiceResponse response = confirmDocumentService.readByPk(confirmDocumentPk);
+//
+//        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 단건 조회", response));
+//    }
 
     // 결재 양식 내 본문 생성
     @PostMapping("/api/confirm-documents/{confirm-document-pk}/contents")
@@ -79,14 +101,6 @@ public class ConfirmDocumentApiController {
                                                            @RequestParam(name = "departmentId") String departmentId) {
         List<ConfirmDocumentServiceResponse> responses = confirmDocumentService.findDepartmentConfirmDocument(companyId, departmentId);
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "부서 결재함 조회", responses));
-    }
-
-    // 결재 문서 PK 조회
-    @GetMapping("/api/confirm-documents/{confirm-document-pk}")
-    public ResponseEntity<ResponseResult<?>> readByPk(@PathVariable(value = "confirm-document-pk") Long confirmDocumentPk) {
-        ConfirmDocumentServiceResponse response = confirmDocumentService.readByPk(confirmDocumentPk);
-
-        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 단건 조회", response));
     }
 
     // 결재선 등록

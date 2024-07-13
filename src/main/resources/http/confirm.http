@@ -180,7 +180,7 @@ Content-Type: application/json
   "approvalLineId": "U00117"
 }
 
-###
-GET http://localhost:8000/api/confirm-documents/approval?approvalId=SPY00011
+### 결재 문서 겸색
+GET http://localhost:8000/api/confirm-documents/VACBNG117
 Content-Type: application/json
 

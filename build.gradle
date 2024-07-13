@@ -44,6 +44,7 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     // https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter
     implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.2")
@@ -55,6 +56,9 @@ dependencies {
     implementation 'io.hypersistence:hypersistence-utils-hibernate-60:3.7.0'
     implementation 'com.fasterxml.jackson.module:jackson-module-jakarta-xmlbind-annotations'
     // json 타입 컬럼을 사용하기 위한 프로젝트 START END
+
+    // SQL 로그 출력용
+    implementation group: 'org.bgee.log4jdbc-log4j2', name: 'log4jdbc-log4j2-jdbc4.1', version: '1.16'
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
