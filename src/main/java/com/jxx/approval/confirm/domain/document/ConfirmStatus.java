@@ -17,7 +17,7 @@ public enum ConfirmStatus {
 
     private final String description;
 
-    protected static final List<ConfirmStatus> cancelPossible = List.of(CREATE, UPDATE, REJECT);
+    protected static final List<ConfirmStatus> cancelPossible = List.of(CREATE, UPDATE);
     protected static final List<ConfirmStatus> raisePossible = List.of(CREATE, UPDATE, REJECT);
     protected static final List<ConfirmStatus> raiseBefore = List.of(CREATE, UPDATE);
 

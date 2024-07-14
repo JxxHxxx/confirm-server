@@ -77,9 +77,10 @@ class ConfirmDocumentTest {
     }
 
     @DisplayName(value = "파기(리스소 생성자에 의한) 가능한 문서인지를 검증한다." +
-            "confirmStatus 상태가 RAISE, CANCEL, ACCEPT 중 하나라면 true 를 반환한다.")
+            "confirmStatus 상태가 RAISE, REJECT, ACCEPT, CANCEL 중 하나라면 true 를 반환한다." +
+            "즉, 결재문서의 상태가 상신, 반려, 승인,취소 상태라면 결재 문서를 취소할 수 없다.")
     @ParameterizedTest
-    @EnumSource(value = ConfirmStatus.class, names = {"RAISE", "CANCEL", "ACCEPT"})
+    @EnumSource(value = ConfirmStatus.class, names = {"RAISE", "REJECT", "ACCEPT", "CANCEL"})
     void cancel_impossible_return_true_case(ConfirmStatus confirmStatus) {
         ConfirmDocument confirmDocument = ConfirmDocument.builder()
                 .requester(new Requester("JXX", "J00001", "테스트부서", "U00001", "테스터"))

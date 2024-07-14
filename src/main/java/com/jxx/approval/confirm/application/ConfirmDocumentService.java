@@ -163,7 +163,7 @@ public class ConfirmDocumentService {
     }
 
     @Transactional
-    public ConfirmDocumentServiceResponse cancelConfirmDocument(String confirmDocumentId, ConfirmDocumentCancelForm form) {
+    public ConfirmDocumentServiceDto cancelConfirmDocument(String confirmDocumentId, ConfirmDocumentCancelForm form) {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findWithContent(confirmDocumentId)
                 .orElseThrow();
 
@@ -175,12 +175,18 @@ public class ConfirmDocumentService {
         }
 
         // 취소 가능한 상태인지
+        ConfirmStatus confirmStatus = confirmDocument.getConfirmStatus();
         if (confirmDocument.cancelImpossible()) {
-            throw new ConfirmDocumentException(ConfirmDocumentException.FAIL_CANCEL + " 사유 : " + confirmDocument.getConfirmStatus().getDescription(), confirmDocument.getRequesterId());
+            // 결재 문서가 취소라면 CD03, 그 외 취소 불가능한 상태라면 CD04
+            String errCode = CANCEL.equals(confirmStatus) ? "CD03" : "CD04";
+            throw new ConfirmDocumentException(
+                    "CREATE, UPDATE 상태의 결재 문서만 삭제 가능합니다. 현재 결재 문서 상태 : " + confirmDocument.getConfirmStatus(),
+                    confirmDocument.getRequesterId(),
+                    errCode);
         }
         // 결재 문서 상태 변경
         confirmDocument.changeConfirmStatus(CANCEL);
-        return toConfirmDocumentServiceResponse(confirmDocument);
+        return new ConfirmDocumentServiceDto(confirmDocumentId, form.requesterId(), confirmDocument.getConfirmStatus());
     }
 
 

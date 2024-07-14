@@ -57,14 +57,6 @@ public class ConfirmDocumentApiController {
         return ResponseEntity.ok((new ResponseResult<>(200, "결재 문서 검색 완료",  responses)));
     }
 
-    // 결재 문서 PK 조회
-//    @GetMapping("/api/confirm-documents/{confirm-document-pk}")
-//    public ResponseEntity<ResponseResult<?>> readByPk(@PathVariable(value = "confirm-document-pk") Long confirmDocumentPk) {
-//        ConfirmDocumentServiceResponse response = confirmDocumentService.readByPk(confirmDocumentPk);
-//
-//        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 단건 조회", response));
-//    }
-
     // 결재 양식 내 본문 생성
     @PostMapping("/api/confirm-documents/{confirm-document-pk}/contents")
     public ResponseEntity<ResponseResult> createContent(@PathVariable(value = "confirm-document-pk")Long confirmDocumentPk ,@RequestBody List<ConfirmDocumentContentRequest> requests) {
@@ -169,7 +161,7 @@ public class ConfirmDocumentApiController {
     @PatchMapping("/api/confirm-documents/{confirm-document-id}/cancel")
     public ResponseEntity<ResponseResult> cancelConfirmDocument(@PathVariable(name = "confirm-document-id") String confirmDocumentId,
                                                    @RequestBody ConfirmDocumentCancelForm form) {
-        ConfirmDocumentServiceResponse response = confirmDocumentService.cancelConfirmDocument(confirmDocumentId, form);
+        ConfirmDocumentServiceDto response = confirmDocumentService.cancelConfirmDocument(confirmDocumentId, form);
 
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 반려", response));
     }
