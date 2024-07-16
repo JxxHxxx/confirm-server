@@ -5,6 +5,7 @@ import com.jxx.approval.confirm.dto.request.ConfirmDocumentElementRequest;
 import com.jxx.approval.confirm.dto.request.ElementPair;
 import com.jxx.approval.confirm.dto.request.ConfirmDocumentFormRequest;
 import com.jxx.approval.confirm.dto.response.ConfirmDocumentElementServiceResponse;
+import com.jxx.approval.confirm.dto.response.ConfirmDocumentFormElementResponse;
 import com.jxx.approval.confirm.dto.response.ConfirmDocumentFormResponse;
 import com.jxx.approval.confirm.dto.response.ResponseResult;
 import lombok.RequiredArgsConstructor;
@@ -48,5 +49,12 @@ public class ConfirmDocumentFormApiController {
     public ResponseEntity<?> getConfirmDocumentFormElements(@RequestParam("companyId") String companyId, @PathVariable("confirm-document-form-id") String confirmDocumentFormId) {
         List<ElementPair> responses =  confirmDocumentFormService.findConfirmDocumentFormElement(companyId, confirmDocumentFormId);
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "문서 양식 요소 조회 완료", responses));
+    }
+
+    @GetMapping("/api/v2/confirm-document-forms/{confirm-document-form-id}/elements")
+    public ResponseEntity<?> getConfirmDocumentFormElementsV2(@RequestParam("companyId") String companyId,
+                                                              @PathVariable("confirm-document-form-id") String confirmDocumentFormId) {
+        List<ConfirmDocumentFormElementResponse> responses =  confirmDocumentFormService.findConfirmDocumentFormElementV2(companyId, confirmDocumentFormId);
+        return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "문서 양식 요소 조회 V2", responses));
     }
 }

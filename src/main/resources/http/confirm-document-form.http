@@ -102,5 +102,6 @@ GET http://localhost:8000/api/confirm-document-forms?companyId=SPY
 ### 결재 문서 양식 요소 조회 API
 GET http://localhost:8000/api/confirm-document-forms/vac/elements?companyId=COM
 
-###
-GET http://localhost:8000/api/confirm-documents?confirmDocumentId=VACSPY1
+### 결재 문서 양식 요소 조회 API V2
+GET http://localhost:8000/api/v2/confirm-document-forms/vac/elements?companyId=com
+

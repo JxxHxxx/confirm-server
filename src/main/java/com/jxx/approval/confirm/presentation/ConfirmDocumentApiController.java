@@ -170,6 +170,5 @@ public class ConfirmDocumentApiController {
     public ResponseEntity<?> findDocumentContent(@PathVariable("content-pk") Long contentPk) {
         ConfirmDocumentAndContentServiceResponse response = confirmDocumentService.findDocumentContent(contentPk);
         return ResponseEntity.ok(response);
-
     }
 }
