@@ -38,12 +38,20 @@ public class ConfirmDocumentFormService {
     @Transactional
     public List<ConfirmDocumentElementServiceResponse> createElements(String confirmDocumentFormId, ConfirmDocumentElementRequest request) {
         ConfirmDocumentForm confirmDocumentForm = formRepository.findByFormIdAndCompanyId(confirmDocumentFormId, request.companyId()).orElseThrow();
-        List<ElementPair> elementPairs = request.elementPairs();
+        List<ElementPairV2> elementPairs = request.elementPairs();
         List<ConfirmDocumentElement> elements = elementPairs.stream()
                 .map(pair -> {
-                    ConfirmDocumentElement confirmDocumentElement = new ConfirmDocumentElement(pair.elementKey(), pair.elementName());
-                    confirmDocumentElement.mappingDocumentForm(confirmDocumentForm);
-                    return confirmDocumentElement;
+                    ConfirmDocumentElement element = ConfirmDocumentElement.builder()
+                            .elementGroupOrder(request.elementGroupOrder())
+                            .elementGroupType(request.elementGroupType())
+                            .elementGroupKey(request.elementGroupKey())
+                            .elementOrder(request.elementGroupOrder())
+                            .elementKey(pair.elementKey())
+                            .elementName(pair.elementName())
+                            .elementOrder(pair.elementOrder())
+                            .build();
+                    element.mappingDocumentForm(confirmDocumentForm);
+                    return element;
                 }).toList();
 
         List<ConfirmDocumentElement> savedElements = elementRepository.saveAll(elements);

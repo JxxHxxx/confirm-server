@@ -39,6 +39,13 @@ public class ConfirmDocumentFormApiController {
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "생성 완료", response));
     }
 
+    @GetMapping("/api/v2/confirm-document-forms/{confirm-document-form-id}/elements")
+    public ResponseEntity<?> getElements(@RequestParam("companyId") String companyId,
+                                                              @PathVariable("confirm-document-form-id") String confirmDocumentFormId) {
+        List<ConfirmDocumentFormElementResponse> responses =  confirmDocumentFormService.findConfirmDocumentFormElementV2(companyId, confirmDocumentFormId);
+        return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "문서 양식 요소 조회 V2", responses));
+    }
+
     @GetMapping("/api/confirm-document-forms")
     public ResponseEntity<?> getConfirmDocumentForms(@RequestParam("companyId") String companyId) {
         List<ConfirmDocumentFormResponse> response =  confirmDocumentFormService.findConfirmDocumentForms(companyId);
@@ -49,12 +56,5 @@ public class ConfirmDocumentFormApiController {
     public ResponseEntity<?> getConfirmDocumentFormElements(@RequestParam("companyId") String companyId, @PathVariable("confirm-document-form-id") String confirmDocumentFormId) {
         List<ElementPair> responses =  confirmDocumentFormService.findConfirmDocumentFormElement(companyId, confirmDocumentFormId);
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "문서 양식 요소 조회 완료", responses));
-    }
-
-    @GetMapping("/api/v2/confirm-document-forms/{confirm-document-form-id}/elements")
-    public ResponseEntity<?> getConfirmDocumentFormElementsV2(@RequestParam("companyId") String companyId,
-                                                              @PathVariable("confirm-document-form-id") String confirmDocumentFormId) {
-        List<ConfirmDocumentFormElementResponse> responses =  confirmDocumentFormService.findConfirmDocumentFormElementV2(companyId, confirmDocumentFormId);
-        return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "문서 양식 요소 조회 V2", responses));
     }
 }
