@@ -68,6 +68,13 @@ public class ConfirmDocumentFormService {
                 .toList();
     }
 
+    public List<ConfirmDocumentFormResponse> findConfirmDocumentFormsV2() {
+        List<ConfirmDocumentForm> confirmDocumentForms = formRepository.findAll();
+        return confirmDocumentForms.stream()
+                .map(form -> new ConfirmDocumentFormResponse(form.getPk(), form.getCompanyId(), form.getFormId(), form.getFormName()))
+                .toList();
+    }
+
     public List<ElementPair> findConfirmDocumentFormElement(String companyId, String confirmDocumentFormId) {
         List<ConfirmDocumentElement> confirmDocumentFormElements = elementRepository.findByConfirmDocumentForm(companyId, confirmDocumentFormId);
         return confirmDocumentFormElements.stream()

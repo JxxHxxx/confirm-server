@@ -45,10 +45,15 @@ public class ConfirmDocumentFormApiController {
         List<ConfirmDocumentFormElementResponse> responses =  confirmDocumentFormService.findConfirmDocumentFormElementV2(companyId, confirmDocumentFormId);
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "문서 양식 요소 조회 V2", responses));
     }
-
     @GetMapping("/api/confirm-document-forms")
     public ResponseEntity<?> getConfirmDocumentForms(@RequestParam("companyId") String companyId) {
         List<ConfirmDocumentFormResponse> response =  confirmDocumentFormService.findConfirmDocumentForms(companyId);
+        return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "문서 양식 조회 완료", response));
+    }
+
+    @GetMapping("/admin/confirm-document-forms")
+    public ResponseEntity<?> getConfirmDocumentFormsV2() {
+        List<ConfirmDocumentFormResponse> response =  confirmDocumentFormService.findConfirmDocumentFormsV2();
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "문서 양식 조회 완료", response));
     }
 
