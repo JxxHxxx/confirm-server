@@ -3,19 +3,20 @@ package com.jxx.approval.confirm.application;
 import com.jxx.approval.confirm.domain.form.ConfirmDocumentElement;
 import com.jxx.approval.confirm.domain.form.ConfirmDocumentForm;
 import com.jxx.approval.confirm.dto.request.ConfirmDocumentElementRequest;
+import com.jxx.approval.confirm.dto.request.ConfirmDocumentFormSearchCond;
 import com.jxx.approval.confirm.dto.request.ElementPair;
 import com.jxx.approval.confirm.dto.request.ConfirmDocumentFormRequest;
 import com.jxx.approval.confirm.dto.response.ConfirmDocumentElementServiceResponse;
 import com.jxx.approval.confirm.dto.response.ConfirmDocumentFormElementResponse;
 import com.jxx.approval.confirm.dto.response.ConfirmDocumentFormResponse;
 import com.jxx.approval.confirm.dto.response.ElementPairV2;
+import com.jxx.approval.confirm.infra.ConfirmDocumentAdminMapper;
 import com.jxx.approval.confirm.infra.ConfirmDocumentElementRepository;
 import com.jxx.approval.confirm.infra.ConfirmDocumentFormRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ public class ConfirmDocumentFormService {
 
     private final ConfirmDocumentElementRepository elementRepository;
     private final ConfirmDocumentFormRepository formRepository;
+    private final ConfirmDocumentAdminMapper confirmDocumentAdminMapper;
 
     @Transactional
     public void createForm(ConfirmDocumentFormRequest request) {
@@ -64,14 +66,8 @@ public class ConfirmDocumentFormService {
     public List<ConfirmDocumentFormResponse> findConfirmDocumentForms(String companyId) {
         List<ConfirmDocumentForm> confirmDocumentForms = formRepository.findByCompanyId(companyId);
         return confirmDocumentForms.stream()
-                .map(form -> new ConfirmDocumentFormResponse(form.getPk(), form.getCompanyId(), form.getFormId(), form.getFormName()))
-                .toList();
-    }
-
-    public List<ConfirmDocumentFormResponse> findConfirmDocumentFormsV2() {
-        List<ConfirmDocumentForm> confirmDocumentForms = formRepository.findAll();
-        return confirmDocumentForms.stream()
-                .map(form -> new ConfirmDocumentFormResponse(form.getPk(), form.getCompanyId(), form.getFormId(), form.getFormName()))
+                .map(form -> new ConfirmDocumentFormResponse(
+                        form.getPk(), form.getCompanyId(), form.getFormId(), form.getFormName(), form.isUsed(), form.getCreateTime()))
                 .toList();
     }
 
@@ -115,4 +111,7 @@ public class ConfirmDocumentFormService {
     }
 
 
+    public List<ConfirmDocumentFormResponse> searchConfirmDocumentForms(ConfirmDocumentFormSearchCond searchCond) {
+        return confirmDocumentAdminMapper.searchConfirmDocumentForm(searchCond);
+    }
 }
