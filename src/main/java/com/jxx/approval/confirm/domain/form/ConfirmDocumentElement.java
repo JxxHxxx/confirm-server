@@ -11,8 +11,8 @@ import org.hibernate.annotations.Comment;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "JXX_CONFIRM_DOCUMENT_ELEMENT" ,
-        indexes = @Index(name = "IDX_GRKEY_CMNID_FID_ELEKEY",
-                columnList = "CONFIRM_DOCUMENT_ELEMENT_GROUP_KEY, CONFIRM_DOCUMENT_FORM_COMPANY_ID, CONFIRM_DOCUMENT_FORM_ID, CONFIRM_DOCUMENT_ELEMENT_KEY",
+        indexes = @Index(name = "IDX_CMNID_FID_GRKEY_ELEKEY",
+                columnList = "CONFIRM_DOCUMENT_FORM_COMPANY_ID, CONFIRM_DOCUMENT_FORM_ID, CONFIRM_DOCUMENT_ELEMENT_GROUP_KEY, CONFIRM_DOCUMENT_ELEMENT_KEY",
                 unique = true))
 public class ConfirmDocumentElement {
 
@@ -27,7 +27,7 @@ public class ConfirmDocumentElement {
     @Column(name = "CONFIRM_DOCUMENT_ELEMENT_NAME", nullable = false)
     @Comment(value = "결재 문서 요소 이름")
     private String elementName;
-    @Column(name = "CONFIRM_DOCUMENT_ELEMENT_ORDER", nullable = false)
+    @Column(name = "CONFIRM_DOCUMENT_ELEMENT_O:RDER", nullable = false)
     @Comment(value = "결재 문서 요소 이름")
     private int elementOrder;
     @Column(name = "CONFIRM_DOCUMENT_ELEMENT_GROUP_KEY",nullable = false)
