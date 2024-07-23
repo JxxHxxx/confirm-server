@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jxx.approval.confirm.infra.ConfirmDocumentAdminMapper">
+    <select id="searchConfirmDocumentForm"
+            parameterType="com.jxx.approval.confirm.dto.request.ConfirmDocumentFormSearchCond"
+            resultType="com.jxx.approval.confirm.dto.response.ConfirmDocumentFormResponse">
+        SELECT DF.CONFIRM_DOCUMENT_FORM_PK,
+               DF.CONFIRM_DOCUMENT_FORM_COMPANY_ID,
+               DF.CONFIRM_DOCUMENT_FORM_ID,
+               DF.CONFIRM_DOCUMENT_FORM_NAME,
+               DF.USED,
+               DF.CREATE_TIME
+        FROM JXX_CONFIRM_DOCUMENT_FORM DF
+            <where>
+                <if test="formName != null and formName != ''">
+                    AND DF.CONFIRM_DOCUMENT_FORM_NAME LIKE CONCAT('%', #{formName}, '%')
+                </if>
+                <if test="companyId != null and companyId != ''">
+                    AND DF.CONFIRM_DOCUMENT_FORM_COMPANY_ID = #{companyId}
+                </if>
+            </where>
+    </select>
+</mapper>
