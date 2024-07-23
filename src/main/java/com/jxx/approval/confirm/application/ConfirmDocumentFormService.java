@@ -44,6 +44,7 @@ public class ConfirmDocumentFormService {
                     ConfirmDocumentElement element = ConfirmDocumentElement.builder()
                             .elementGroupOrder(request.elementGroupOrder())
                             .elementGroupType(request.elementGroupType())
+                            .elementGroupName(request.elementGroupName())
                             .elementGroupKey(request.elementGroupKey())
                             .elementOrder(request.elementGroupOrder())
                             .elementKey(pair.elementKey())

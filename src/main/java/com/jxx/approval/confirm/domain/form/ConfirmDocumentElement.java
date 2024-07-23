@@ -10,7 +10,10 @@ import org.hibernate.annotations.Comment;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "JXX_CONFIRM_DOCUMENT_ELEMENT")
+@Table(name = "JXX_CONFIRM_DOCUMENT_ELEMENT" ,
+        indexes = @Index(name = "IDX_GRKEY_CMNID_FID_ELEKEY",
+                columnList = "CONFIRM_DOCUMENT_ELEMENT_GROUP_KEY, CONFIRM_DOCUMENT_FORM_COMPANY_ID, CONFIRM_DOCUMENT_FORM_ID, CONFIRM_DOCUMENT_ELEMENT_KEY",
+                unique = true))
 public class ConfirmDocumentElement {
 
     @Id

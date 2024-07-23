@@ -8,100 +8,70 @@ Content-Type: application/json
   "companyId": "SPY"
 }
 
-### 결재 문서 양식 요소 생성 1
-POST http://localhost:8000/admin/confirm-document-forms/COST/elements
-Content-Type: application/json
-
-[
-  {
-    "elementKey" : "title",
-    "elementName" : "문서 제목"
-  },
-  {
-    "elementKey" : "writer",
-    "elementName" : "작성자"
-  },
-  {
-    "elementKey" : "write_time",
-    "elementName" : "작성일시"
-  },
-  {
-    "elementKey" : "writer_department_name",
-    "elementName" : "작성자 부서"
-  },
-  {
-    "elementKey" : "expense_user",
-    "elementName" : "경비 사용자"
-  },
-  {
-    "elementKey" : "expense_duration",
-    "elementName" : "경비 사용 기간"
-  },
-  {
-    "elementKey" : "expense_date",
-    "elementName" : "경비 사용 날짜"
-  },
-  {
-    "elementKey" : "where_to_use",
-    "elementName" : "사용처"
-  },
-  {
-    "elementKey" : "cost",
-    "elementName" : "금액"
-  }
-]
-
-### 결재 문서 양식 메타 정보 생성 2
-POST http://localhost:8000/admin/confirm-document-forms
+### 결재 문서 요소 생성
+POST http://localhost:8000/admin/confirm-document-forms/cost/elements
 Content-Type: application/json
 
 {
-  "formId": "DEPARTMENT_REQUEST",
-  "formName": "요청부서 승인 요청",
-  "companyId": "SPY"
+  "companyId": "com",
+  "elementGroupKey": "BAISC_REQUEST_INFO",
+  "elementGroupName": "요청 정보",
+  "elementGroupType":"PAIR",
+  "elementGroupOrder": 1,
+  "elementPairs": [
+    {
+      "elementKey": "card_user",
+      "elementName": "카드 사용자",
+      "elementOrder": 1
+    },
+    {
+      "elementKey": "use_duration",
+      "elementName": "사용기간",
+      "elementOrder": 2
+    }
+  ]
 }
 
-### 결재 문서 양식 요소 생성 2
-POST http://localhost:8000/admin/confirm-document-forms/DEPARTMENT_REQUEST/elements
+### 결재 문서 요소 생성
+POST http://localhost:8000/admin/confirm-document-forms/cost/elements
 Content-Type: application/json
 
-[
-  {
-    "elementKey": "document_title",
-    "elementName": "문서 제목"
-  },
-  {
-    "elementKey": "request_title",
-    "elementName": "요청 제목"
-  },
-  {
-    "elementKey": "requester_name",
-    "elementName": "요청자"
-  },
-  {
-    "elementKey": "requester_department_name",
-    "elementName": "요청 부서"
-  },
-  {
-    "elementKey": "service_name",
-    "elementName": "서비스 대상"
-  },
-  {
-    "elementKey": "complete_hope_date",
-    "elementName": "완료 희망 일시"
-  },
-  {
-    "elementKey": "request_content",
-    "elementName": "요청 내용"
-  }
-]
-
-### 결재 문서 양식 조회 API
-GET http://localhost:8000/api/confirm-document-forms?companyId=SPY
-
-### 결재 문서 양식 요소 조회 API
-GET http://localhost:8000/api/confirm-document-forms/vac/elements?companyId=COM
-
-### 결재 문서 양식 요소 조회 API V2
-GET http://localhost:8000/api/v2/confirm-document-forms/vac/elements?companyId=com
-
+{
+  "companyId": "com",
+  "elementGroupKey": "USAGE_HISTORY",
+  "elementGroupName": "사용 내역",
+  "elementGroupType":"TABLE",
+  "elementGroupOrder": 2,
+  "elementPairs": [
+    {
+      "elementKey": "use_datetime",
+      "elementName": "사용시간",
+      "elementOrder": 1
+    },
+    {
+      "elementKey": "user",
+      "elementName": "사용자",
+      "elementOrder": 2
+    },
+    {
+      "elementKey": "use_type",
+      "elementName": "구분",
+      "elementOrder": 3
+    },
+    {
+      "elementKey": "use_detail",
+      "elementName": "사용내역(상세 기재)",
+      "elementOrder": 4
+    },
+    {
+      "elementKey": "usage_cost",
+      "elementName": "사용금액",
+      "elementOrder": 5
+    },
+    {
+      "elementKey": "note",
+      "elementName": "비고",
+      "elementOrder": 6
+    }
+  ]
+}
