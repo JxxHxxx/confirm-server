@@ -54,6 +54,12 @@
             <if test="approvalName !=null and approvalName !=''">
                 AND ALM.APPROVAL_NAME = #{approvalName}
             </if>
+            <if test="confirmStatus !=null and confirmStatus !=''">
+                AND CDM.CONFIRM_STATUS IN
+                <foreach item="confirmStatus" collection="confirmStatus" separator="," open="(" close=")">
+                    #{confirmStatus}
+                </foreach>
+            </if>
             <if test="approveStatus !=null and approveStatus !=''">
                 AND ALM.APPROVAL_STATUS = #{approveStatus}
             </if>

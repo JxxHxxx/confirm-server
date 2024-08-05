@@ -28,3 +28,7 @@ Content-Type: application/json
 
 ###
 GET http://localhost:8000/api/confirm-documents/search?startDate=2024-06-01&endDate=2024-07-23&page=1&size=2
+
+
+###
+GET http://localhost:8000/api/confirm-documents/fetch-approval-lines?confirmStatus=CREATE,RAISE
