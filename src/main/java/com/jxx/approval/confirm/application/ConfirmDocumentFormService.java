@@ -4,7 +4,6 @@ import com.jxx.approval.confirm.domain.form.ConfirmDocumentElement;
 import com.jxx.approval.confirm.domain.form.ConfirmDocumentForm;
 import com.jxx.approval.confirm.dto.request.ConfirmDocumentElementRequest;
 import com.jxx.approval.confirm.dto.request.ConfirmDocumentFormSearchCond;
-import com.jxx.approval.confirm.dto.request.ElementPair;
 import com.jxx.approval.confirm.dto.request.ConfirmDocumentFormRequest;
 import com.jxx.approval.confirm.dto.response.ConfirmDocumentElementServiceResponse;
 import com.jxx.approval.confirm.dto.response.ConfirmDocumentFormElementResponse;
@@ -72,15 +71,8 @@ public class ConfirmDocumentFormService {
                 .toList();
     }
 
-    public List<ElementPair> findConfirmDocumentFormElement(String companyId, String confirmDocumentFormId) {
-        List<ConfirmDocumentElement> confirmDocumentFormElements = elementRepository.findByConfirmDocumentForm(companyId, confirmDocumentFormId);
-        return confirmDocumentFormElements.stream()
-                .map(element -> new ElementPair(element.getElementGroupName(), element.getElementKey(), element.getElementName()))
-                .toList();
-    }
-
-    public List<ConfirmDocumentFormElementResponse> findConfirmDocumentFormElementV2(String companyId, String confirmDocumentFormId) {
-        List<ConfirmDocumentElement> formElements = elementRepository.findByConfirmDocumentForm(companyId, confirmDocumentFormId);
+    public List<ConfirmDocumentFormElementResponse> findConfirmDocumentFormElements(List<String> companyId, String confirmDocumentFormId) {
+        List<ConfirmDocumentElement> formElements = elementRepository.findByConfirmDocumentForms(companyId, confirmDocumentFormId);
 
         // 그룹 KEY 를 기준으로 Map
         Map<String, List<ConfirmDocumentElement>> groupByGroupKeyElements = formElements.stream()
