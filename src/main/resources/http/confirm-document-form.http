@@ -75,6 +75,3 @@ Content-Type: application/json
     }
   ]
 }
-
-###
-GET http://localhost:8000/api/v2/confirm-document-forms/cost/elements?companyId=com,spy
