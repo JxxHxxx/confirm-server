@@ -32,3 +32,6 @@ GET http://localhost:8000/api/confirm-documents/search?startDate=2024-06-01&endD
 
 ###
 GET http://localhost:8000/api/confirm-documents/fetch-approval-lines?confirmStatus=CREATE,RAISE
+
+###
+GET

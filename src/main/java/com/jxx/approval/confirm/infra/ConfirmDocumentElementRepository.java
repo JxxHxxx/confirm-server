@@ -12,4 +12,9 @@ public interface ConfirmDocumentElementRepository extends JpaRepository<ConfirmD
             "where cde.confirmDocumentForm.companyId=:companyId " +
             "and cde.confirmDocumentForm.formId=:formId")
     List<ConfirmDocumentElement> findByConfirmDocumentForm(String companyId, String formId);
+
+    @Query("select cde from ConfirmDocumentElement cde " +
+            "where cde.confirmDocumentForm.companyId in :companyId " +
+            "and cde.confirmDocumentForm.formId=:formId")
+    List<ConfirmDocumentElement> findByConfirmDocumentForms(List<String> companyId, String formId);
 }

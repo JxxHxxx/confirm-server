@@ -28,7 +28,7 @@ public class ConfirmDocumentElement {
     @Comment(value = "결재 문서 요소 이름")
     private String elementName;
     @Column(name = "CONFIRM_DOCUMENT_ELEMENT_ORDER", nullable = false)
-    @Comment(value = "결재 문서 요소 이름")
+    @Comment(value = "결재 문서 요소 순서")
     private int elementOrder;
     @Column(name = "CONFIRM_DOCUMENT_ELEMENT_GROUP_KEY",nullable = false)
     @Comment(value = "결재 문서 요소 그룹 KEY")

@@ -79,8 +79,8 @@ public class ConfirmDocumentFormService {
                 .toList();
     }
 
-    public List<ConfirmDocumentFormElementResponse> findConfirmDocumentFormElementV2(String companyId, String confirmDocumentFormId) {
-        List<ConfirmDocumentElement> formElements = elementRepository.findByConfirmDocumentForm(companyId, confirmDocumentFormId);
+    public List<ConfirmDocumentFormElementResponse> findConfirmDocumentFormElementV2(List<String> companyIds, String confirmDocumentFormId) {
+        List<ConfirmDocumentElement> formElements = elementRepository.findByConfirmDocumentForms(companyIds, confirmDocumentFormId);
 
         // 그룹 KEY 를 기준으로 Map
         Map<String, List<ConfirmDocumentElement>> groupByGroupKeyElements = formElements.stream()
