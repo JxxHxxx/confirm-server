@@ -40,7 +40,7 @@ public class ConfirmDocumentService {
         ConfirmDocument confirmDocument = ConfirmDocument.builder()
                 .confirmStatus(CREATE)
                 .approvalLineLifecycle(ApprovalLineLifecycle.BEFORE_CREATE)
-                .confirmDocumentId(ConfirmDocumentIdGenerator.generate(form.companyId()))
+                .confirmDocumentId(ConfirmDocumentIdGenerator.generate(form))
                 .document(document)
                 .requester(requester)
                 .createSystem(form.createSystem())

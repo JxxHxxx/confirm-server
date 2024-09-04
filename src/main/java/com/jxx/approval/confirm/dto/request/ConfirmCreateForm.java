@@ -5,6 +5,8 @@ import com.jxx.approval.confirm.domain.document.DocumentType;
 import java.util.Map;
 
 public record ConfirmCreateForm(
+
+        Long resourceId, // third-party 식별자
         String companyId,
         String departmentId,
         String departmentName,

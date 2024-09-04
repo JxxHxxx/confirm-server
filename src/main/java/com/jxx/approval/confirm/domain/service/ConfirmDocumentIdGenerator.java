@@ -1,14 +1,16 @@
 package com.jxx.approval.confirm.domain.service;
 
 
+import com.jxx.approval.confirm.dto.request.ConfirmCreateForm;
+
 public class ConfirmDocumentIdGenerator {
     private static final String SYSTEM_ID = "CON";
-    public static String generate(String companyId) {
+    public static String generate(ConfirmCreateForm form) {
         StringBuilder builder = new StringBuilder();
         return builder
-                .append(SYSTEM_ID)
-                .append(companyId)
-                .append(System.currentTimeMillis())
+                .append(form.documentType().name())
+                .append(form.companyId())
+                .append(form.resourceId())
                 .toString();
     }
 }
