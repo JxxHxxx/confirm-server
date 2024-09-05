@@ -31,10 +31,10 @@ VALUES ('COM', 'item_request', '비품 신청서'),
        ('BNG', 'material_order_request', '원재료 주문 요청서'),
        ('BNG', 'new_product_approve', '신제품 출시 승인서'),
        ('SPY', 'medical_eq_purchase', '의료 장비 구매 요청서'),
-       ('SPY', 'access_patient_record', '환자 진료 기록 열람 신청서')
-    INSERT
+       ('SPY', 'access_patient_record', '환자 진료 기록 열람 신청서'),
+       ('COM', 'WRK', '업무 요청서');
 
-INTO jxx_confirm_document_element
+INSERT INTO jxx_confirm_document_element
 (CONFIRM_DOCUMENT_ELEMENT_NAME, CONFIRM_DOCUMENT_ELEMENT_GROUP_NAME, CONFIRM_DOCUMENT_ELEMENT_KEY,
  CONFIRM_DOCUMENT_FORM_ID, CONFIRM_DOCUMENT_FORM_COMPANY_ID, CONFIRM_DOCUMENT_ELEMENT_GROUP_KEY,
  CONFIRM_DOCUMENT_ELEMENT_GROUP_ORDER, CONFIRM_DOCUMENT_ELEMENT_GROUP_TYPE, CONFIRM_DOCUMENT_ELEMENT_ORDER)
@@ -52,3 +52,8 @@ VALUES ('요청자', '요청 정보', 'requester_name', 'vac', 'COM', 'BAISC_REQ
         , ( '사용내역(상세 기재)', '사용 내역', 'use_detail', 'cost', 'COM', 'USAGE_HISTORY', 2, 'TABLE', 4)
         , ( '사용금액', '사용 내역', 'usage_cost', 'cost', 'COM', 'USAGE_HISTORY', 2, 'TABLE', 5)
         , ( '비고', '사용 내역', 'note', 'cost', 'COM', 'USAGE_HISTORY', 2, 'TABLE', 6);
+        ,('요청자', '요청 정보', 'requesterName', 'WRK', 'COM', 'BAISC_REQUEST_INFO', 1, 'PAIR', 1);
+        ,('요청부서', '요청 정보', 'requestDepartmentName', 'WRK', 'COM', 'BAISC_REQUEST_INFO', 1, 'PAIR', 2);
+        ,('요청 내용', '요청 정보', 'requestContent', 'WRK', 'COM', 'BAISC_REQUEST_INFO', 1, 'PAIR', 3);
+        ,('분석 내용', '요청 분석', 'analyzeContent', 'WRK', 'COM', 'REQ_ANALYZE', 2, 'PAIR', 1);
+        ,('계획 내용', '작업 계획', 'workPlanContent', 'WRK', 'COM', 'REQ_WORKPLAN', 3, 'PAIR', 1);
