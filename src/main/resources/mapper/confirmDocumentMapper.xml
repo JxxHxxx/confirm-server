@@ -110,9 +110,9 @@
         CDCM.CONFIRM_DOCUMENT_CONTENT_PK,
         CDCM.CONTENTS
         FROM JXX_CONFIRM_DOCUMENT_MASTER CDM
-        INNER JOIN JXX_CONFIRM_DOCUMENT_CONTENT_MASTER CDCM
+        LEFT JOIN JXX_CONFIRM_DOCUMENT_CONTENT_MASTER CDCM
         ON CDM.CONFIRM_DOCUMENT_PK = CDCM.CONFIRM_DOCUMENT_CONTENT_PK
-        INNER JOIN JXX_APPROVAL_LINE_MASTER ALM
+        LEFT JOIN JXX_APPROVAL_LINE_MASTER ALM
         ON ALM.CONFIRM_DOCUMENT_ID = CDM.CONFIRM_DOCUMENT_ID
         <where>
             <if test="startDate !='' and startDate !=null and endDate !='' and endDate !=null ">
@@ -140,6 +140,12 @@
             </if>
             <if test="approveStatus !=null and approveStatus !=''">
                 AND ALM.APPROVAL_STATUS = #{approveStatus}
+            </if>
+            <if test="confirmStatus !=null and confirmStatus !=''">
+                AND CDM.CONFIRM_STATUS IN
+                <foreach item="confirmStatus" collection="confirmStatus" separator="," open="(" close=")">
+                    #{confirmStatus}
+                </foreach>
             </if>
         </where>
         ORDER BY CDM.CREATE_TIME DESC
