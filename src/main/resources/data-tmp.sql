@@ -51,9 +51,9 @@ VALUES ('요청자', '요청 정보', 'requester_name', 'vac', 'COM', 'BAISC_REQ
         , ( '구분', '사용 내역', 'use_type', 'cost', 'COM', 'USAGE_HISTORY', 2, 'TABLE', 3)
         , ( '사용내역(상세 기재)', '사용 내역', 'use_detail', 'cost', 'COM', 'USAGE_HISTORY', 2, 'TABLE', 4)
         , ( '사용금액', '사용 내역', 'usage_cost', 'cost', 'COM', 'USAGE_HISTORY', 2, 'TABLE', 5)
-        , ( '비고', '사용 내역', 'note', 'cost', 'COM', 'USAGE_HISTORY', 2, 'TABLE', 6);
-        ,('요청자', '요청 정보', 'requesterName', 'WRK', 'COM', 'BAISC_REQUEST_INFO', 1, 'PAIR', 1);
-        ,('요청부서', '요청 정보', 'requestDepartmentName', 'WRK', 'COM', 'BAISC_REQUEST_INFO', 1, 'PAIR', 2);
-        ,('요청 내용', '요청 정보', 'requestContent', 'WRK', 'COM', 'BAISC_REQUEST_INFO', 1, 'PAIR', 3);
-        ,('분석 내용', '요청 분석', 'analyzeContent', 'WRK', 'COM', 'REQ_ANALYZE', 2, 'PAIR', 1);
+        , ( '비고', '사용 내역', 'note', 'cost', 'COM', 'USAGE_HISTORY', 2, 'TABLE', 6)
+        ,('요청자', '요청 정보', 'requesterName', 'WRK', 'COM', 'BAISC_REQUEST_INFO', 1, 'PAIR', 1)
+        ,('요청부서', '요청 정보', 'requestDepartmentName', 'WRK', 'COM', 'BAISC_REQUEST_INFO', 1, 'PAIR', 2)
+        ,('요청 내용', '요청 정보', 'requestContent', 'WRK', 'COM', 'BAISC_REQUEST_INFO', 1, 'PAIR', 3)
+        ,('분석 내용', '요청 분석', 'analyzeContent', 'WRK', 'COM', 'REQ_ANALYZE', 2, 'PAIR', 1)
         ,('계획 내용', '작업 계획', 'workPlanContent', 'WRK', 'COM', 'REQ_WORKPLAN', 3, 'PAIR', 1);
