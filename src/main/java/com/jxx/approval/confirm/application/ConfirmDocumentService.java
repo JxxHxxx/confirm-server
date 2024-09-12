@@ -129,6 +129,7 @@ public class ConfirmDocumentService {
                 confirmDocument.getRequester().getRequesterId(),
                 confirmDocument.getRequester().getRequesterName(),
                 confirmDocument.receiveContentPk(),
+                confirmDocument.getApprovalLineLifecycle(),
                 confirmDocument.receiveContents());
     }
 

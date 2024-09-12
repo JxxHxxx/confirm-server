@@ -108,6 +108,7 @@
         CDM.REQUESTER_ID,
         CDM.REQUESTER_NAME,
         CDCM.CONFIRM_DOCUMENT_CONTENT_PK,
+        CDM.APPROVAL_LINE_LIFE_CYCLE,
         CDCM.CONTENTS
         FROM JXX_CONFIRM_DOCUMENT_MASTER CDM
         LEFT JOIN JXX_CONFIRM_DOCUMENT_CONTENT_MASTER CDCM
@@ -194,6 +195,7 @@
         <result property="requesterId" column="REQUESTER_ID"/>
         <result property="requesterName" column="REQUESTER_NAME"/>
         <result property="contentPk" column="CONFIRM_DOCUMENT_CONTENT_PK"/>
+        <result property="approvalLineLifecycle" column="APPROVAL_LINE_LIFE_CYCLE"/>
         <result property="contents" column="CONTENTS" javaType="java.util.Map"
                 typeHandler="com.jxx.approval.common.mapper.typehandler.JsonTypeHandler"/>
     </resultMap>

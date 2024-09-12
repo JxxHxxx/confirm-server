@@ -2,6 +2,7 @@ package com.jxx.approval.confirm.dto.response;
 
 import com.jxx.approval.confirm.domain.document.ConfirmStatus;
 import com.jxx.approval.confirm.domain.document.DocumentType;
+import com.jxx.approval.confirm.domain.line.ApprovalLineLifecycle;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,5 +27,6 @@ public class ConfirmDocumentServiceResponse {
     private String requesterId;
     private String requesterName;
     private Long contentPk;
+    private ApprovalLineLifecycle approvalLineLifecycle;
     private Map<String, Object> contents;
 }
