@@ -110,9 +110,10 @@ public class ConfirmDocumentApiController {
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재선 삭제 완료", response));
     }
     @GetMapping("/api/confirm-documents/{confirm-document-id}/approval-lines")
-    public ResponseEntity<?> findApprovalLines(@PathVariable("confirm-document-id") String confirmDocumentId) {
+    public ResponseEntity<?> findApprovalLines(@PathVariable("confirm-document-id") String confirmDocumentId,
+                                               @RequestParam(value = "companyId") String companyId) {
 
-        List<ApprovalLineServiceDto> responses = approvalLineService.findByConfirmDocumentId(confirmDocumentId);
+        List<ApprovalLineServiceDto> responses = approvalLineService.findByConfirmDocumentId(confirmDocumentId, companyId);
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재선 조회", responses));
     }
 

@@ -10,6 +10,9 @@ import java.util.List;
 public interface ApprovalLineRepository extends JpaRepository<ApprovalLine, Long> {
 
     List<ApprovalLine> findByConfirmDocumentConfirmDocumentId(String confirmDocumentId);
+
+    @Query("SELECT al FROM ApprovalLine al join fetch al.confirmDocument WHERE al.confirmDocument.confirmDocumentId =:confirmDocumentId")
+    List<ApprovalLine> fetchByConfirmDocumentId(@Param("confirmDocumentId") String confirmDocumentId);
     @Query("SELECT al FROM ApprovalLine al WHERE al.confirmDocument.confirmDocumentId =:confirmDocumentId")
     List<ApprovalLine> findByConfirmDocumentId(@Param("confirmDocumentId") String confirmDocumentId);
 

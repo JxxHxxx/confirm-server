@@ -186,9 +186,10 @@ public class ApprovalLineService {
                 vacationId);
     }
 
-
-    public List<ApprovalLineServiceDto> findByConfirmDocumentId(String confirmDocumentId) {
+    // TODO 다른 회사의 결재 라인을 볼 수 있는 문제 해결해야함
+    public List<ApprovalLineServiceDto> findByConfirmDocumentId(String confirmDocumentId, String companyId) {
         List<ApprovalLine> approvalLines = approvalLineRepository.findByConfirmDocumentConfirmDocumentId(confirmDocumentId);
+
 
         return approvalLines.stream()
                 .map(ap -> new ApprovalLineServiceDto(
