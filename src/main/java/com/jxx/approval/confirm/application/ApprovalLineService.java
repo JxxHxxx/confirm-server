@@ -188,8 +188,16 @@ public class ApprovalLineService {
 
     // TODO 다른 회사의 결재 라인을 볼 수 있는 문제 해결해야함
     public List<ApprovalLineServiceDto> findByConfirmDocumentId(String confirmDocumentId, String companyId) {
-        List<ApprovalLine> approvalLines = approvalLineRepository.findByConfirmDocumentConfirmDocumentId(confirmDocumentId);
-
+        List<ApprovalLine> approvalLines = approvalLineRepository.fetchByConfirmDocumentId(confirmDocumentId);
+        boolean isNotOurCompanyDocument = approvalLines.stream()
+                .anyMatch(ap -> {
+                    ConfirmDocument confirmDocument = ap.getConfirmDocument();
+                    return !confirmDocument.areOurCompanyConfirmDocument(companyId);
+                });
+        if (isNotOurCompanyDocument) {
+            // logging 작업 해야함
+            throw new ConfirmDocumentException("접근 권한이 없습니다.");
+        }
 
         return approvalLines.stream()
                 .map(ap -> new ApprovalLineServiceDto(

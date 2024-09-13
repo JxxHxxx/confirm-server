@@ -10,6 +10,7 @@ import com.jxx.approval.confirm.dto.request.*;
 import com.jxx.approval.confirm.dto.response.*;
 import com.jxx.approval.confirm.listener.ApproveStatusChangedEvent;
 import com.jxx.approval.confirm.listener.ConfirmStatusEvent;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -111,7 +112,7 @@ public class ConfirmDocumentApiController {
     }
     @GetMapping("/api/confirm-documents/{confirm-document-id}/approval-lines")
     public ResponseEntity<?> findApprovalLines(@PathVariable("confirm-document-id") String confirmDocumentId,
-                                               @RequestParam(value = "companyId") String companyId) {
+                                               @RequestParam(value = "companyId") @NotBlank String companyId) {
 
         List<ApprovalLineServiceDto> responses = approvalLineService.findByConfirmDocumentId(confirmDocumentId, companyId);
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재선 조회", responses));

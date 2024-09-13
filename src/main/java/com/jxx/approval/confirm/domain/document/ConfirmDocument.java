@@ -177,4 +177,14 @@ public class ConfirmDocument {
     public Long receiveContentPk() {
         return this.content.getPk();
     }
+
+    /**
+     * 사내 결재 문서인지 검증
+     * @Param : memberCompanyId 사용자의 회사 코드
+     * @Return - true : 결재문서 회사코드와 사용자 회사코드 일치
+     *         - false : 결재문서 회사코드와 사용자 회사코드 불일치
+     **/
+    public boolean areOurCompanyConfirmDocument(String memberCompanyId) {
+        return Objects.equals(requester.getCompanyId(), memberCompanyId);
+    }
 }
