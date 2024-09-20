@@ -1,6 +1,5 @@
 package com.jxx.approval.confirm.listener;
 
-import com.jxx.approval.confirm.domain.document.ConfirmStatus;
 import com.jxx.approval.confirm.domain.document.DocumentType;
 
 import java.time.LocalDateTime;

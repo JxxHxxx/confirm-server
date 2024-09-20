@@ -138,6 +138,15 @@ public class ConfirmDocumentApiController {
         // 결재 문서 승인 로직
         ApprovalLineServiceResponse response = approvalLineService.accept(confirmDocumentId, form);
 
+        // 승인의 경우, 모든 결재자가 승인해야 결재 문서의 상태를 승인으로 변경하는 이벤트가 발생해야함
+        if (response.finalApproval()) {
+            eventPublisher.publishEvent(new ConfirmDocumentFinalAcceptDecisionEvent(
+                    confirmDocumentId,
+                    response.companyId(),
+                    response.documentType(),
+                    LocalDateTime.now()));
+        }
+
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 승인", response));
     }
     // 결재 문서 반려

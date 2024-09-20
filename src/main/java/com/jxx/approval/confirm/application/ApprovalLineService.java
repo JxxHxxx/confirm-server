@@ -20,10 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,7 +36,6 @@ public class ApprovalLineService {
     private final ApprovalLineRepository approvalLineRepository;
     private final ConfirmDocumentRepository confirmDocumentRepository;
     private final ApplicationEventPublisher eventPublisher;
-    private final PlatformTransactionManager platformTransactionManager;
 
     @Transactional
     public ApprovalLineResponse enrollApprovalLines(List<ApprovalLineEnrollForm> enrollForms, String confirmDocumentId) throws JsonProcessingException {
@@ -143,24 +139,12 @@ public class ApprovalLineService {
                 .build()
                 .isEmptyApprovalLine();
 
-        TransactionStatus txStatus = platformTransactionManager.getTransaction(TransactionDefinition.withDefaults());
-
         ApprovalLine approvalLine = approvalLineManager
                 .checkBelongInApprovalLine()
                 .checkApprovalLineOrder()
                 .changeApproveStatus(ApproveStatus.ACCEPT);
         // 최종 결정권자 여부
         boolean finalApproval = approvalLine.isFinalApproval(approvalLines);
-
-        // 승인의 경우, 모든 결재자가 승인해야 결재 문서의 상태를 승인으로 변경하는 이벤트가 발생해야함
-        if (finalApproval) {
-            eventPublisher.publishEvent(new ConfirmDocumentFinalAcceptDecisionEvent(
-                    confirmDocumentId,
-                    confirmDocument.getCompanyId(),
-                    confirmDocument.getDocumentType(),
-                    LocalDateTime.now()));
-        }
-        platformTransactionManager.commit(txStatus);
 
         return new ApprovalLineServiceResponse(
                 approvalLine.getPk(),
@@ -191,6 +175,7 @@ public class ApprovalLineService {
         approvalLineManager.isEmptyApprovalLine();
 
         // 자신이 이미 결정한 사안인지 체크
+        // dirty checking
         ApprovalLine approvalLine = approvalLineManager
                 .checkBelongInApprovalLine()
                 .checkApprovalLineOrder()
