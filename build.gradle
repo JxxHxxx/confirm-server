@@ -60,6 +60,10 @@ dependencies {
     // SQL 로그 출력용
     implementation group: 'org.bgee.log4jdbc-log4j2', name: 'log4jdbc-log4j2-jdbc4.1', version: '1.16'
 
+    // 타 시스템 PATCH, PUT API 호출
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5
+    implementation 'org.apache.httpcomponents.client5:httpclient5:5.3.1'
+
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
 

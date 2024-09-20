@@ -9,7 +9,8 @@ import com.jxx.approval.confirm.application.ConfirmDocumentService;
 import com.jxx.approval.confirm.dto.request.*;
 import com.jxx.approval.confirm.dto.response.*;
 import com.jxx.approval.confirm.listener.ApproveStatusChangedEvent;
-import com.jxx.approval.confirm.listener.ConfirmStatusEvent;
+import com.jxx.approval.confirm.listener.ConfirmDocumentFinalAcceptDecisionEvent;
+import com.jxx.approval.confirm.listener.ConfirmDocumentRejectDecisionEvent;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -136,10 +137,6 @@ public class ConfirmDocumentApiController {
         eventPublisher.publishEvent(ApproveStatusChangedEvent.acceptEvent(confirmDocumentId, form.approvalLineId()));
         // 결재 문서 승인 로직
         ApprovalLineServiceResponse response = approvalLineService.accept(confirmDocumentId, form);
-        // 임시
-        if (response.finalApproval()) {
-            eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentId, response.vacationId(),ConfirmStatus.ACCEPT, LocalDateTime.now()));
-        }
 
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 승인", response));
     }
@@ -154,7 +151,12 @@ public class ConfirmDocumentApiController {
         // 결재 문서 반려 로직
         ApprovalLineServiceResponse response = approvalLineService.reject(confirmDocumentId, form);
 
-        eventPublisher.publishEvent(new ConfirmStatusEvent(confirmDocumentId, response.vacationId(), ConfirmStatus.REJECT, LocalDateTime.now()));
+        //반려의 경우, 중간 결재자가 반려하면 이전, 이후 결재자의 승인 여부와 상관없이 반려에 대한 후속 처리를 해야함
+        eventPublisher.publishEvent(new ConfirmDocumentRejectDecisionEvent(
+                confirmDocumentId,
+                response.documentType(),
+                response.companyId(),
+                LocalDateTime.now()));
 
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 반려", response));
     }

@@ -14,12 +14,18 @@ import com.jxx.approval.confirm.dto.response.*;
 import com.jxx.approval.confirm.infra.ConfirmDocumentRepository;
 import com.jxx.approval.confirm.dto.request.ApprovalLineEnrollForm;
 import com.jxx.approval.confirm.infra.ApprovalLineRepository;
-import com.jxx.approval.vendor.vacation.VacationIdExtractor;
+import com.jxx.approval.confirm.listener.ConfirmDocumentFinalAcceptDecisionEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -32,6 +38,8 @@ public class ApprovalLineService {
 
     private final ApprovalLineRepository approvalLineRepository;
     private final ConfirmDocumentRepository confirmDocumentRepository;
+    private final ApplicationEventPublisher eventPublisher;
+    private final PlatformTransactionManager platformTransactionManager;
 
     @Transactional
     public ApprovalLineResponse enrollApprovalLines(List<ApprovalLineEnrollForm> enrollForms, String confirmDocumentId) throws JsonProcessingException {
@@ -121,10 +129,13 @@ public class ApprovalLineService {
         return approvalLineResponse(confirmDocument, approvalLines);
     }
 
-    @Transactional
     public ApprovalLineServiceResponse accept(String confirmDocumentId, ApprovalInformationForm form) {
         // 리스너로 ConfirmDocument Status 체킹 해야됨
-        List<ApprovalLine> approvalLines = approvalLineRepository.findByConfirmDocumentConfirmDocumentId(confirmDocumentId);
+
+        List<ApprovalLine> approvalLines = approvalLineRepository.fetchByConfirmDocumentId(confirmDocumentId);
+
+        //추가 로직 - 결재 문서 타입을 넘기기 위함
+        ConfirmDocument confirmDocument = approvalLines.get(0).getConfirmDocument();
 
         ApprovalLineManager approvalLineManager = ApprovalLineManager.builder()
                 .approvalLineId(form.approvalLineId())
@@ -132,16 +143,24 @@ public class ApprovalLineService {
                 .build()
                 .isEmptyApprovalLine();
 
+        TransactionStatus txStatus = platformTransactionManager.getTransaction(TransactionDefinition.withDefaults());
+
         ApprovalLine approvalLine = approvalLineManager
                 .checkBelongInApprovalLine()
                 .checkApprovalLineOrder()
                 .changeApproveStatus(ApproveStatus.ACCEPT);
-
+        // 최종 결정권자 여부
         boolean finalApproval = approvalLine.isFinalApproval(approvalLines);
 
-        //여기 리팩토링 할 수 있음 일단 GO
-        ConfirmDocument findDocument = confirmDocumentRepository.findWithContent(confirmDocumentId).orElseThrow();
-        Long vacationId = VacationIdExtractor.execute(findDocument);
+        // 승인의 경우, 모든 결재자가 승인해야 결재 문서의 상태를 승인으로 변경하는 이벤트가 발생해야함
+        if (finalApproval) {
+            eventPublisher.publishEvent(new ConfirmDocumentFinalAcceptDecisionEvent(
+                    confirmDocumentId,
+                    confirmDocument.getCompanyId(),
+                    confirmDocument.getDocumentType(),
+                    LocalDateTime.now()));
+        }
+        platformTransactionManager.commit(txStatus);
 
         return new ApprovalLineServiceResponse(
                 approvalLine.getPk(),
@@ -149,7 +168,9 @@ public class ApprovalLineService {
                 approvalLine.getApprovalLineId(),
                 approvalLine.getApproveStatus(),
                 finalApproval,
-                vacationId);
+                confirmDocument.getDocumentType(),
+                confirmDocument.getCompanyId(),
+                confirmDocumentId);
     }
 
     @Transactional
@@ -157,7 +178,10 @@ public class ApprovalLineService {
         // 리스너로 ConfirmDocument Status 체킹 해야됨
 
         // 파기된 문서인지 체크
-        List<ApprovalLine> approvalLines = approvalLineRepository.findByConfirmDocumentConfirmDocumentId(confirmDocumentId);
+        List<ApprovalLine> approvalLines = approvalLineRepository.fetchByConfirmDocumentId(confirmDocumentId);
+
+        //추가 로직 - 결재 문서 타입을 넘기기 위함
+        ConfirmDocument confirmDocument = approvalLines.get(0).getConfirmDocument();
 
         ApprovalLineManager approvalLineManager = ApprovalLineManager.builder()
                 .approvalLineId(form.approvalLineId())
@@ -172,9 +196,6 @@ public class ApprovalLineService {
                 .checkApprovalLineOrder()
                 .changeApproveStatus(ApproveStatus.REJECT);
 
-        ConfirmDocument findDocument = confirmDocumentRepository.findWithContent(confirmDocumentId).orElseThrow();
-        Long vacationId = VacationIdExtractor.execute(findDocument);
-
         boolean finalApproval = approvalLine.isFinalApproval(approvalLines);
 
         return new ApprovalLineServiceResponse(
@@ -183,7 +204,9 @@ public class ApprovalLineService {
                 approvalLine.getApprovalLineId(),
                 approvalLine.getApproveStatus(),
                 finalApproval,
-                vacationId);
+                confirmDocument.getDocumentType(),
+                confirmDocument.getCompanyId(),
+                confirmDocumentId);
     }
 
     // TODO 다른 회사의 결재 라인을 볼 수 있는 문제 해결해야함

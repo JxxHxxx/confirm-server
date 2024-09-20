@@ -33,7 +33,7 @@ public class ConfirmDocumentExceptionHandler {
 
     @ExceptionHandler(ApprovalLineException.class)
     public ResponseEntity<ResponseResult> handle(ApprovalLineException exception) {
-        log.info("FAIL MSG : {} REQUESTER ID : {}", exception.getMessage(), exception.getApprovalId(), exception);
+        log.error("FAIL MSG : {} REQUESTER ID : {}", exception.getMessage(), exception.getApprovalId(), exception);
         return ResponseEntity
                 .badRequest()
                 .body(new ResponseResult<>(400, exception.getMessage(), null));
