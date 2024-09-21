@@ -130,14 +130,15 @@ public class ApprovalLineService {
 
         List<ApprovalLine> approvalLines = approvalLineRepository.fetchByConfirmDocumentId(confirmDocumentId);
 
-        //추가 로직 - 결재 문서 타입을 넘기기 위함
-        ConfirmDocument confirmDocument = approvalLines.get(0).getConfirmDocument();
 
         ApprovalLineManager approvalLineManager = ApprovalLineManager.builder()
                 .approvalLineId(form.approvalLineId())
                 .approvalLines(approvalLines)
                 .build()
-                .isEmptyApprovalLine();
+                .isEmptyApprovalLine(); // 빈 결재 라인인지 검증
+
+        //빈 결재 라인 검증을 위에서 하기 때문에 IndexOutOfBoundsException 예외는 뜨지 않음
+        ConfirmDocument confirmDocument = approvalLines.get(0).getConfirmDocument();
 
         ApprovalLine approvalLine = approvalLineManager
                 .checkBelongInApprovalLine()
@@ -164,15 +165,16 @@ public class ApprovalLineService {
         // 파기된 문서인지 체크
         List<ApprovalLine> approvalLines = approvalLineRepository.fetchByConfirmDocumentId(confirmDocumentId);
 
-        //추가 로직 - 결재 문서 타입을 넘기기 위함
-        ConfirmDocument confirmDocument = approvalLines.get(0).getConfirmDocument();
+
 
         ApprovalLineManager approvalLineManager = ApprovalLineManager.builder()
                 .approvalLineId(form.approvalLineId())
                 .approvalLines(approvalLines)
-                .build();
+                .build()
+                .isEmptyApprovalLine();
 
-        approvalLineManager.isEmptyApprovalLine();
+        //추가 로직 - 결재 문서 타입을 넘기기 위함
+        ConfirmDocument confirmDocument = approvalLines.get(0).getConfirmDocument();
 
         // 자신이 이미 결정한 사안인지 체크
         // dirty checking
