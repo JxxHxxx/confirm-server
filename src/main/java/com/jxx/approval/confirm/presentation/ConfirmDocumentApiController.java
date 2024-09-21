@@ -3,12 +3,11 @@ package com.jxx.approval.confirm.presentation;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jxx.approval.confirm.application.ApprovalLineService;
 import com.jxx.approval.confirm.domain.document.ConfirmDocumentException;
-import com.jxx.approval.confirm.domain.document.ConfirmStatus;
 import com.jxx.approval.confirm.dto.request.ConfirmDocumentContentRequest;
 import com.jxx.approval.confirm.application.ConfirmDocumentService;
 import com.jxx.approval.confirm.dto.request.*;
 import com.jxx.approval.confirm.dto.response.*;
-import com.jxx.approval.confirm.listener.ApproveStatusChangedEvent;
+import com.jxx.approval.confirm.listener.ConfirmDocumentAcceptRejectEvent;
 import com.jxx.approval.confirm.listener.ConfirmDocumentFinalAcceptDecisionEvent;
 import com.jxx.approval.confirm.listener.ConfirmDocumentRejectDecisionEvent;
 import jakarta.validation.constraints.NotBlank;
@@ -134,7 +133,7 @@ public class ConfirmDocumentApiController {
                                                    @RequestBody ApprovalInformationForm form) {
 
         // ConfirmDocument 에서 결재자가 결재 문서를 승인할 수 있는 상태인지 검증
-        eventPublisher.publishEvent(ApproveStatusChangedEvent.acceptEvent(confirmDocumentId, form.approvalLineId()));
+//        eventPublisher.publishEvent(ConfirmDocumentAcceptRejectEvent.acceptEvent(confirmDocumentId, form.approvalLineId()));
         // 결재 문서 승인 로직
         ApprovalLineServiceResponse response = approvalLineService.accept(confirmDocumentId, form);
 
@@ -155,8 +154,6 @@ public class ConfirmDocumentApiController {
     public ResponseEntity<ResponseResult> rejectConfirmDocument(@PathVariable(name = "confirm-document-id") String confirmDocumentId,
                                                    @RequestBody ApprovalInformationForm form) {
 
-        // ConfirmDocument 에서 결재자가 결재 문서를 반려할 수 있는 상태인지 검증
-        eventPublisher.publishEvent(ApproveStatusChangedEvent.rejectEvent(confirmDocumentId, form.approvalLineId()));
         // 결재 문서 반려 로직
         ApprovalLineServiceResponse response = approvalLineService.reject(confirmDocumentId, form);
 

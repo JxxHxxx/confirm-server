@@ -18,8 +18,7 @@ public class ConfirmDocumentExceptionHandler {
 
     @ExceptionHandler(ConfirmDocumentException.class)
     public ResponseEntity<ResponseResult> handle(ConfirmDocumentException exception) {
-        log.info("FAIL MSG : {} REQUESTER ID : {}", exception.getMessage(), exception.getRequesterId(), exception);
-
+        log.error("", exception);
         String data = null;
         String errorCode = exception.getErrorCode();
         if (Objects.nonNull(errorCode)) {

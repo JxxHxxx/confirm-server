@@ -14,6 +14,7 @@ import com.jxx.approval.confirm.dto.response.*;
 import com.jxx.approval.confirm.infra.ConfirmDocumentRepository;
 import com.jxx.approval.confirm.dto.request.ApprovalLineEnrollForm;
 import com.jxx.approval.confirm.infra.ApprovalLineRepository;
+import com.jxx.approval.confirm.listener.ConfirmDocumentAcceptRejectEvent;
 import com.jxx.approval.confirm.listener.ConfirmDocumentFinalAcceptDecisionEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -130,7 +131,6 @@ public class ApprovalLineService {
 
         List<ApprovalLine> approvalLines = approvalLineRepository.fetchByConfirmDocumentId(confirmDocumentId);
 
-
         ApprovalLineManager approvalLineManager = ApprovalLineManager.builder()
                 .approvalLineId(form.approvalLineId())
                 .approvalLines(approvalLines)
@@ -139,6 +139,9 @@ public class ApprovalLineService {
 
         //빈 결재 라인 검증을 위에서 하기 때문에 IndexOutOfBoundsException 예외는 뜨지 않음
         ConfirmDocument confirmDocument = approvalLines.get(0).getConfirmDocument();
+
+        // ConfirmDocument 에서 결재자가 결재 문서를 승인할 수 있는 상태인지 검증
+        eventPublisher.publishEvent(ConfirmDocumentAcceptRejectEvent.acceptEvent(confirmDocument));
 
         ApprovalLine approvalLine = approvalLineManager
                 .checkBelongInApprovalLine()
@@ -165,8 +168,6 @@ public class ApprovalLineService {
         // 파기된 문서인지 체크
         List<ApprovalLine> approvalLines = approvalLineRepository.fetchByConfirmDocumentId(confirmDocumentId);
 
-
-
         ApprovalLineManager approvalLineManager = ApprovalLineManager.builder()
                 .approvalLineId(form.approvalLineId())
                 .approvalLines(approvalLines)
@@ -175,6 +176,9 @@ public class ApprovalLineService {
 
         //추가 로직 - 결재 문서 타입을 넘기기 위함
         ConfirmDocument confirmDocument = approvalLines.get(0).getConfirmDocument();
+
+        // ConfirmDocument 에서 결재자가 결재 문서를 반려할 수 있는 상태인지 검증
+        eventPublisher.publishEvent(ConfirmDocumentAcceptRejectEvent.rejectEvent(confirmDocument));
 
         // 자신이 이미 결정한 사안인지 체크
         // dirty checking

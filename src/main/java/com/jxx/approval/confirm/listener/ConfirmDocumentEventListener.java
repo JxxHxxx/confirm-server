@@ -18,7 +18,6 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 
 @Slf4j
@@ -30,15 +29,16 @@ public class ConfirmDocumentEventListener {
     /**
      * 현재 결재 문서가 결재자가 승인/반려를 할 수 있는 상태인지를 검증
      **/
-    @TransactionalEventListener(value = ApproveStatusChangedEvent.class, phase = TransactionPhase.BEFORE_COMMIT)
-    public void handle(ApproveStatusChangedEvent event) {
-        String confirmDocumentId = event.getConfirmDocumentId();
-        // 로깅 작업 해야함
-        ConfirmDocument confirmDocument = confirmDocumentRepository.findWithContent(confirmDocumentId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문서입니다."));
-
-        if (confirmDocument.confirmStatusNotBelongIn(event.getConfirmStatus())) {
-            throw new ConfirmDocumentException("승인자의 요청을 처리할 수 없습니다. 요청 종류 :" + event.getRequestType(), event.getApprovalLineId());
+    @TransactionalEventListener(value = ConfirmDocumentAcceptRejectEvent.class, phase = TransactionPhase.BEFORE_COMMIT)
+    public void handle(ConfirmDocumentAcceptRejectEvent event) {
+        // 로그 작업
+        ConfirmDocument confirmDocument = event.getConfirmDocument();
+        if (!confirmDocument.validateConfirmStatusChange(event.getToConfirmStatus())) {
+            log.info("\n {}", event.validateFailMessage());
+            throw new ConfirmDocumentException("현재 결재 문서는 승인/반려할 수 없는 상태입니다.");
+        }
+        else {
+            log.info("\n {}", event.validateSuccessMessage());
         }
     }
 

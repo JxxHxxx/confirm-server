@@ -187,4 +187,23 @@ public class ConfirmDocument {
     public boolean areOurCompanyConfirmDocument(String memberCompanyId) {
         return Objects.equals(requester.getCompanyId(), memberCompanyId);
     }
+
+    /**
+     *
+     * @param toConfirmStatus : 결재 문서의 TO-BE 상태 값
+     * @return 결재 문서가 toConfirmStatus 상태로 변경 가능한지 반환
+     */
+    public boolean validateConfirmStatusChange(ConfirmStatus toConfirmStatus) {
+        switch (toConfirmStatus) {
+            case ACCEPT -> {
+                return ACCEPT_POSSIBLE_STATUS.contains(this.confirmStatus);
+            }
+            case REJECT -> {
+                return REJECT_POSSIBLE_STATUS.contains(this.confirmStatus);
+            }
+            default -> {
+                return false;
+            }
+        }
+    }
 }
