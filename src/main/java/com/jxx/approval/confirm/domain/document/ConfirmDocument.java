@@ -105,6 +105,7 @@ public class ConfirmDocument {
      * 종료 상태가 된 결재 문서 후속 처리
      * 결재 문서의 종료 상태란, 최종 결정권자의 승인, 중도 반려 등이 존재한다.
      **/
+    // WRITE QUERY : JPA dirty checking
     public void processCompletedConfirmDocument(ConfirmStatus confirmStatus, LocalDateTime completedTime) {
         changeConfirmStatus(confirmStatus);
         setCompletedTime(completedTime);
@@ -152,7 +153,7 @@ public class ConfirmDocument {
         return !raiseBefore.contains(confirmStatus);
     }
 
-    // NULL 체크 추가
+    // 결재 라인 중, ACCEPT 가 아닌 플래그가 있는지 검사
     public boolean anyApprovalNotAccepted() {
         return approvalLines.stream()
                 .anyMatch(approvalLine -> (approvalLine.isNotApproveStatus(ACCEPT) || Objects.isNull(approvalLine.getApproveStatus())));

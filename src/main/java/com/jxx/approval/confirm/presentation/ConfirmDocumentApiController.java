@@ -7,7 +7,6 @@ import com.jxx.approval.confirm.dto.request.ConfirmDocumentContentRequest;
 import com.jxx.approval.confirm.application.ConfirmDocumentService;
 import com.jxx.approval.confirm.dto.request.*;
 import com.jxx.approval.confirm.dto.response.*;
-import com.jxx.approval.confirm.listener.ConfirmDocumentAcceptRejectEvent;
 import com.jxx.approval.confirm.listener.ConfirmDocumentFinalAcceptDecisionEvent;
 import com.jxx.approval.confirm.listener.ConfirmDocumentRejectDecisionEvent;
 import jakarta.validation.constraints.NotBlank;
@@ -127,25 +126,11 @@ public class ConfirmDocumentApiController {
         return ResponseEntity.ok(new ResponseResult(OK.value(), "결재 문서 상신", response));
     }
     // 결재 문서 승인
-    @Transactional
+//    @Transactional
     @PatchMapping("/api/confirm-documents/{confirm-document-id}/accept")
     public ResponseEntity<ResponseResult> acceptConfirmDocument(@PathVariable(name = "confirm-document-id") String confirmDocumentId,
                                                    @RequestBody ApprovalInformationForm form) {
-
-        // ConfirmDocument 에서 결재자가 결재 문서를 승인할 수 있는 상태인지 검증
-//        eventPublisher.publishEvent(ConfirmDocumentAcceptRejectEvent.acceptEvent(confirmDocumentId, form.approvalLineId()));
-        // 결재 문서 승인 로직
         ApprovalLineServiceResponse response = approvalLineService.accept(confirmDocumentId, form);
-
-        // 승인의 경우, 모든 결재자가 승인해야 결재 문서의 상태를 승인으로 변경하는 이벤트가 발생해야함
-        if (response.finalApproval()) {
-            eventPublisher.publishEvent(new ConfirmDocumentFinalAcceptDecisionEvent(
-                    confirmDocumentId,
-                    response.companyId(),
-                    response.documentType(),
-                    LocalDateTime.now()));
-        }
-
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 승인", response));
     }
     // 결재 문서 반려
@@ -153,17 +138,7 @@ public class ConfirmDocumentApiController {
     @PatchMapping("/api/confirm-documents/{confirm-document-id}/reject")
     public ResponseEntity<ResponseResult> rejectConfirmDocument(@PathVariable(name = "confirm-document-id") String confirmDocumentId,
                                                    @RequestBody ApprovalInformationForm form) {
-
-        // 결재 문서 반려 로직
         ApprovalLineServiceResponse response = approvalLineService.reject(confirmDocumentId, form);
-
-        //반려의 경우, 중간 결재자가 반려하면 이전, 이후 결재자의 승인 여부와 상관없이 반려에 대한 후속 처리를 해야함
-        eventPublisher.publishEvent(new ConfirmDocumentRejectDecisionEvent(
-                confirmDocumentId,
-                response.documentType(),
-                response.companyId(),
-                LocalDateTime.now()));
-
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 반려", response));
     }
 
@@ -172,8 +147,7 @@ public class ConfirmDocumentApiController {
     public ResponseEntity<ResponseResult> cancelConfirmDocument(@PathVariable(name = "confirm-document-id") String confirmDocumentId,
                                                    @RequestBody ConfirmDocumentCancelForm form) {
         ConfirmDocumentServiceDto response = confirmDocumentService.cancelConfirmDocument(confirmDocumentId, form);
-
-        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 반려", response));
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "결재 문서 취소", response));
     }
 
     @GetMapping("/api/confirm-documents/contents/{content-pk}")

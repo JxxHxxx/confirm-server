@@ -1,14 +1,9 @@
 package com.jxx.approval.confirm.listener;
 
-import com.jxx.approval.confirm.domain.document.DocumentType;
-
-import java.time.LocalDateTime;
+import com.jxx.approval.confirm.domain.document.ConfirmDocument;
 
 /** 결재 문서 반려 시 발생하는 이벤트 **/
 public record ConfirmDocumentRejectDecisionEvent(
-        String confirmDocumentId,
-        DocumentType documentType,
-        String companyId,
-        LocalDateTime completedTime
+        ConfirmDocument confirmDocument
 ) {
 }

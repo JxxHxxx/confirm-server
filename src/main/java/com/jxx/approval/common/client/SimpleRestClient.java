@@ -2,6 +2,7 @@ package com.jxx.approval.common.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jxx.approval.confirm.dto.response.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -32,11 +33,24 @@ public class SimpleRestClient {
 
     public <T> ResponseEntity<T> getForEntity(String url, Class<T> responseType) throws JsonProcessingException {
         ResponseEntity<T> response = restTemplate.getForEntity(url, responseType);
+        ;
         return response;
     }
 
+    /** ResponseResult 객체는 아래와 같은 형태이다.
+     * Jxx 프로젝트에서 공통으로 따르는 API 응답 구조이기 떄문에 내부 프로젝트 간에는 호환이 가능하다.
+     * {
+     * "status":200,
+     * "message":"response success",
+     * "data": ...
+     * }"
+     **/
+    public ResponseResult patch(String url, Object request, Object... uriVariable) throws JsonProcessingException {
+        return restTemplate.patchForObject(url, request, ResponseResult.class, uriVariable);
+    }
+
     public <T> T patch(String url, Object request, Class<T> responseType, Object... uriVariable) throws JsonProcessingException {
-        String stringResponse = restTemplate.patchForObject(url, request, String.class, uriVariable);
-        return objectMapper.readValue(stringResponse, responseType);
+
+        return restTemplate.patchForObject(url, request, responseType, uriVariable);
     }
 }

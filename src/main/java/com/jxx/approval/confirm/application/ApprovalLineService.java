@@ -16,11 +16,11 @@ import com.jxx.approval.confirm.dto.request.ApprovalLineEnrollForm;
 import com.jxx.approval.confirm.infra.ApprovalLineRepository;
 import com.jxx.approval.confirm.listener.ConfirmDocumentAcceptRejectEvent;
 import com.jxx.approval.confirm.listener.ConfirmDocumentFinalAcceptDecisionEvent;
+import com.jxx.approval.confirm.listener.ConfirmDocumentRejectDecisionEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -126,9 +126,8 @@ public class ApprovalLineService {
         return approvalLineResponse(confirmDocument, approvalLines);
     }
 
+    @Transactional
     public ApprovalLineServiceResponse accept(String confirmDocumentId, ApprovalInformationForm form) {
-        // 리스너로 ConfirmDocument Status 체킹 해야됨
-
         List<ApprovalLine> approvalLines = approvalLineRepository.fetchByConfirmDocumentId(confirmDocumentId);
 
         ApprovalLineManager approvalLineManager = ApprovalLineManager.builder()
@@ -143,19 +142,25 @@ public class ApprovalLineService {
         // ConfirmDocument 에서 결재자가 결재 문서를 승인할 수 있는 상태인지 검증
         eventPublisher.publishEvent(ConfirmDocumentAcceptRejectEvent.acceptEvent(confirmDocument));
 
+        // dirty checking
         ApprovalLine approvalLine = approvalLineManager
                 .checkBelongInApprovalLine()
                 .checkApprovalLineOrder()
                 .changeApproveStatus(ApproveStatus.ACCEPT);
-        // 최종 결정권자 여부
-        boolean finalApproval = approvalLine.isFinalApproval(approvalLines);
+        // 최종 결정권자 여부 - 메모리 상에서만 확인 가능, 다시 말해 DB에 없는 필드
+
+        // 최종 승인자가 승인을 했을 때 발생하는 이벤트로 일반적으로 타 서버의 API 를 호출한다.
+        // 다만 changeApproveStatus(ApproveStatus.ACCEPT) 에서 발생하는 UPDATE 쿼리와 트랜잭션을 분리하게되면 데이터 정합성이 맞지 않을 수 있어 트랜잭션을 유지한다.
+        if (approvalLine.isFinalApproval(approvalLines)) {
+            eventPublisher.publishEvent(new ConfirmDocumentFinalAcceptDecisionEvent(confirmDocument));
+        }
 
         return new ApprovalLineServiceResponse(
                 approvalLine.getPk(),
                 approvalLine.getApprovalOrder(),
                 approvalLine.getApprovalLineId(),
                 approvalLine.getApproveStatus(),
-                finalApproval,
+                approvalLine.isFinalApproval(approvalLines),
                 confirmDocument.getDocumentType(),
                 confirmDocument.getCompanyId(),
                 confirmDocumentId);
@@ -186,6 +191,9 @@ public class ApprovalLineService {
                 .checkBelongInApprovalLine()
                 .checkApprovalLineOrder()
                 .changeApproveStatus(ApproveStatus.REJECT);
+
+        //반려의 경우, 중간 결재자가 반려하면 이전, 이후 결재자의 승인 여부와 상관없이 반려에 대한 후속 처리를 해야함
+        eventPublisher.publishEvent(new ConfirmDocumentRejectDecisionEvent(confirmDocument));
 
         boolean finalApproval = approvalLine.isFinalApproval(approvalLines);
 
