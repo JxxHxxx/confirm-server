@@ -102,20 +102,23 @@ public class ConfirmDocument {
     }
 
     /**
-     * 종료 상태가 된 결재 문서 후속 처리
-     * 결재 문서의 종료 상태란, 최종 결정권자의 승인, 중도 반려 등이 존재한다.
+     * <pre>
+     * WRITE QUERY : JPA dirty checking
+     * 최종 결정된 결재 문서 후속 처리
+     * 최종 결정된 문서란
+     * 1) 최종 결정권자의 승인
+     * 2) 결재자 중 1인 반려가 된 문서를 말한다.
+     * </pre>
      **/
-    // WRITE QUERY : JPA dirty checking
-    public void processCompletedConfirmDocument(ConfirmStatus confirmStatus, LocalDateTime completedTime) {
+    public void processFinalDecisionConfirmDocument(ConfirmStatus confirmStatus) {
         changeConfirmStatus(confirmStatus);
-        setCompletedTime(completedTime);
+        setCompletedTime(LocalDateTime.now());
         setApprovalLineLifecycle(ApprovalLineLifecycle.PROCESS_UNMODIFIABLE);
     }
 
     public String getConfirmDocumentId() {
         return this.confirmDocumentId;
     }
-
 
     public DocumentType getDocumentType() {
         return this.document.getDocumentType();
@@ -181,16 +184,16 @@ public class ConfirmDocument {
 
     /**
      * 사내 결재 문서인지 검증
+     *
      * @Param : memberCompanyId 사용자의 회사 코드
      * @Return - true : 결재문서 회사코드와 사용자 회사코드 일치
-     *         - false : 결재문서 회사코드와 사용자 회사코드 불일치
+     * - false : 결재문서 회사코드와 사용자 회사코드 불일치
      **/
     public boolean areOurCompanyConfirmDocument(String memberCompanyId) {
         return Objects.equals(requester.getCompanyId(), memberCompanyId);
     }
 
     /**
-     *
      * @param toConfirmStatus : 결재 문서의 TO-BE 상태 값
      * @return 결재 문서가 toConfirmStatus 상태로 변경 가능한지 반환
      */

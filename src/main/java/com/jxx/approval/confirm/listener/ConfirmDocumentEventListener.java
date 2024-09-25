@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -112,7 +111,7 @@ public class ConfirmDocumentEventListener {
         if (thirdPartyApiResponseSuccess) {
             // 결재 문서 상태 변경 및 최종 승인/반려 시간 지정
             // WRITE QUERY : JPA dirty checking
-            confirmDocument.processCompletedConfirmDocument(ConfirmStatus.ACCEPT, LocalDateTime.now());
+            confirmDocument.processFinalDecisionConfirmDocument(ConfirmStatus.ACCEPT);
         }
     }
 
@@ -172,7 +171,7 @@ public class ConfirmDocumentEventListener {
         if (thirdPartyApiResponseSuccess) {
             // 결재 문서 상태 변경 및 최종 승인/반려 시간 지정
             // WRITE QUERY : JPA dirty checking
-            confirmDocument.processCompletedConfirmDocument(ConfirmStatus.REJECT, LocalDateTime.now());
+            confirmDocument.processFinalDecisionConfirmDocument(ConfirmStatus.REJECT);
         }
 
     }
