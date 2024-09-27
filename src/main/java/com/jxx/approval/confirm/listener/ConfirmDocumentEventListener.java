@@ -2,12 +2,16 @@ package com.jxx.approval.confirm.listener;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jxx.approval.common.client.SimpleRestClient;
+import com.jxx.approval.confirm.domain.connect.ConfirmDocumentConnection;
+import com.jxx.approval.confirm.domain.connect.ConnectionParameter;
+import com.jxx.approval.confirm.domain.connect.ParameterType;
 import com.jxx.approval.confirm.domain.document.ConfirmDocument;
 import com.jxx.approval.confirm.domain.document.ConfirmDocumentException;
 import com.jxx.approval.confirm.domain.document.ConfirmStatus;
 import com.jxx.approval.confirm.domain.document.DocumentType;
 import com.jxx.approval.confirm.dto.request.ConfirmStatusChangeRequest;
 import com.jxx.approval.confirm.dto.response.ResponseResult;
+import com.jxx.approval.confirm.infra.ConfirmDocumentConnectionRepository;
 import com.jxx.approval.vendor.vacation.ResourceIdExtractor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,15 +20,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
+import org.springframework.web.util.UriBuilder;
+import org.springframework.web.util.UriBuilderFactory;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
+import static com.jxx.approval.confirm.domain.connect.ParameterType.REQUEST_BODY;
 
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class ConfirmDocumentEventListener {
+
+    private final ConfirmDocumentConnectionRepository confirmDocumentConnectionRepository;
+
     /**
      * 현재 결재 문서가 결재자가 승인/반려를 할 수 있는 상태인지를 검증
      * 굳이 이 로직을 여기에 둘 필요가 있나 싶음...
@@ -46,7 +60,7 @@ public class ConfirmDocumentEventListener {
      * 외부 통신이 발생할 수 있다. SYNC 권장
      **/
     @TransactionalEventListener(value = ConfirmDocumentFinalAcceptDecisionEvent.class, phase = TransactionPhase.BEFORE_COMMIT)
-    public void handle(ConfirmDocumentFinalAcceptDecisionEvent event) throws JsonProcessingException {
+    public void handleConfirmDocumentFinalAcceptDecisionEvent(ConfirmDocumentFinalAcceptDecisionEvent event) throws JsonProcessingException {
         ConfirmDocument confirmDocument = event.confirmDocument();
         String confirmDocumentId = confirmDocument.getConfirmDocumentId();
         DocumentType documentType = confirmDocument.getDocumentType();
@@ -83,13 +97,11 @@ public class ConfirmDocumentEventListener {
                     // PK 추출
                     Long workTicketPk = ResourceIdExtractor.execute(confirmDocumentId, documentType, companyId);
 
-                    // GW 서버로 보낼 requestBody 파라미터 리스트
-                    Map<String, Object> requestBody = new HashMap<>();
-                    requestBody.put("workStatus", "ACCEPT");
-
-                    ResponseResult response = simpleRestClient.patch("http://localhost:8080/api/work-tickets/{work-ticket-pk}/complete-confirm",
-                            requestBody,
-                            workTicketPk);
+                    ConfirmDocumentConnection connection = confirmDocumentConnectionRepository.findByDocumentTypeAndTriggerType(documentType, "ACCEPT").get();
+                    List<ConnectionParameter> connectionParameters = connection.getConnectionParameters();
+                    Map<String, Object> newRequestBody = new HashMap<>();
+                    connectionParameters.forEach(cp -> newRequestBody.put(cp.getParameterKey(), cp.getParameterValue()));
+                    ResponseResult response = simpleRestClient.patch(connection.getHost() + "/" + connection.getUrl(), newRequestBody, workTicketPk);
 
                     if (HttpStatusCode.valueOf(response.getStatus()).is2xxSuccessful()) {
                         thirdPartyApiResponseSuccess = true;
@@ -114,6 +126,89 @@ public class ConfirmDocumentEventListener {
             confirmDocument.processFinalDecisionConfirmDocument(ConfirmStatus.ACCEPT);
         }
     }
+
+//    /**
+//     * 결재 문서 최종 승인 시 발생하는 이벤트 처리 로직
+//     * 외부 통신이 발생할 수 있다. SYNC 권장
+//     **/
+//    @TransactionalEventListener(value = ConfirmDocumentFinalAcceptDecisionEvent.class, phase = TransactionPhase.BEFORE_COMMIT)
+//    public void handleConfirmDocumentFinalAcceptDecisionEvent(ConfirmDocumentFinalAcceptDecisionEvent event) throws JsonProcessingException {
+//        ConfirmDocument confirmDocument = event.confirmDocument();
+//        String confirmDocumentId = confirmDocument.getConfirmDocumentId();
+//        DocumentType documentType = confirmDocument.getDocumentType();
+//        String companyId = confirmDocument.getCompanyId();
+//        log.info("\n [PROCESS:FINAL ACCEPT]confirmDocumentId:{}", confirmDocumentId);
+//
+//        if (confirmDocument.anyApprovalNotAccepted()) {
+//            log.error("confirmDocumentId:{} present reject flag, so cannot process accept logic", confirmDocumentId);
+//            throw new ConfirmDocumentException("잘못된 접근입니다. 관리자에게 문의하세요.");
+//        }
+//
+//        boolean thirdPartyApiResponseSuccess = false; // third-party API 정상 응답 여부
+//
+//        // 추상화 START
+//        SimpleRestClient simpleRestClient = new SimpleRestClient();
+//        ConfirmDocumentConnection connection = confirmDocumentConnectionRepository.findByDocumentTypeAndTriggerType(documentType, "ACCEPT").get();
+//        List<ConnectionParameter> connectionParameters = connection.getConnectionParameters();
+//
+//        // request body 생성
+//        List<ConnectionParameter> requestBodyConnectionParameters = connectionParameters.stream()
+//                .filter(ConnectionParameter::isNotRequestBodyType)
+//                .toList();
+//
+//        Map<String, Object> httpRequestBody = new HashMap<>();
+//        requestBodyConnectionParameters.forEach(cp -> httpRequestBody.put(cp.getParameterKey(), cp.getParameterValue()));
+//
+//        List<ConnectionParameter> queryStringConnectionParameters = connectionParameters.stream()
+//                .filter(ConnectionParameter::isNotQueryStringType)
+//                .toList();
+//
+//        String url = connection.getHost() + "/" + connection.getUrl();
+//
+//        // PATH-VARIABLE
+//        Long resourceId = ResourceIdExtractor.execute(confirmDocumentId, documentType, companyId);
+//        // 추상화 END
+//
+//        // TODO 우선 GET,POST,PATCH 만 구현
+//        switch (connection.getMethodType()) {
+//            case "GET" -> {
+//                log.info("GET 미구현");
+//            }
+//            case "POST" -> {
+//                try {
+//
+//                    ResponseEntity<String> response = simpleRestClient.postForEntity(url, httpRequestBody, String.class, resourceId);
+//
+//                    if (response.getStatusCode().is2xxSuccessful()) {
+//                        thirdPartyApiResponseSuccess = true;
+//                    }
+//                    else {
+//                        log.info("실패");
+//                    }
+//                } catch (Exception e) {
+//                    log.error("", e);
+//                    throw new ConfirmDocumentException("오류 발생");
+//                }
+//            }
+//            case "PATCH" -> {
+//                ResponseResult response = simpleRestClient.patch(url, httpRequestBody, resourceId);
+//
+//                if (HttpStatusCode.valueOf(response.getStatus()).is2xxSuccessful()) {
+//                    thirdPartyApiResponseSuccess = true;
+//                } else {
+//                    log.error("{} {}", response.getStatus(), response.getMessage());
+//                    throw new ConfirmDocumentException(response.getMessage());
+//                }
+//            }
+//
+//        }
+//
+//        if (thirdPartyApiResponseSuccess) {
+//            // 결재 문서 상태 변경 및 최종 승인/반려 시간 지정
+//            // WRITE QUERY : JPA dirty checking
+//            confirmDocument.processFinalDecisionConfirmDocument(ConfirmStatus.ACCEPT);
+//        }
+//    }
 
     @TransactionalEventListener(value = ConfirmDocumentRejectDecisionEvent.class, phase = TransactionPhase.BEFORE_COMMIT)
     public void handle(ConfirmDocumentRejectDecisionEvent event) throws JsonProcessingException {

@@ -57,3 +57,9 @@ VALUES ('요청자', '요청 정보', 'requester_name', 'vac', 'COM', 'BAISC_REQ
         ,('요청 내용', '요청 정보', 'requestContent', 'WRK', 'COM', 'BAISC_REQUEST_INFO', 1, 'PAIR', 3)
         ,('분석 내용', '요청 분석', 'analyzeContent', 'WRK', 'COM', 'REQ_ANALYZE', 2, 'PAIR', 1)
         ,('계획 내용', '작업 계획', 'workPlanContent', 'WRK', 'COM', 'REQ_WORKPLAN', 3, 'PAIR', 1);
+
+INSERT INTO JXX_CONFIRM_DOCUMENT_CONNECTION (DESCRIPTION, DOCUMENT_TYPE, HOST, METHOD_TYPE, TRIGGER_TYPE, URL) VALUES
+    ('작업 티켓 최종 승인 후속 처리 API', 'WRK', 'http://localhost:8080','PATCH','ACCEPT','api/work-tickets/{work-ticket-pk}/complete-confirm');
+
+INSERT INTO JXX_CONFIRM_DOCUMENT_CONNECTION_PARAMETER (PARAMETER_KEY, PARAMETER_TYPE, PATH_VARIABLE_ORDER, PARAMETER_VALUE, CONNECTION_PK) VALUES
+    ('workStatus', 'REQUEST_BODY',1, 'ACCEPT', 1);

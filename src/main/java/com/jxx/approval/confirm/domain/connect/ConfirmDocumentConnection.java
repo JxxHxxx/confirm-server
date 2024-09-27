@@ -34,6 +34,7 @@ public class ConfirmDocumentConnection {
     private String url;
     @Comment("결재 문서 유형")
     @Column(name = "DOCUMENT_TYPE")
+    @Enumerated(value = EnumType.STRING)
     private DocumentType documentType;
     @Comment("트리거 타입(어떤 이벤트가 발생할 때 호출해야 하는지를 표현)")
     @Column(name = "TRIGGER_TYPE")

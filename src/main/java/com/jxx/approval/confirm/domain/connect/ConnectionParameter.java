@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
+import java.util.Objects;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -44,5 +46,13 @@ public class ConnectionParameter {
         this.parameterValue = parameterValue;
         this.pathVariableOrder = pathVariableOrder;
         this.confirmDocumentConnection = confirmDocumentConnection;
+    }
+
+    public boolean isNotRequestBodyType() {
+        return !Objects.equals(this.parameterType, ParameterType.REQUEST_BODY);
+    }
+
+    public boolean isNotQueryStringType() {
+        return !Objects.equals(this.parameterType, ParameterType.QUERY_STRING);
     }
 }
