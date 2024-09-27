@@ -41,8 +41,8 @@ INSERT INTO jxx_confirm_document_element
 VALUES ('요청자', '요청 정보', 'requester_name', 'vac', 'COM', 'BAISC_REQUEST_INFO', 1, 'PAIR', 1)
         , ('요청부서', '요청 정보', 'department_name', 'vac', 'COM', 'BAISC_REQUEST_INFO', 1, 'PAIR', 2)
         , ('사유', '요청 정보', 'reason', 'vac', 'COM', 'BAISC_REQUEST_INFO', 1, 'PAIR', 3)
-        , ('시작일', '휴가 기간', 'vacation_durations.startDateTime', 'vac', 'COM', 'VACATION_DURATION', 2, 'PAIR', 1)
-        , ('종료일', '휴가 기간', 'vacation_durations.endDateTime', 'vac', 'COM', 'VACATION_DURATION', 2, 'PAIR', 2)
+        , ('시작일', '휴가 기간', 'vacation_durations.startDateTime', 'vac', 'COM', 'VACATION_DURATION', 2, 'ARRAY', 1)
+        , ('종료일', '휴가 기간', 'vacation_durations.endDateTime', 'vac', 'COM', 'VACATION_DURATION', 2, 'ARRAY', 2)
         , ('직무대행자', '그 외', 'delegator_name', 'vac', 'COM', 'ETC', 3, 'PAIR', 1)
         , ( '카드 사용자', '요청 정보', 'card_user', 'cost', 'COM', 'BAISC_REQUEST_INFO', 1, 'PAIR', 1)
         , ( '사용기간', '요청 정보', 'use_duration', 'cost', 'COM', 'BAISC_REQUEST_INFO', 1, 'PAIR', 2)
@@ -58,8 +58,9 @@ VALUES ('요청자', '요청 정보', 'requester_name', 'vac', 'COM', 'BAISC_REQ
         ,('분석 내용', '요청 분석', 'analyzeContent', 'WRK', 'COM', 'REQ_ANALYZE', 2, 'PAIR', 1)
         ,('계획 내용', '작업 계획', 'workPlanContent', 'WRK', 'COM', 'REQ_WORKPLAN', 3, 'PAIR', 1);
 
-INSERT INTO JXX_CONFIRM_DOCUMENT_CONNECTION (DESCRIPTION, DOCUMENT_TYPE, HOST, METHOD_TYPE, TRIGGER_TYPE, URL) VALUES
-    ('작업 티켓 최종 승인 후속 처리 API', 'WRK', 'http://localhost:8080','PATCH','ACCEPT','api/work-tickets/{work-ticket-pk}/complete-confirm');
+INSERT INTO JXX_REST_API_CONNECTION (DESCRIPTION, DOCUMENT_TYPE, HOST, METHOD_TYPE, PATH, PORT, SCHEME, TRIGGER_TYPE) VALUES
+ ('작업 티켓 최종 승인 후속 처리 API', 'WRK', 'localhost','PATCH','/api/work-tickets/{work-ticket-pk}/complete-confirm', 8080,'http','FINAL_ACCEPT');
 
-INSERT INTO JXX_CONFIRM_DOCUMENT_CONNECTION_PARAMETER (PARAMETER_KEY, PARAMETER_TYPE, PATH_VARIABLE_ORDER, PARAMETER_VALUE, CONNECTION_PK) VALUES
-    ('workStatus', 'REQUEST_BODY',1, 'ACCEPT', 1);
+INSERT INTO JXX_CONNECTION_ELEMENT (ELEMENT_KEY, ELEMENT_TYPE, ELEMENT_VALUE, ELEMENT_VALUE_TYPE, CONNECTION_PK) VALUES
+ ('workStatus', 'REQUEST_BODY', 'ACCEPT','CONST', 1),
+ ('work-ticket-pk', 'PATH_VARIABLE', null, 'RESOURCE_ID', 1);

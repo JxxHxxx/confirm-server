@@ -152,7 +152,12 @@ public class ApprovalLineService {
         // 최종 승인자가 승인을 했을 때 발생하는 이벤트로 일반적으로 타 서버의 API 를 호출한다.
         // 다만 changeApproveStatus(ApproveStatus.ACCEPT) 에서 발생하는 UPDATE 쿼리와 트랜잭션을 분리하게되면 데이터 정합성이 맞지 않을 수 있어 트랜잭션을 유지한다.
         if (approvalLine.isFinalApproval(approvalLines)) {
-            eventPublisher.publishEvent(new ConfirmDocumentFinalAcceptDecisionEvent(confirmDocument));
+            if (confirmDocument.anyApprovalNotAccepted()) {
+                log.error("confirmDocumentId:{} present reject flag, so cannot process accept logic", confirmDocumentId);
+                throw new ConfirmDocumentException("잘못된 접근입니다. 관리자에게 문의하세요.");
+            }
+
+            eventPublisher.publishEvent(new ConfirmDocumentFinalAcceptDecisionEvent(confirmDocument, "FINAL_ACCEPT"));
         }
 
         return new ApprovalLineServiceResponse(

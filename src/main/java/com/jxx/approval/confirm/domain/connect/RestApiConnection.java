@@ -15,23 +15,29 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "JXX_CONFIRM_DOCUMENT_CONNECTION",
+@Table(name = "JXX_REST_API_CONNECTION",
         indexes = @Index(columnList = "DOCUMENT_TYPE, TRIGGER_TYPE", unique = true))
-public class ConfirmDocumentConnection {
+public class RestApiConnection {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CONNECTION_PK")
     private Long connectionPk;
-
-    @Comment("REST API를 호출할 HOST")
+    @Comment("URL scheme")
+    @Column(name = "SCHEME")
+    private String scheme;
+    @Comment("URL host or ip")
     @Column(name = "HOST")
     private String host;
+    @Comment("URL port")
+    @Column(name = "PORT")
+    private int port;
+    @Comment("URL path")
+    @Column(name = "PATH")
+    private String path;
     @Comment("REST API 메서드 유형")
     @Column(name = "METHOD_TYPE")
     private String methodType;
-    @Comment("REST API URL")
-    @Column(name = "URL")
-    private String url;
     @Comment("결재 문서 유형")
     @Column(name = "DOCUMENT_TYPE")
     @Enumerated(value = EnumType.STRING)
@@ -42,17 +48,22 @@ public class ConfirmDocumentConnection {
     @Comment("REST API에 대한 설명")
     @Column(name = "DESCRIPTION")
     private String description;
-    @OneToMany(mappedBy = "confirmDocumentConnection", fetch = FetchType.LAZY)
-    private List<ConnectionParameter> connectionParameters = new ArrayList<>();
+    @OneToMany(mappedBy = "restApiConnection", fetch = FetchType.LAZY)
+    private List<ConnectionElement> connectionElements = new ArrayList<>();
 
     @Builder
-    public ConfirmDocumentConnection(String host, String methodType, String url, DocumentType documentType,
-                                     String triggerType, String description) {
+    public RestApiConnection(String scheme, String host, int port, String path, String methodType, DocumentType documentType,
+                             String triggerType, String description, List<ConnectionElement> connectionElements) {
+        this.scheme = scheme;
         this.host = host;
+        this.port = port;
+        this.path = path;
         this.methodType = methodType;
-        this.url = url;
         this.documentType = documentType;
         this.triggerType = triggerType;
         this.description = description;
+        this.connectionElements = connectionElements;
     }
 }
+
+

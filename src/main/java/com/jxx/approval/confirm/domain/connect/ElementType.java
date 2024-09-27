@@ -1,6 +1,6 @@
 package com.jxx.approval.confirm.domain.connect;
 
-public enum ParameterType {
+public enum ElementType {
     REQUEST_BODY,
     PATH_VARIABLE,
     QUERY_STRING
