@@ -55,78 +55,6 @@ public class ConfirmDocumentEventListener {
      * 결재 문서 최종 승인 시 발생하는 이벤트 처리 로직
      * 외부 통신이 발생할 수 있다. SYNC 권장
      **/
-//    @TransactionalEventListener(value = ConfirmDocumentFinalAcceptDecisionEvent.class, phase = TransactionPhase.BEFORE_COMMIT)
-//    public void handleConfirmDocumentFinalAcceptDecisionEvent(ConfirmDocumentFinalAcceptDecisionEvent event) throws JsonProcessingException {
-//        ConfirmDocument confirmDocument = event.confirmDocument();
-//        String confirmDocumentId = confirmDocument.getConfirmDocumentId();
-//        DocumentType documentType = confirmDocument.getDocumentType();
-//        String companyId = confirmDocument.getCompanyId();
-//        log.info("\n [PROCESS:FINAL ACCEPT]confirmDocumentId:{}", confirmDocumentId);
-//
-//        if (confirmDocument.anyApprovalNotAccepted()) {
-//            log.error("confirmDocumentId:{} present reject flag, so cannot process accept logic", confirmDocumentId);
-//            throw new ConfirmDocumentException("잘못된 접근입니다. 관리자에게 문의하세요.");
-//        }
-//
-//        boolean thirdPartyApiResponseSuccess = false; // third-party API 정상 응답 여부
-//
-//        SimpleRestClient simpleRestClient = new SimpleRestClient();
-//        switch (documentType) {
-//            case VAC -> {
-//                try {
-//                    Long vacationId = ResourceIdExtractor.execute(confirmDocumentId, documentType, companyId);
-//                    ResponseEntity<String> response = simpleRestClient.postForEntity("http://localhost:8080/api/vacations/{vacation-id}/vacation-status",
-//                            new ConfirmStatusChangeRequest("confirm-server", "APPROVED"),
-//                            String.class,
-//                            vacationId);
-//
-//                    if (response.getStatusCode().is2xxSuccessful()) {
-//                        thirdPartyApiResponseSuccess = true;
-//                    }
-//                } catch (Exception e) {
-//                    log.error("", e);
-//                }
-//            }
-//
-//            case WRK -> {
-//                try {
-//                    // PK 추출
-//                    Long workTicketPk = ResourceIdExtractor.execute(confirmDocumentId, documentType, companyId);
-//
-//                    RestApiConnection connection = restApiConnectionRepository.findByDocumentTypeAndTriggerType(documentType, "ACCEPT").get();
-//                    List<ConnectionElement> connectionElements = connection.getConnectionElements();
-//                    Map<String, Object> newRequestBody = new HashMap<>();
-//                    connectionElements.forEach(cp -> newRequestBody.put(cp.getElementrKey(), cp.getElementValue()));
-//                    ResponseResult response = simpleRestClient.patch(connection.getHost() + "/" + connection.getUrl(), newRequestBody, workTicketPk);
-//
-//                    if (HttpStatusCode.valueOf(response.getStatus()).is2xxSuccessful()) {
-//                        thirdPartyApiResponseSuccess = true;
-//                    }
-//                    else {
-//                        log.error("{} {}", response.getStatus(), response.getMessage());
-//                        throw new ConfirmDocumentException("작업 티켓 후속 처리 과정에서 정상적인 응답을 받지 못했습니다." + response.getMessage());
-//                    }
-//                } catch (Exception e) {
-//                    log.error("", e);
-//                    throw e;
-//                }
-//            }
-//            default -> {
-//                log.info("documentType:{} 처리 로직은 미구현되어 있습니다.", documentType);
-//            }
-//        }
-//
-//        if (thirdPartyApiResponseSuccess) {
-//            // 결재 문서 상태 변경 및 최종 승인/반려 시간 지정
-//            // WRITE QUERY : JPA dirty checking
-//            confirmDocument.processFinalDecisionConfirmDocument(ConfirmStatus.ACCEPT);
-//        }
-//    }
-
-    /**
-     * 결재 문서 최종 승인 시 발생하는 이벤트 처리 로직
-     * 외부 통신이 발생할 수 있다. SYNC 권장
-     **/
     @TransactionalEventListener(value = ConfirmDocumentFinalAcceptDecisionEvent.class, phase = TransactionPhase.BEFORE_COMMIT)
     public void handleConfirmDocumentFinalAcceptDecisionEvent(ConfirmDocumentFinalAcceptDecisionEvent event) throws JsonProcessingException {
         // third-party API 정상 응답 여부
@@ -152,7 +80,7 @@ public class ConfirmDocumentEventListener {
         DocumentType documentType = confirmDocument.getDocumentType();
         String companyId = confirmDocument.getCompanyId();
 
-        log.info("\n [START][EVENT:{}]confirmDocumentId:{}", triggerType, confirmDocumentId);
+        log.info("\n [EVENT-START][DOCID:{} DOCTYPE:{} TRIGTYPE:{}]", confirmDocumentId, documentType, triggerType);
 
         // 추상화 START
         SimpleRestClient simpleRestClient = new SimpleRestClient();
@@ -183,7 +111,7 @@ public class ConfirmDocumentEventListener {
                         pathVariables.put(elementKey, ResourceIdExtractor.execute(confirmDocumentId, documentType, companyId));
                 case CONST -> pathVariables.put(elementKey, elementValue);
                 case VARIABLE -> log.info("미구현");
-                default -> log.error("ElementValueType is not exist");
+                default -> log.error("ElementValueType: {}  is not exist", connectionElement.getElementValueType());
             }
         }
 
@@ -204,25 +132,33 @@ public class ConfirmDocumentEventListener {
             case "POST" -> {
                 try {
                     ResponseEntity<String> response = simpleRestClient.postForEntity(url, httpRequestBody, String.class);
-
-                    if (response.getStatusCode().is2xxSuccessful()) {
+                    HttpStatusCode statusCode = response.getStatusCode();
+                    if (statusCode.is2xxSuccessful()) {
                         return true;
                     } else {
+                        log.info("{} 상태 코드 응답을 받았습니다. 처리 실패", statusCode.value());
                         return false;
                     }
                 } catch (Exception e) {
-                    log.error("", e);
+                    log.error("예상치 않은 예외 발생", e);
                     throw new ConfirmDocumentException("오류 발생");
                 }
             }
             case "PATCH" -> {
-                ResponseResult response = simpleRestClient.patch(url, httpRequestBody);
-
-                if (HttpStatusCode.valueOf(response.getStatus()).is2xxSuccessful()) {
-                    return true;
-                } else {
-                    log.error("{} {}", response.getStatus(), response.getMessage());
-                    throw new ConfirmDocumentException(response.getMessage());
+                ResponseResult response = null;
+                try {
+                    response = simpleRestClient.patch(url, httpRequestBody);
+                    Integer statusCode = response.getStatus();
+                    if (HttpStatusCode.valueOf(statusCode).is2xxSuccessful()) {
+                        return true;
+                    }
+                    else {
+                        log.info("{} 상태 코드 응답을 받았습니다. 처리 실패", statusCode);
+                        return false;
+                    }
+                } catch (Exception e) {
+                    log.error("예상치 않은 예외 발생", e);
+                    throw new ConfirmDocumentException("오류 발생");
                 }
             }
             case "GET" -> {
