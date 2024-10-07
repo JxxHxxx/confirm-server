@@ -1,9 +1,11 @@
 package com.jxx.approval.confirm.presentation;
 
+import com.jxx.approval.confirm.application.AdminApprovalLineService;
 import com.jxx.approval.confirm.application.ConfirmDocumentFormService;
 import com.jxx.approval.confirm.dto.request.ConfirmDocumentElementRequest;
 import com.jxx.approval.confirm.dto.request.ConfirmDocumentFormRequest;
 import com.jxx.approval.confirm.dto.request.ConfirmDocumentFormSearchCond;
+import com.jxx.approval.confirm.dto.response.ApprovalLineServiceDto;
 import com.jxx.approval.confirm.dto.response.ConfirmDocumentElementServiceResponse;
 import com.jxx.approval.confirm.dto.response.ConfirmDocumentFormResponse;
 import com.jxx.approval.confirm.dto.response.ResponseResult;
@@ -14,11 +16,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.OK;
+
 @RestController
 @RequiredArgsConstructor
 public class ConfirmDocumentAdminController {
 
     private final ConfirmDocumentFormService confirmDocumentFormService;
+    private final AdminApprovalLineService adminApprovalLineService;
 
 
     @PostMapping("/admin/confirm-document-forms")
@@ -41,5 +46,11 @@ public class ConfirmDocumentAdminController {
     public ResponseEntity<?> searchConfirmDocumentForms(@ModelAttribute ConfirmDocumentFormSearchCond searchCond) {
         List<ConfirmDocumentFormResponse> responses = confirmDocumentFormService.searchConfirmDocumentForms(searchCond);
         return ResponseEntity.ok(new ResponseResult<>(HttpStatus.OK.value(), "문서 양식 검색", responses));
+    }
+
+    @GetMapping("/admin/confirm-documents/{confirm-document-id}/approval-lines")
+    public ResponseEntity<?> findApprovalLines(@PathVariable("confirm-document-id") String confirmDocumentId) {
+        List<ApprovalLineServiceDto> responses = adminApprovalLineService.findByConfirmDocumentId(confirmDocumentId);
+        return ResponseEntity.ok(new ResponseResult<>(OK.value(), "관리자용 결재선 조회", responses));
     }
 }
