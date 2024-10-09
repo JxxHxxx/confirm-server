@@ -1,6 +1,6 @@
 package com.jxx.approval.confirm.presentation;
 
-import com.jxx.approval.confirm.application.AdminApprovalLineService;
+import com.jxx.approval.confirm.application.AdminConfirmService;
 import com.jxx.approval.confirm.application.ConfirmDocumentFormService;
 import com.jxx.approval.confirm.dto.request.ConfirmDocumentElementRequest;
 import com.jxx.approval.confirm.dto.request.ConfirmDocumentFormRequest;
@@ -23,7 +23,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class ConfirmDocumentAdminController {
 
     private final ConfirmDocumentFormService confirmDocumentFormService;
-    private final AdminApprovalLineService adminApprovalLineService;
+    private final AdminConfirmService adminConfirmService;
 
 
     @PostMapping("/admin/confirm-document-forms")
@@ -50,7 +50,7 @@ public class ConfirmDocumentAdminController {
 
     @GetMapping("/admin/confirm-documents/{confirm-document-id}/approval-lines")
     public ResponseEntity<?> findApprovalLines(@PathVariable("confirm-document-id") String confirmDocumentId) {
-        List<ApprovalLineServiceDto> responses = adminApprovalLineService.findByConfirmDocumentId(confirmDocumentId);
+        List<ApprovalLineServiceDto> responses = adminConfirmService.findApprovalLinesBy(confirmDocumentId);
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "관리자용 결재선 조회", responses));
     }
 }
