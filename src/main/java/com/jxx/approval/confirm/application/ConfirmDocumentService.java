@@ -10,14 +10,11 @@ import com.jxx.approval.confirm.infra.ConfirmDocumentContentRepository;
 import com.jxx.approval.confirm.infra.ConfirmDocumentMapper;
 import com.jxx.approval.confirm.infra.ConfirmDocumentRepository;
 import com.jxx.approval.confirm.listener.ConfirmDocumentRaiseEvent;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -33,7 +30,6 @@ public class ConfirmDocumentService {
     private final ConfirmDocumentRepository confirmDocumentRepository;
     private final ConfirmDocumentMapper confirmDocumentMapper;
     private final ConfirmDocumentContentRepository contentRepository;
-    private final PlatformTransactionManager transactionManager;
     private final ApplicationEventPublisher eventPublisher;
 
     /*여기서 Content 까지 같이 만들어야 함 */
@@ -84,7 +80,6 @@ public class ConfirmDocumentService {
 
     @Transactional
     public ConfirmDocumentServiceDto raise(String confirmDocumentId, ConfirmRaiseForm form) {
-        log.info("call raise");
         ConfirmDocument confirmDocument = confirmDocumentRepository.findWithContent(confirmDocumentId)
                 .orElseThrow(() -> new IllegalArgumentException());
 
@@ -110,10 +105,7 @@ public class ConfirmDocumentService {
         confirmDocument.changeConfirmStatus(RAISE);
         confirmDocument.changeApprovalLineCycle(ApprovalLineLifecycle.PROCESS_MODIFIABLE);
 
-        // TX COMMIT
-
         eventPublisher.publishEvent(new ConfirmDocumentRaiseEvent(confirmDocument, "RAISE"));
-        log.info("call test");
 
         return new ConfirmDocumentServiceDto(confirmDocumentId, form.requesterId(), confirmDocument.getConfirmStatus());
     }

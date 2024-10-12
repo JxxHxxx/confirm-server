@@ -61,8 +61,11 @@ VALUES ('요청자', '요청 정보', 'requester_name', 'vac', 'COM', 'BAISC_REQ
 INSERT INTO JXX_REST_API_CONNECTION (DESCRIPTION, DOCUMENT_TYPE, HOST, METHOD_TYPE, PATH, PORT, SCHEME, TRIGGER_TYPE) VALUES
  ('작업 티켓 최종 승인 후속 처리 API', 'WRK', 'localhost','PATCH','/api/work-tickets/{work-ticket-pk}/complete-confirm', 8080,'http','FINAL_ACCEPT'),
  ('휴가 신청서 최종 승인 후속 처리 API', 'VAC', 'localhost','POST','/api/vacations/{vacation-id}/vacation-status', 8080,'http','FINAL_ACCEPT'),
- ('휴가 신청선 상신 후속 처리 API', 'VAC', 'localhost','POST','/api/v2/vacations/{vacation-id}/raise', 8080,'http','RAISE');
+ ('휴가 신청선 상신 후속 처리 API', 'VAC', 'localhost','POST','/api/v2/vacations/{vacation-id}/raise', 8080,'http','RAISE'),
+ ('작업 티켓 반려 후속 처리 API', 'WRK', 'localhost','PATCH','/api/work-tickets/{work-ticket-pk}/complete-confirm', 8080,'http','REJECT'),
+ ('휴가 신청서 반려 후속 처리 API', 'VAC', 'localhost','POST','/api/vacations/{vacation-id}/vacation-status', 8080,'http','REJECT');
 
+# 환경 별로 CONNECTION_PK 가 다를 수 있으니 확인
 INSERT INTO JXX_CONNECTION_ELEMENT (ELEMENT_KEY, ELEMENT_TYPE, ELEMENT_VALUE, ELEMENT_VALUE_TYPE, CONNECTION_PK) VALUES
  ('workStatus', 'REQUEST_BODY', 'ACCEPT','CONST', 1),
  ('work-ticket-pk', 'PATH_VARIABLE', null, 'RESOURCE_ID', 1),
@@ -70,4 +73,8 @@ INSERT INTO JXX_CONNECTION_ELEMENT (ELEMENT_KEY, ELEMENT_TYPE, ELEMENT_VALUE, EL
  ('vacationStatus', 'REQUEST_BODY', 'APPROVED','CONST', 2),
  ('vacation-id', 'PATH_VARIABLE', null, 'RESOURCE_ID', 2),
  ('confirmStatus', 'REQUEST_BODY', 'RAISE','CONST', 3),
- ('vacation-id', 'PATH_VARIABLE', null, 'RESOURCE_ID', 3);
+ ('vacation-id', 'PATH_VARIABLE', null, 'RESOURCE_ID', 3),
+ ('workStatus', 'REQUEST_BODY', 'REJECT_FROM_REQUESTER','CONST', 4),
+ ('work-ticket-pk', 'PATH_VARIABLE', null, 'RESOURCE_ID', 4),
+ ('confirm-server', 'REQUEST_BODY', 'REJECT','CONST', 5),
+ ('vacation-id', 'PATH_VARIABLE', null, 'RESOURCE_ID', 5);

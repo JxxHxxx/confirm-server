@@ -5,6 +5,7 @@ import com.jxx.approval.confirm.application.server.dto.VerifyCompanyMemberDto;
 import com.jxx.approval.confirm.application.server.function.VerifyCompanyMemberApi;
 import com.jxx.approval.confirm.domain.document.ConfirmDocument;
 import com.jxx.approval.confirm.domain.document.ConfirmDocumentException;
+import com.jxx.approval.confirm.domain.document.ConfirmStatus;
 import com.jxx.approval.confirm.domain.document.Requester;
 import com.jxx.approval.confirm.domain.line.ApprovalLine;
 import com.jxx.approval.confirm.domain.line.ApprovalLineManager;
@@ -139,7 +140,9 @@ public class ApprovalLineService {
         ConfirmDocument confirmDocument = approvalLines.get(0).getConfirmDocument();
 
         // ConfirmDocument 에서 결재자가 결재 문서를 승인할 수 있는 상태인지 검증
-        eventPublisher.publishEvent(ConfirmDocumentAcceptRejectEvent.acceptEvent(confirmDocument));
+        if (confirmDocument.isNotChangeTo(ConfirmStatus.ACCEPT)) {
+            throw new ConfirmDocumentException("현재 결재 문서는 발려 할 수 없는 상태입니다.");
+        }
 
         // dirty checking
         ApprovalLine approvalLine = approvalLineManager
@@ -156,6 +159,9 @@ public class ApprovalLineService {
                 throw new ConfirmDocumentException("잘못된 접근입니다. 관리자에게 문의하세요.");
             }
 
+            // 결재 문서 상태 변경 및 최종 승인/반려 시간 지정
+            // WRITE QUERY : JPA dirty checking
+            confirmDocument.processFinalDecisionConfirmDocument(ConfirmStatus.ACCEPT);
             eventPublisher.publishEvent(new ConfirmDocumentFinalAcceptDecisionEvent(confirmDocument, "FINAL_ACCEPT"));
         }
 
@@ -186,15 +192,19 @@ public class ApprovalLineService {
         //추가 로직 - 결재 문서 타입을 넘기기 위함
         ConfirmDocument confirmDocument = approvalLines.get(0).getConfirmDocument();
 
-        // ConfirmDocument 에서 결재자가 결재 문서를 반려할 수 있는 상태인지 검증
+        if (confirmDocument.isNotChangeTo(ConfirmStatus.REJECT)) {
+            throw new ConfirmDocumentException("현재 결재 문서는 발려 할 수 없는 상태입니다.");
+        }
+
         eventPublisher.publishEvent(ConfirmDocumentAcceptRejectEvent.rejectEvent(confirmDocument));
 
         // 자신이 이미 결정한 사안인지 체크
-        // dirty checking
+        // WRITE QUERY
         ApprovalLine approvalLine = approvalLineManager
                 .checkBelongInApprovalLine()
                 .checkApprovalLineOrder()
                 .changeApproveStatus(ApproveStatus.REJECT);
+        confirmDocument.processFinalDecisionConfirmDocument(ConfirmStatus.REJECT);
 
         //반려의 경우, 중간 결재자가 반려하면 이전, 이후 결재자의 승인 여부와 상관없이 반려에 대한 후속 처리를 해야함
         eventPublisher.publishEvent(new ConfirmDocumentRejectDecisionEvent(confirmDocument));

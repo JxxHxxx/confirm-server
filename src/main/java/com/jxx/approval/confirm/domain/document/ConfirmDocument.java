@@ -194,16 +194,15 @@ public class ConfirmDocument {
     }
 
     /**
-     * @param toConfirmStatus : 결재 문서의 TO-BE 상태 값
-     * @return 결재 문서가 toConfirmStatus 상태로 변경 가능한지 반환
-     */
-    public boolean validateConfirmStatusChange(ConfirmStatus toConfirmStatus) {
-        switch (toConfirmStatus) {
+     * @param confirmStatus : 해당 상태 값으로 변경 가능한지 검증
+     **/
+    public boolean isNotChangeTo(ConfirmStatus confirmStatus) {
+        switch (confirmStatus) {
             case ACCEPT -> {
-                return ACCEPT_POSSIBLE_STATUS.contains(this.confirmStatus);
+                return !ACCEPT_POSSIBLE_STATUS.contains(this.confirmStatus);
             }
             case REJECT -> {
-                return REJECT_POSSIBLE_STATUS.contains(this.confirmStatus);
+                return !REJECT_POSSIBLE_STATUS.contains(this.confirmStatus);
             }
             default -> {
                 return false;

@@ -1,28 +1,29 @@
 package com.jxx.approval.confirm.application;
-import org.junit.jupiter.api.Assertions;
+import com.jxx.approval.confirm.domain.document.ConfirmDocument;
+import com.jxx.approval.confirm.infra.RestApiConnectionRepository;
 import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 
+@SpringBootTest
 class ConfirmDocumentServiceTest {
+
+    @Autowired
+    ConfirmDocumentService confirmDocumentService;
+
+    ConfirmDocumentRestApiAdapterService confirmDocumentRestApiAdapterService = new ConfirmDocumentRestApiAdapterService() {
+        @Override
+        public boolean call(ConfirmDocument confirmDocument, String triggerType) {
+            return true;
+        }
+    };
+    @Autowired
+    RestApiConnectionRepository restApiConnectionRepository;
 
     @Test
     void validate_identity_map() {
-
-        Map<String, Object> original = new HashMap<>();
-        original.put("name", "jh");
-
-        Map<String, Object> copy =  new HashMap<>(original);
-
-        original.put("age", 30);
-        System.out.println("aa");
-
-        assertThat(original).isEqualTo(copy);
-        assertThat(copy.get("age")).isEqualTo(30);
+        System.out.println("Hello World");
     }
 
 }

@@ -94,10 +94,10 @@ class ConfirmDocumentTest {
         assertThat(isCancelImpossible).isTrue();
     }
 
-    @DisplayName(value = "파기(리스소 생성자에 의한) 가능한 문서인지를 검증한다." +
-            "confirmStatus 상태가 CREATE, UPDATE, REJECT 중 하나라면 false 를 반환한다.")
+    @DisplayName(value = "파기(리소스 생성자에 의한) 가능한 문서인지를 검증한다." +
+            "confirmStatus 상태가 CREATE, UPDATE 중 하나라면 false 를 반환한다.")
     @ParameterizedTest
-    @EnumSource(value = ConfirmStatus.class, names = {"CREATE", "UPDATE", "REJECT"})
+    @EnumSource(value = ConfirmStatus.class, names = {"CREATE", "UPDATE"})
     void cancel_impossible_return_false_case(ConfirmStatus confirmStatus) {
         ConfirmDocument confirmDocument = ConfirmDocument.builder()
                 .requester(new Requester("JXX", "J00001", "테스트부서", "U00001", "테스터"))
