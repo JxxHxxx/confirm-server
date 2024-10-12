@@ -7,17 +7,13 @@ import com.jxx.approval.confirm.dto.request.ConfirmDocumentContentRequest;
 import com.jxx.approval.confirm.application.ConfirmDocumentService;
 import com.jxx.approval.confirm.dto.request.*;
 import com.jxx.approval.confirm.dto.response.*;
-import com.jxx.approval.confirm.listener.ConfirmDocumentFinalAcceptDecisionEvent;
-import com.jxx.approval.confirm.listener.ConfirmDocumentRejectDecisionEvent;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,7 +26,6 @@ public class ConfirmDocumentApiController {
 
     private final ConfirmDocumentService confirmDocumentService;
     private final ApprovalLineService approvalLineService;
-    private final ApplicationEventPublisher eventPublisher;
 
     private final static String WHITE_SPACE = "";
 

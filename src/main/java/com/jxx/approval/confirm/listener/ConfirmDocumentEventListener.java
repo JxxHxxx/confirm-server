@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -26,6 +27,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 @Slf4j
@@ -35,6 +37,17 @@ public class ConfirmDocumentEventListener {
 
     private final RestApiConnectionRepository restApiConnectionRepository;
 
+    // 결재 문서 상신 처리가 완료 된 후, 처리
+    // 결재 문서 상신 처리 후, 트랜잭션 종료 후
+    // 여기서는 I/O 로직
+    @TransactionalEventListener(value = ConfirmDocumentRaiseEvent.class, phase = TransactionPhase.AFTER_COMMIT)
+    public void handleRaiseEvent(ConfirmDocumentRaiseEvent event) throws JsonProcessingException {
+        log.info("EVENT ConfirmDocumentRaiseEvent");
+        ConfirmDocument confirmDocument = event.confirmDocument();
+        String triggerType = event.triggerType();
+
+        callThirdPartyRestApi(confirmDocument, triggerType);
+    }
     /**
      * 현재 결재 문서가 결재자가 승인/반려를 할 수 있는 상태인지를 검증
      * 굳이 이 로직을 여기에 둘 필요가 있나 싶음...
@@ -57,11 +70,12 @@ public class ConfirmDocumentEventListener {
      **/
     @TransactionalEventListener(value = ConfirmDocumentFinalAcceptDecisionEvent.class, phase = TransactionPhase.BEFORE_COMMIT)
     public void handleConfirmDocumentFinalAcceptDecisionEvent(ConfirmDocumentFinalAcceptDecisionEvent event) throws JsonProcessingException {
+        log.info("EVENT ConfirmDocumentFinalAcceptDecisionEvent");
         // third-party API 정상 응답 여부
         ConfirmDocument confirmDocument = event.confirmDocument();
         String triggerType = event.triggerType();
 
-        if (executeFinalAcceptAfterProcess(confirmDocument, triggerType)) {
+        if (callThirdPartyRestApi(confirmDocument, triggerType)) {
             // 결재 문서 상태 변경 및 최종 승인/반려 시간 지정
             // WRITE QUERY : JPA dirty checking
             confirmDocument.processFinalDecisionConfirmDocument(ConfirmStatus.ACCEPT);
@@ -73,9 +87,11 @@ public class ConfirmDocumentEventListener {
      * @param confirmDocument
      * @param triggerType
      * @return true : REST API 정상 응답 / false REST API 정상 응답 실패
+     * 엔티티 매니저 종료된 상태
      * @throws JsonProcessingException
      */
-    public boolean executeFinalAcceptAfterProcess(ConfirmDocument confirmDocument, String triggerType) throws JsonProcessingException {
+
+    public boolean callThirdPartyRestApi(ConfirmDocument confirmDocument, String triggerType) throws JsonProcessingException {
         String confirmDocumentId = confirmDocument.getConfirmDocumentId();
         DocumentType documentType = confirmDocument.getDocumentType();
         String companyId = confirmDocument.getCompanyId();
