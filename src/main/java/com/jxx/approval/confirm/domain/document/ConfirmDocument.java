@@ -81,6 +81,19 @@ public class ConfirmDocument {
         this.createTime = LocalDateTime.now();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ConfirmDocument that = (ConfirmDocument) o;
+        return Objects.equals(pk, that.pk) && Objects.equals(confirmDocumentId, that.confirmDocumentId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pk, confirmDocumentId);
+    }
+
     public void setConfirmDocumentId(String confirmDocumentId) {
         this.confirmDocumentId = confirmDocumentId;
     }

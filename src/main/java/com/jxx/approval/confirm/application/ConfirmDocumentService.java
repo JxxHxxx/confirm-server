@@ -14,8 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.*;
 
@@ -82,14 +82,12 @@ public class ConfirmDocumentService {
     public ConfirmDocumentServiceDto raise(String confirmDocumentId, ConfirmRaiseForm form) {
         ConfirmDocument confirmDocument = confirmDocumentRepository.findWithContent(confirmDocumentId)
                 .orElseThrow(() -> new IllegalArgumentException());
-
         // 요청자 검증
         Requester raiseRequester = new Requester(form.companyId(), form.departmentId(),
                 null, form.requesterId(), null);
         if (confirmDocument.isNotDocumentOwner(raiseRequester)) {
             throw new ConfirmDocumentException(ConfirmDocumentException.FAIL_SELF_VERIFICATION, form.requesterId());
         }
-
         if (confirmDocument.raiseImpossible()) {
             // 결재 문서의 상태를 던짐, exceptionHandler 의 data 필드에 매핑
             throw new ConfirmDocumentException("해당 결재 문서를 상신할 수 없는 상태입니다.",
@@ -100,13 +98,11 @@ public class ConfirmDocumentService {
         if (!confirmDocument.approvalLineCreated()) {
             throw new ApprovalLineException(EMPTY_APPROVAL_LINE);
         }
-
         // WRITE QUERY
         confirmDocument.changeConfirmStatus(RAISE);
         confirmDocument.changeApprovalLineCycle(ApprovalLineLifecycle.PROCESS_MODIFIABLE);
 
         eventPublisher.publishEvent(new ConfirmDocumentRaiseEvent(confirmDocument, "RAISE"));
-
         return new ConfirmDocumentServiceDto(confirmDocumentId, form.requesterId(), confirmDocument.getConfirmStatus());
     }
 

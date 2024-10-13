@@ -4,18 +4,18 @@ import com.jxx.approval.common.client.SimpleRestClient;
 import com.jxx.approval.confirm.application.ConfirmDocumentRestApiAdapterService;
 import com.jxx.approval.confirm.domain.connect.ConnectionElement;
 import com.jxx.approval.confirm.domain.connect.RestApiConnection;
-import com.jxx.approval.confirm.domain.document.ConfirmDocument;
-import com.jxx.approval.confirm.domain.document.ConfirmDocumentException;
-import com.jxx.approval.confirm.domain.document.DocumentType;
+import com.jxx.approval.confirm.domain.document.*;
 import com.jxx.approval.confirm.dto.response.ResponseResult;
 import com.jxx.approval.confirm.infra.RestApiConnectionRepository;
 import com.jxx.approval.vendor.vacation.ResourceIdExtractor;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -29,6 +29,7 @@ import java.util.Map;
 public class DefaultConfirmDocumentRestApiAdapterService implements ConfirmDocumentRestApiAdapterService {
 
     private final RestApiConnectionRepository restApiConnectionRepository;
+    private final EntityManager entityManager;
 
     @Override
     public boolean call(ConfirmDocument confirmDocument, String triggerType) {
@@ -40,8 +41,9 @@ public class DefaultConfirmDocumentRestApiAdapterService implements ConfirmDocum
 
         // 추상화 START
         SimpleRestClient simpleRestClient = new SimpleRestClient();
-        RestApiConnection connection = restApiConnectionRepository.findByDocumentTypeAndTriggerType(documentType, triggerType)
-                .orElseThrow();
+        List<RestApiConnection> restApiConnections = restApiConnectionRepository.fetchWithConnectionElements(documentType, triggerType);
+
+        RestApiConnection connection = restApiConnections.get(0);
         List<ConnectionElement> connectionElements = connection.getConnectionElements();
 
         // request body 생성

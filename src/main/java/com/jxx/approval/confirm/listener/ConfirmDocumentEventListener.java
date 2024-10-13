@@ -5,6 +5,7 @@ import com.jxx.approval.confirm.application.ConfirmDocumentRestApiAdapterService
 import com.jxx.approval.confirm.domain.document.ConfirmDocument;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -19,6 +20,7 @@ public class ConfirmDocumentEventListener {
     // 결재 문서 상신 처리가 완료 된 후, 처리
     // 결재 문서 상신 처리 후, 트랜잭션 종료 후
     // 여기서는 I/O 로직
+    @Async
     @TransactionalEventListener(value = ConfirmDocumentRaiseEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handleRaiseEvent(ConfirmDocumentRaiseEvent event) throws JsonProcessingException {
         log.info("EVENT ConfirmDocumentRaiseEvent");
