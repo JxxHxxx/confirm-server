@@ -12,13 +12,14 @@ public class ApiAccessLogInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         String uri = request.getRequestURI();
-        String remoteHost = request.getRemoteHost();
+//        String remoteHost = request.getRemoteHost();
+        String remoteAddr = request.getRemoteAddr();
         String httpMethod = request.getMethod();
         int httpStatusCode = response.getStatus();
         Map<String, String[]> params = request.getParameterMap();
         StringBuilder param = createParamUri(params);
-        // log format [요청을 보낸 서버 HOST][API HTTP 메서드][API URI][API param][API HttpStatusCode]
-        log.info("[{}][{}][{}][{}][{}]", remoteHost, httpMethod, uri, param, httpStatusCode);
+        // log format [요청을 보낸 클라이언트 IP][API HTTP 메서드][API URI][API param][API HttpStatusCode]
+        log.info("[{}][{}][{}][{}][{}]", remoteAddr, httpMethod, uri, param, httpStatusCode);
     }
 
     private static StringBuilder createParamUri(Map<String, String[]> params) {
