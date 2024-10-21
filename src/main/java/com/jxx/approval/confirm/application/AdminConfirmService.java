@@ -1,9 +1,11 @@
 package com.jxx.approval.confirm.application;
 
+import com.jxx.approval.confirm.domain.AdminClientException;
 import com.jxx.approval.confirm.domain.connect.ConnectionElement;
 import com.jxx.approval.confirm.domain.connect.RestApiConnection;
+import com.jxx.approval.confirm.domain.document.DocumentType;
 import com.jxx.approval.confirm.domain.line.ApprovalLine;
-import com.jxx.approval.confirm.dto.request.ConnectionElementCreateRequest;
+import com.jxx.approval.confirm.dto.request.ConfirmConnectionApiRequest;
 import com.jxx.approval.confirm.dto.request.RestApiConnectionCreateRequest;
 import com.jxx.approval.confirm.dto.response.ApprovalLineServiceDto;
 import com.jxx.approval.confirm.infra.ApprovalLineRepository;
@@ -12,10 +14,11 @@ import com.jxx.approval.confirm.infra.RestApiConnectionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
@@ -25,6 +28,8 @@ public class AdminConfirmService {
 
     private final RestApiConnectionRepository restApiConnectionRepository;
     private final ConnectionElementRepository connectionElementRepository;
+
+    private final PlatformTransactionManager txManager;
 
     public List<ApprovalLineServiceDto> findApprovalLinesBy(String confirmDocumentId) {
         List<ApprovalLine> approvalLines = approvalLineRepository.fetchByConfirmDocumentId(confirmDocumentId);
@@ -63,4 +68,53 @@ public class AdminConfirmService {
 
         connectionElementRepository.saveAll(connectionElements);
     }
+
+    public void mappingApi(ConfirmConnectionApiRequest request) {
+        //  TRIGGER_TYPE, DOCUMENT_TYPE 두개는 고유한 값을 가져야 함
+        validateUnique(request);
+        // API 가 정상 호출 여부는 스케줄러를 통해 확인
+        // 약식에 맞아야함
+        // HOST, METHOD_TYPE, PATH, PORT, SCHEME 이용해서 호출
+        validateMappingApiParams(request);
+
+        RestApiConnection restApiConnection = RestApiConnection.builder()
+                .methodType(request.methodType())
+                .scheme(request.scheme())
+                .path(request.path())
+                .triggerType(request.triggerType())
+                .description(request.description())
+                .host(request.host())
+                .port(request.port())
+                .build();
+
+        // 트랜잭션 시작
+        TransactionStatus txStatus = txManager.getTransaction(TransactionDefinition.withDefaults());
+        restApiConnectionRepository.save(restApiConnection);
+        txManager.commit(txStatus); // 트랜잭션 종료
+    }
+
+    private void validateUnique(ConfirmConnectionApiRequest request) {
+        DocumentType documentType = request.documentType();
+        String triggerType = request.triggerType();
+        boolean present = restApiConnectionRepository.findByDocumentTypeAndTriggerType(documentType, triggerType)
+                .isPresent();
+
+        if (present) {
+            throw new AdminClientException("documentType:" + documentType + "triggerType:" + triggerType + "is present");
+        }
+    }
+
+    private void validateMappingApiParams(ConfirmConnectionApiRequest request) {
+        boolean validatePath = RestApiConnection.validatePath(request.path());
+        boolean validateScheme = RestApiConnection.validateScheme(request.scheme());
+        boolean validatePort = RestApiConnection.validatePort(request.port());
+        boolean validateMethodType = RestApiConnection.validateMethodType(request.methodType());
+
+        if (!(validatePath && validateScheme && validatePort && validateMethodType)) {
+            log.error("validatePath : {} validateScheme : {} validatePort : {} validateMethodType : {}",
+                    validatePath, validateScheme, validatePort, validateMethodType);
+            throw new AdminClientException("유효하지 않은 연동 API 정보가 존재합니다.");
+        }
+    }
+
 }
