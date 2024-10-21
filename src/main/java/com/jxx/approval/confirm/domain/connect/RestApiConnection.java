@@ -10,12 +10,15 @@ import org.hibernate.annotations.Comment;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.NumberUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-/** 결재 문서에 따라 외부 API 호출이 필요한 정보를 모와놓는 엔티티 **/
+/**
+ * 결재 문서에 따라 외부 API 호출이 필요한 정보를 모와놓는 엔티티
+ **/
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -53,12 +56,21 @@ public class RestApiConnection {
     @Comment("REST API에 대한 설명")
     @Column(name = "DESCRIPTION")
     private String description;
+
+    @Comment("생성일시")
+    @Column(name = "CREATE_DATE_TIME")
+    private LocalDateTime createDateTime;
+
+    @Comment("생성을 요청한 사용자의 ID")
+    @Column(name = "REQUESTER_ID")
+    private String requesterId;
+
     @OneToMany(mappedBy = "restApiConnection", fetch = FetchType.LAZY)
     private List<ConnectionElement> connectionElements = new ArrayList<>();
 
     @Builder
     public RestApiConnection(String scheme, String host, int port, String path, String methodType, DocumentType documentType,
-                             String triggerType, String description, List<ConnectionElement> connectionElements) {
+                             String triggerType, String description, LocalDateTime creteDateTime, String requesterId, List<ConnectionElement> connectionElements) {
         this.scheme = scheme;
         this.host = host;
         this.port = port;
@@ -67,12 +79,14 @@ public class RestApiConnection {
         this.documentType = documentType;
         this.triggerType = triggerType;
         this.description = description;
+        this.createDateTime = creteDateTime;
+        this.requesterId = requesterId;
         this.connectionElements = connectionElements;
     }
 
     /**
-     REST API PATH 가 유효한 형식인지 검증
-     ^/.* = 문자열은 슬래시(/)로 시작하고 뒤에는 0 개 이상의 문자열이 올 수 있다.
+     * REST API PATH 가 유효한 형식인지 검증
+     * ^/.* = 문자열은 슬래시(/)로 시작하고 뒤에는 0 개 이상의 문자열이 올 수 있다.
      **/
     public static boolean validatePath(String path) {
         return Pattern.matches("^/.*", path);
@@ -84,7 +98,7 @@ public class RestApiConnection {
     }
 
     public static boolean validatePort(Integer port) {
-        return  port >= 0 && port <= 65535;
+        return port >= 0 && port <= 65535;
     }
 
     public static boolean validateScheme(String scheme) {

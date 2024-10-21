@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jxx.approval.confirm.infra.RestApiConnectionAdminMapper">
+    <select id="search"
+    parameterType="com.jxx.approval.confirm.dto.request.RestApiConnectionSearchCond"
+    resultType="com.jxx.approval.confirm.dto.response.RestApiConnectionResponse">
+        SELECT RAC.CONNECTION_PK,
+               RAC.DESCRIPTION,
+               RAC.DOCUMENT_TYPE,
+               RAC.HOST,
+               RAC.METHOD_TYPE,
+               RAC.PATH,
+               RAC.PORT,
+               RAC.SCEHME,
+               RAC.TRIGGER_TYPE,
+               RAC.REQUESTER_ID,
+               RAC.CREATE_DATE_TIME
+            FROM JXX_REST_API_CONNECTION RAC
+        <where>
+             <if test="triggerType != '' and triggerType != null">
+                AND RAC.TRIGGER_TYPE = #{triggerType}
+             </if>
+            <if test="documentType != '' and documentType != null">
+                RAC.TRIGGER_TYPE = #{documentType}
+            </if>
+            <if test="requesterId != '' and requesterId != null">
+                RAC.TRIGGER_TYPE = #{requesterId}
+            </if>
+        </where>
+            ORDER BY RAC.CREATE_DATE_TIME DESC;
+    </select>
+</mapper>

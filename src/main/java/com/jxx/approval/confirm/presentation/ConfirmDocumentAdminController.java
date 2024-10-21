@@ -2,21 +2,13 @@ package com.jxx.approval.confirm.presentation;
 
 import com.jxx.approval.confirm.application.AdminConfirmService;
 import com.jxx.approval.confirm.application.ConfirmDocumentFormService;
-import com.jxx.approval.confirm.dto.request.ConfirmConnectionApiRequest;
-import com.jxx.approval.confirm.dto.request.ConfirmDocumentElementRequest;
-import com.jxx.approval.confirm.dto.request.ConfirmDocumentFormRequest;
-import com.jxx.approval.confirm.dto.request.ConfirmDocumentFormSearchCond;
-import com.jxx.approval.confirm.dto.response.ApprovalLineServiceDto;
-import com.jxx.approval.confirm.dto.response.ConfirmDocumentElementServiceResponse;
-import com.jxx.approval.confirm.dto.response.ConfirmDocumentFormResponse;
-import com.jxx.approval.confirm.dto.response.ResponseResult;
-import jakarta.validation.Valid;
+import com.jxx.approval.confirm.dto.request.*;
+import com.jxx.approval.confirm.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
@@ -62,8 +54,14 @@ public class ConfirmDocumentAdminController {
      * 연동 API 등록
      **/
     @PostMapping("/admin/confirm-documents/mapping-api")
-    public ResponseEntity<?> mappingApi(@RequestBody ConfirmConnectionApiRequest request) {
-        adminConfirmService.mappingApi(request);
-        return ResponseEntity.status(201).body(null);
+    public ResponseEntity<?> mappingConfirmApi(@RequestBody ConfirmConnectionApiRequest request) {
+        RestApiConnectionResponse response = adminConfirmService.mappingConfirmApi(request);
+        return ResponseEntity.status(201).body(new ResponseResult<>(201, "결재 연동 API 생성 완료", response));
+    }
+
+    @GetMapping("/admin/confirm-documents/mapping-api")
+    public ResponseEntity<?> searchMappingConfirmApi(@ModelAttribute RestApiConnectionSearchCond cond) {
+        List<RestApiConnectionResponse> responses = adminConfirmService.searchMappingConfirmApi(cond);
+        return ResponseEntity.ok(new ResponseResult<>(200, "결재 연동 API 리스트 조회 완료", responses));
     }
 }

@@ -7,7 +7,9 @@ import com.jxx.approval.confirm.domain.document.DocumentType;
 import com.jxx.approval.confirm.domain.line.ApprovalLine;
 import com.jxx.approval.confirm.dto.request.ConfirmConnectionApiRequest;
 import com.jxx.approval.confirm.dto.request.RestApiConnectionCreateRequest;
+import com.jxx.approval.confirm.dto.request.RestApiConnectionSearchCond;
 import com.jxx.approval.confirm.dto.response.ApprovalLineServiceDto;
+import com.jxx.approval.confirm.dto.response.RestApiConnectionResponse;
 import com.jxx.approval.confirm.infra.ApprovalLineRepository;
 import com.jxx.approval.confirm.infra.ConnectionElementRepository;
 import com.jxx.approval.confirm.infra.RestApiConnectionRepository;
@@ -18,6 +20,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -69,7 +72,7 @@ public class AdminConfirmService {
         connectionElementRepository.saveAll(connectionElements);
     }
 
-    public void mappingApi(ConfirmConnectionApiRequest request) {
+    public RestApiConnectionResponse mappingConfirmApi(ConfirmConnectionApiRequest request) {
         //  TRIGGER_TYPE, DOCUMENT_TYPE 두개는 고유한 값을 가져야 함
         validateUnique(request);
         // API 가 정상 호출 여부는 스케줄러를 통해 확인
@@ -77,7 +80,9 @@ public class AdminConfirmService {
         // HOST, METHOD_TYPE, PATH, PORT, SCHEME 이용해서 호출
         validateMappingApiParams(request);
 
-        RestApiConnection restApiConnection = RestApiConnection.builder()
+        // 트랜잭션 시작
+        TransactionStatus txStatus = txManager.getTransaction(TransactionDefinition.withDefaults());
+        RestApiConnection restApiConnection = restApiConnectionRepository.save(RestApiConnection.builder()
                 .methodType(request.methodType())
                 .scheme(request.scheme())
                 .path(request.path())
@@ -85,12 +90,23 @@ public class AdminConfirmService {
                 .description(request.description())
                 .host(request.host())
                 .port(request.port())
-                .build();
-
-        // 트랜잭션 시작
-        TransactionStatus txStatus = txManager.getTransaction(TransactionDefinition.withDefaults());
-        restApiConnectionRepository.save(restApiConnection);
+                .requesterId(request.requesterId())
+                .creteDateTime(LocalDateTime.now())
+                .build());
         txManager.commit(txStatus); // 트랜잭션 종료
+
+        return new RestApiConnectionResponse(
+                restApiConnection.getConnectionPk(),
+                restApiConnection.getScheme(),
+                restApiConnection.getHost(),
+                restApiConnection.getPort(),
+                restApiConnection.getMethodType(),
+                restApiConnection.getPath(),
+                restApiConnection.getTriggerType(),
+                restApiConnection.getDocumentType(),
+                restApiConnection.getCreateDateTime(),
+                request.requesterId()
+        );
     }
 
     private void validateUnique(ConfirmConnectionApiRequest request) {
@@ -117,4 +133,7 @@ public class AdminConfirmService {
         }
     }
 
+    public List<RestApiConnectionResponse> searchMappingConfirmApi(RestApiConnectionSearchCond cond) {
+        return null;
+    }
 }

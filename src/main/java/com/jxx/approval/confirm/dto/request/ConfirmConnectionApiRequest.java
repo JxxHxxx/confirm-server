@@ -11,8 +11,8 @@ public record ConfirmConnectionApiRequest(
         String path,
         String triggerType,
         DocumentType documentType,
-
-        String description
+        String description,
+        String requesterId
 
         ) {
 }
