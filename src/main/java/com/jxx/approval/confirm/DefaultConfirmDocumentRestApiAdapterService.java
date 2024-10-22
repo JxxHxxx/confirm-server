@@ -2,20 +2,19 @@ package com.jxx.approval.confirm;
 
 import com.jxx.approval.common.client.SimpleRestClient;
 import com.jxx.approval.confirm.application.ConfirmDocumentRestApiAdapterService;
+import com.jxx.approval.confirm.domain.AdminClientException;
 import com.jxx.approval.confirm.domain.connect.ConnectionElement;
 import com.jxx.approval.confirm.domain.connect.RestApiConnection;
 import com.jxx.approval.confirm.domain.document.*;
 import com.jxx.approval.confirm.dto.response.ResponseResult;
 import com.jxx.approval.confirm.infra.RestApiConnectionRepository;
 import com.jxx.approval.vendor.vacation.ResourceIdExtractor;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -29,7 +28,6 @@ import java.util.Map;
 public class DefaultConfirmDocumentRestApiAdapterService implements ConfirmDocumentRestApiAdapterService {
 
     private final RestApiConnectionRepository restApiConnectionRepository;
-    private final EntityManager entityManager;
 
     @Override
     public boolean call(ConfirmDocument confirmDocument, String triggerType) {
@@ -40,21 +38,33 @@ public class DefaultConfirmDocumentRestApiAdapterService implements ConfirmDocum
         log.info("\n [EVENT-START][DOCID:{} DOCTYPE:{} TRIGTYPE:{}]", confirmDocumentId, documentType, triggerType);
 
         // 추상화 START
-        SimpleRestClient simpleRestClient = new SimpleRestClient();
-        List<RestApiConnection> restApiConnections = restApiConnectionRepository.fetchWithConnectionElements(documentType, triggerType);
+        RestApiConnection connection = null;
+        try {
+            connection = restApiConnectionRepository.fetchWithConnectionElements(documentType, triggerType).get(0);
+        } catch (ArrayIndexOutOfBoundsException exception) {
+            log.error("documentType:{} triggerType:{} 을 만족하는 restApiConnection 존재하지 않음" ,documentType, triggerType, exception);
+            throw new AdminClientException("documentType:" + documentType + "triggerType: " + triggerType + "을 만족하는 restApiConnection 존재하지 않음");
+        }
 
-        RestApiConnection connection = restApiConnections.get(0);
-        List<ConnectionElement> connectionElements = connection.getConnectionElements();
+        Map<String, Object> requestBody = buildRequestBody(connection); // request body 생성
+        String url = buildUrl(confirmDocumentId, companyId, connection); // url 생성
+        return callApi(connection, requestBody, url); // api 호출
+    }
 
-        // request body 생성
-        List<ConnectionElement> requestBodyConnectionElements = connectionElements.stream()
+    private Map<String, Object> buildRequestBody(RestApiConnection connection) {
+        List<ConnectionElement> requestBodyConnectionElements = connection.getConnectionElements()
+                .stream()
                 .filter(ConnectionElement::isRequestBodyType)
                 .toList();
 
-        Map<String, Object> httpRequestBody = new HashMap<>();
-        requestBodyConnectionElements.forEach(cp -> httpRequestBody.put(cp.getElementKey(), cp.getElementValue()));
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBodyConnectionElements.forEach(cp -> requestBody.put(cp.getElementKey(), cp.getElementValue()));
+        return requestBody;
+    }
 
-        List<ConnectionElement> pathVariableConnectionElements = connectionElements.stream()
+    private String buildUrl(String confirmDocumentId, String companyId, RestApiConnection connection) {
+        List<ConnectionElement> pathVariableConnectionElements = connection.getConnectionElements()
+                .stream()
                 .filter(ConnectionElement::isPathVariableType)
                 .toList();
 
@@ -66,7 +76,7 @@ public class DefaultConfirmDocumentRestApiAdapterService implements ConfirmDocum
 
             switch (connectionElement.getElementValueType()) {
                 case RESOURCE_ID ->
-                        pathVariables.put(elementKey, ResourceIdExtractor.execute(confirmDocumentId, documentType, companyId));
+                        pathVariables.put(elementKey, ResourceIdExtractor.execute(confirmDocumentId, connection.getDocumentType(), companyId));
                 case CONST -> pathVariables.put(elementKey, elementValue);
                 case VARIABLE -> log.info("미구현");
                 default -> log.error("ElementValueType: {}  is not exist", connectionElement.getElementValueType());
@@ -76,7 +86,7 @@ public class DefaultConfirmDocumentRestApiAdapterService implements ConfirmDocum
         // TODO Query String 추상화 필요
         MultiValueMap<String, String> queryPrams = new HttpHeaders();
 
-        String url = UriComponentsBuilder.fromUriString(connection.getPath())
+        return UriComponentsBuilder.fromUriString(connection.getPath())
                 .scheme(connection.getScheme())
                 .host(connection.getHost())
                 .port(connection.getPort())
@@ -84,19 +94,21 @@ public class DefaultConfirmDocumentRestApiAdapterService implements ConfirmDocum
                 .uriVariables(pathVariables)
                 .build()
                 .toString();
+    }
 
-        // TODO 우선 GET,POST,PATCH 만 구현
+    /**
+     * @return true : API 정상 응답 O / false : API 정상 응답 X
+     *
+     **/
+    private static boolean callApi(RestApiConnection connection, Map<String, Object> httpRequestBody, String url) {
+        SimpleRestClient simpleRestClient = new SimpleRestClient();
         switch (connection.getMethodType()) {
             case "POST" -> {
                 try {
                     ResponseEntity<String> response = simpleRestClient.postForEntity(url, httpRequestBody, String.class);
                     HttpStatusCode statusCode = response.getStatusCode();
-                    if (statusCode.is2xxSuccessful()) {
-                        return true;
-                    } else {
-                        log.info("{} 상태 코드 응답을 받았습니다. 처리 실패", statusCode.value());
-                        return false;
-                    }
+                    log.info("response statusCode {}", statusCode);
+                    return statusCode.is2xxSuccessful();
                 } catch (Exception e) {
                     log.error("예상치 않은 예외 발생", e);
                     throw new ConfirmDocumentException("오류 발생");
@@ -107,13 +119,8 @@ public class DefaultConfirmDocumentRestApiAdapterService implements ConfirmDocum
                 try {
                     response = simpleRestClient.patch(url, httpRequestBody);
                     Integer statusCode = response.getStatus();
-                    if (HttpStatusCode.valueOf(statusCode).is2xxSuccessful()) {
-                        return true;
-                    }
-                    else {
-                        log.info("{} 상태 코드 응답을 받았습니다. 처리 실패", statusCode);
-                        return false;
-                    }
+                    log.info("response statusCode {}", statusCode);
+                    return HttpStatusCode.valueOf(statusCode).is2xxSuccessful();
                 } catch (Exception e) {
                     log.error("예상치 않은 예외 발생", e);
                     throw new ConfirmDocumentException("오류 발생");
