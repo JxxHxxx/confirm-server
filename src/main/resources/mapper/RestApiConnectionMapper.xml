@@ -7,21 +7,21 @@
     parameterType="com.jxx.approval.confirm.dto.request.RestApiConnectionSearchCond"
     resultType="com.jxx.approval.confirm.dto.response.RestApiConnectionResponse">
         SELECT RAC.CONNECTION_PK,
-               RAC.DESCRIPTION,
-               RAC.DOCUMENT_TYPE,
-               RAC.HOST,
-               RAC.METHOD_TYPE,
-               RAC.PATH,
-               RAC.PORT,
-               RAC.SCEHME,
-               RAC.TRIGGER_TYPE,
-               RAC.REQUESTER_ID,
-               RAC.CREATE_DATE_TIME
-            FROM JXX_REST_API_CONNECTION RAC
+            RAC.DESCRIPTION,
+            RAC.SCHEME,
+            RAC.HOST,
+            RAC.PORT,
+            RAC.METHOD_TYPE,
+            RAC.PATH,
+            RAC.TRIGGER_TYPE,
+            RAC.DOCUMENT_TYPE,
+            RAC.CREATE_DATE_TIME,
+            RAC.REQUESTER_ID
+        FROM JXX_REST_API_CONNECTION RAC
         <where>
-             <if test="triggerType != '' and triggerType != null">
+            <if test="triggerType != '' and triggerType != null">
                 AND RAC.TRIGGER_TYPE = #{triggerType}
-             </if>
+            </if>
             <if test="documentType != '' and documentType != null">
                 RAC.TRIGGER_TYPE = #{documentType}
             </if>
@@ -29,6 +29,6 @@
                 RAC.TRIGGER_TYPE = #{requesterId}
             </if>
         </where>
-            ORDER BY RAC.CREATE_DATE_TIME DESC;
+        ORDER BY RAC.CREATE_DATE_TIME DESC;
     </select>
 </mapper>

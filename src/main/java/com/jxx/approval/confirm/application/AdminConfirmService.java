@@ -1,5 +1,6 @@
 package com.jxx.approval.confirm.application;
 
+import com.jxx.approval.common.page.PageService;
 import com.jxx.approval.confirm.domain.AdminClientException;
 import com.jxx.approval.confirm.domain.connect.ConnectionElement;
 import com.jxx.approval.confirm.domain.connect.RestApiConnection;
@@ -12,9 +13,11 @@ import com.jxx.approval.confirm.dto.response.ApprovalLineServiceDto;
 import com.jxx.approval.confirm.dto.response.RestApiConnectionResponse;
 import com.jxx.approval.confirm.infra.ApprovalLineRepository;
 import com.jxx.approval.confirm.infra.ConnectionElementRepository;
+import com.jxx.approval.confirm.infra.RestApiConnectionAdminMapper;
 import com.jxx.approval.confirm.infra.RestApiConnectionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -28,10 +31,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminConfirmService {
     private final ApprovalLineRepository approvalLineRepository;
-
     private final RestApiConnectionRepository restApiConnectionRepository;
     private final ConnectionElementRepository connectionElementRepository;
-
+    private final RestApiConnectionAdminMapper restApiConnectionAdminMapper;
     private final PlatformTransactionManager txManager;
 
     public List<ApprovalLineServiceDto> findApprovalLinesBy(String confirmDocumentId) {
@@ -97,6 +99,7 @@ public class AdminConfirmService {
 
         return new RestApiConnectionResponse(
                 restApiConnection.getConnectionPk(),
+                restApiConnection.getDescription(),
                 restApiConnection.getScheme(),
                 restApiConnection.getHost(),
                 restApiConnection.getPort(),
@@ -105,8 +108,7 @@ public class AdminConfirmService {
                 restApiConnection.getTriggerType(),
                 restApiConnection.getDocumentType(),
                 restApiConnection.getCreateDateTime(),
-                request.requesterId()
-        );
+                request.requesterId());
     }
 
     private void validateUnique(ConfirmConnectionApiRequest request) {
@@ -133,7 +135,9 @@ public class AdminConfirmService {
         }
     }
 
-    public List<RestApiConnectionResponse> searchMappingConfirmApi(RestApiConnectionSearchCond cond) {
-        return null;
+    public Page<RestApiConnectionResponse> searchMappingConfirmApi(RestApiConnectionSearchCond cond, int size, int page) {
+        List<RestApiConnectionResponse> responses = restApiConnectionAdminMapper.search(cond);
+        PageService pageService = new PageService(page, size);
+        return pageService.convertToPage(responses);
     }
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -11,7 +12,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PageService {
 
+    /** 조회할 item 페이지 **/
     private final int page;
+    /** 조회할 item 양 **/
     private final int size;
 
     public <T> Page<T> convertToPage(List<T> responses) {

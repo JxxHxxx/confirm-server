@@ -5,6 +5,7 @@ import com.jxx.approval.confirm.application.ConfirmDocumentFormService;
 import com.jxx.approval.confirm.dto.request.*;
 import com.jxx.approval.confirm.dto.response.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,8 +61,10 @@ public class ConfirmDocumentAdminController {
     }
 
     @GetMapping("/admin/confirm-documents/mapping-api")
-    public ResponseEntity<?> searchMappingConfirmApi(@ModelAttribute RestApiConnectionSearchCond cond) {
-        List<RestApiConnectionResponse> responses = adminConfirmService.searchMappingConfirmApi(cond);
-        return ResponseEntity.ok(new ResponseResult<>(200, "결재 연동 API 리스트 조회 완료", responses));
+    public ResponseEntity<?> searchMappingConfirmApi(@ModelAttribute RestApiConnectionSearchCond cond,
+                                                     @RequestParam(defaultValue = "10") int size,
+                                                     @RequestParam(defaultValue = "0") int page) {
+        Page<RestApiConnectionResponse> responses = adminConfirmService.searchMappingConfirmApi(cond, size, page);
+        return ResponseEntity.ok(new ResponseResult<>(200, "결재 연동 API 페이지 조회 완료", responses));
     }
 }
