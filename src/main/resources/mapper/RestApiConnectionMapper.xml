@@ -16,18 +16,23 @@
             RAC.TRIGGER_TYPE,
             RAC.DOCUMENT_TYPE,
             RAC.CREATE_DATE_TIME,
-            RAC.REQUESTER_ID
+            RAC.REQUESTER_ID,
+            RAC.USED
         FROM JXX_REST_API_CONNECTION RAC
         <where>
             <if test="triggerType != '' and triggerType != null">
                 AND RAC.TRIGGER_TYPE = #{triggerType}
             </if>
             <if test="documentType != '' and documentType != null">
-                RAC.TRIGGER_TYPE = #{documentType}
+                AND RAC.TRIGGER_TYPE = #{documentType}
             </if>
             <if test="requesterId != '' and requesterId != null">
-                RAC.TRIGGER_TYPE = #{requesterId}
+                AND RAC.TRIGGER_TYPE = #{requesterId}
             </if>
+            <if test="used != '' and used != null">
+                AND RAC.USED = #{used}
+            </if>
+
         </where>
         ORDER BY RAC.CREATE_DATE_TIME DESC;
     </select>

@@ -94,6 +94,7 @@ public class AdminConfirmService {
                 .port(request.port())
                 .requesterId(request.requesterId())
                 .creteDateTime(LocalDateTime.now())
+                .used(true)
                 .build());
         txManager.commit(txStatus); // 트랜잭션 종료
 
@@ -108,7 +109,8 @@ public class AdminConfirmService {
                 restApiConnection.getTriggerType(),
                 restApiConnection.getDocumentType(),
                 restApiConnection.getCreateDateTime(),
-                request.requesterId());
+                restApiConnection.getRequesterId(),
+                restApiConnection.isUsed());
     }
 
     private void validateUnique(ConfirmConnectionApiRequest request) {

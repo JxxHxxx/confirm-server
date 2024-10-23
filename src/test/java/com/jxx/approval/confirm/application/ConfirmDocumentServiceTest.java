@@ -1,4 +1,5 @@
 package com.jxx.approval.confirm.application;
+import com.jxx.approval.confirm.domain.connect.RestApiConnResponseCode;
 import com.jxx.approval.confirm.domain.document.ConfirmDocument;
 import com.jxx.approval.confirm.infra.RestApiConnectionRepository;
 import org.junit.jupiter.api.Test;
@@ -14,8 +15,8 @@ class ConfirmDocumentServiceTest {
 
     ConfirmDocumentRestApiAdapterService confirmDocumentRestApiAdapterService = new ConfirmDocumentRestApiAdapterService() {
         @Override
-        public boolean call(ConfirmDocument confirmDocument, String triggerType) {
-            return true;
+        public RestApiConnResponseCode call(ConfirmDocument confirmDocument, String triggerType) {
+            return RestApiConnResponseCode.RCS01;
         }
     };
     @Autowired

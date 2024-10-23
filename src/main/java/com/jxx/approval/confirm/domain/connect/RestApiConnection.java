@@ -29,48 +29,49 @@ public class RestApiConnection {
     private static final List<String> ALLOW_SCHEMES = List.of("http", "https");
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CONNECTION_PK")
+    @Column(name = "CONNECTION_PK", columnDefinition = "BIGINT")
     private Long connectionPk;
     @Comment("URL scheme")
-    @Column(name = "SCHEME")
+    @Column(name = "SCHEME", columnDefinition = "VARCHAR(8)")
     private String scheme;
-    @Comment("URL host or ip")
-    @Column(name = "HOST")
+    @Comment("URL host or ipv4")
+    @Column(name = "HOST", columnDefinition = "VARCHAR(16)")
     private String host;
     @Comment("URL port")
-    @Column(name = "PORT")
+    @Column(name = "PORT", columnDefinition = "INT")
     private int port;
     @Comment("URL path")
-    @Column(name = "PATH")
+    @Column(name = "PATH", columnDefinition = "VARCHAR(255)")
     private String path;
     @Comment("REST API 메서드 유형")
-    @Column(name = "METHOD_TYPE")
+    @Column(name = "METHOD_TYPE", columnDefinition = "VARCHAR(8)")
     private String methodType;
     @Comment("결재 문서 유형")
-    @Column(name = "DOCUMENT_TYPE")
+    @Column(name = "DOCUMENT_TYPE", columnDefinition = "VARCHAR(8)")
     @Enumerated(value = EnumType.STRING)
     private DocumentType documentType;
     @Comment("트리거 타입(어떤 이벤트가 발생할 때 호출해야 하는지를 표현)")
-    @Column(name = "TRIGGER_TYPE")
+    @Column(name = "TRIGGER_TYPE", columnDefinition = "VARCHAR(16)")
     private String triggerType;
     @Comment("REST API에 대한 설명")
-    @Column(name = "DESCRIPTION")
+    @Column(name = "DESCRIPTION", columnDefinition = "VARCHAR(255)")
     private String description;
-
     @Comment("생성일시")
-    @Column(name = "CREATE_DATE_TIME")
+    @Column(name = "CREATE_DATE_TIME", columnDefinition = "DATETIME")
     private LocalDateTime createDateTime;
-
     @Comment("생성을 요청한 사용자의 ID")
-    @Column(name = "REQUESTER_ID")
+    @Column(name = "REQUESTER_ID", columnDefinition = "VARCHAR(16)")
     private String requesterId;
-
+    @Comment("연동 API 사용여부(false=0/true=1)")
+    @Column(name = "USED", columnDefinition = "TINYINT(1) DEFAULT 1")
+    private boolean used;
     @OneToMany(mappedBy = "restApiConnection", fetch = FetchType.LAZY)
     private List<ConnectionElement> connectionElements = new ArrayList<>();
 
     @Builder
     public RestApiConnection(String scheme, String host, int port, String path, String methodType, DocumentType documentType,
-                             String triggerType, String description, LocalDateTime creteDateTime, String requesterId, List<ConnectionElement> connectionElements) {
+                             String triggerType, String description, LocalDateTime creteDateTime, String requesterId, boolean used,
+                             List<ConnectionElement> connectionElements) {
         this.scheme = scheme;
         this.host = host;
         this.port = port;
@@ -81,6 +82,7 @@ public class RestApiConnection {
         this.description = description;
         this.createDateTime = creteDateTime;
         this.requesterId = requesterId;
+        this.used = used;
         this.connectionElements = connectionElements;
     }
 

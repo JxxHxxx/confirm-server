@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.*;
 
@@ -95,14 +94,14 @@ public class ConfirmDocumentService {
                     confirmDocument.getConfirmStatus().name());
         }
         // 결재선 지정 여부
-        if (!confirmDocument.approvalLineCreated()) {
+        if (confirmDocument.approvalLineNotCreated()) {
             throw new ApprovalLineException(EMPTY_APPROVAL_LINE);
         }
         // WRITE QUERY
         confirmDocument.changeConfirmStatus(RAISE);
         confirmDocument.changeApprovalLineCycle(ApprovalLineLifecycle.PROCESS_MODIFIABLE);
 
-        eventPublisher.publishEvent(new ConfirmDocumentRaiseEvent(confirmDocument, "RAISE"));
+        eventPublisher.publishEvent(new ConfirmDocumentRaiseEvent(confirmDocument));
         return new ConfirmDocumentServiceDto(confirmDocumentId, form.requesterId(), confirmDocument.getConfirmStatus());
     }
 

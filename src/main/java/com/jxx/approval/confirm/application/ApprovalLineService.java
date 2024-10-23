@@ -162,7 +162,7 @@ public class ApprovalLineService {
             // 결재 문서 상태 변경 및 최종 승인/반려 시간 지정
             // WRITE QUERY : JPA dirty checking
             confirmDocument.processFinalDecisionConfirmDocument(ConfirmStatus.ACCEPT);
-            eventPublisher.publishEvent(new ConfirmDocumentFinalAcceptDecisionEvent(confirmDocument, "FINAL_ACCEPT"));
+            eventPublisher.publishEvent(new ConfirmDocumentFinalAcceptDecisionEvent(confirmDocument));
         }
 
         return new ApprovalLineServiceResponse(

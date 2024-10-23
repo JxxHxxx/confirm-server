@@ -1,2 +1,21 @@
 
+### 연동 API 등록
+POST http://localhost:8000/admin/confirm-documents/mapping-api
+Content-Type: application/json
+
+{
+  "description" : "테스트 API",
+  "documentType" : "DCR",
+  "host" : "localhost",
+  "port" : 8080,
+  "methodType" : "GET",
+  "path" : "/test/api",
+  "scheme" :"http" ,
+  "triggerType" : "REJECT",
+  "connectionElements" : []
+}
+
+
+### 연동 API 조회
+
 GET http://localhost:8000/admin/confirm-documents/mapping-api

@@ -183,8 +183,9 @@ public class ConfirmDocument {
         this.approvalLineLifecycle = approvalLineLifecycle;
     }
 
-    public boolean approvalLineCreated() {
-        return ApprovalLineLifecycle.CREATED.equals(approvalLineLifecycle);
+    // 결재선이 생성됐는지 확인 여부, BEFORE_CREATE 상태이면 결재선이 생성되지 않은 상태
+    public boolean approvalLineNotCreated() {
+        return ApprovalLineLifecycle.BEFORE_CREATE.equals(approvalLineLifecycle);
     }
 
     public Map<String, Object> receiveContents() {

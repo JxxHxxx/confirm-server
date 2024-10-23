@@ -17,20 +17,20 @@ public class ConnectionElement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CONNECTION_ELEMENT_PK")
+    @Column(name = "CONNECTION_ELEMENT_PK", columnDefinition = "BIGINT")
     @Comment("REST API 파라미터 PK")
     private Long connectionParameterPk;
     @Enumerated(value = EnumType.STRING)
+    @Column(name = "ELEMENT_TYPE", nullable = false, columnDefinition = "VARCHAR(16)")
     @Comment("파라미터 유형(Request Body/Path Variable/Query String)")
-    @Column(name = "ELEMENT_TYPE", nullable = false)
     private ElementType elementType;
-    @Column(name = "ELEMENT_KEY", nullable = false)
+    @Column(name = "ELEMENT_KEY", nullable = false, columnDefinition = "VARCHAR(255)")
     @Comment("요소의 키")
     private String elementKey;
-    @Column(name = "ELEMENT_VALUE")
+    @Column(name = "ELEMENT_VALUE", columnDefinition = "VARCHAR(255)")
     @Comment("요소의 값")
     private String elementValue;
-    @Column(name = "ELEMENT_VALUE_TYPE")
+    @Column(name = "ELEMENT_VALUE_TYPE", columnDefinition = "VARCHAR(16)")
     @Comment("요소 값 유형")
     @Enumerated(value = EnumType.STRING)
     private ElementValueType elementValueType;

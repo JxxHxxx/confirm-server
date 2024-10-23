@@ -2,6 +2,7 @@ package com.jxx.approval.confirm.listener;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jxx.approval.confirm.application.ConfirmDocumentRestApiAdapterService;
+import com.jxx.approval.confirm.domain.connect.RestApiConnResponseCode;
 import com.jxx.approval.confirm.domain.document.ConfirmDocument;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,11 +24,10 @@ public class ConfirmDocumentEventListener {
     @Async
     @TransactionalEventListener(value = ConfirmDocumentRaiseEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handleRaiseEvent(ConfirmDocumentRaiseEvent event) throws JsonProcessingException {
-        log.info("EVENT ConfirmDocumentRaiseEvent");
         ConfirmDocument confirmDocument = event.confirmDocument();
-        String triggerType = event.triggerType();
-
-        confirmDocumentRestApiAdapterService.call(confirmDocument, triggerType);
+        log.info("START >> CDID:{} TRG:RAISE", confirmDocument.getConfirmDocumentId());
+        RestApiConnResponseCode responseCode = confirmDocumentRestApiAdapterService.call(confirmDocument, "RAISE");
+        log.info("END   >> CDID:{} TRG:RAISE RC:{}", confirmDocument.getConfirmDocumentId(), responseCode);
     }
 
     /**
@@ -36,29 +36,17 @@ public class ConfirmDocumentEventListener {
      **/
     @TransactionalEventListener(value = ConfirmDocumentFinalAcceptDecisionEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handleConfirmDocumentFinalAcceptDecisionEvent(ConfirmDocumentFinalAcceptDecisionEvent event) throws JsonProcessingException {
-        log.info("EVENT ConfirmDocumentFinalAcceptDecisionEvent");
-        // third-party API 정상 응답 여부
         ConfirmDocument confirmDocument = event.confirmDocument();
-        String triggerType = event.triggerType();
-
-        confirmDocumentRestApiAdapterService.call(confirmDocument, triggerType);
+        log.info("START >> CDID:{} TRG:FINAL_ACCEPT", confirmDocument.getConfirmDocumentId());
+        RestApiConnResponseCode responseCode = confirmDocumentRestApiAdapterService.call(confirmDocument, "FINAL_ACCEPT");
+        log.info("END   >> CDID:{} TRG:FINAL_ACCEPT RC:{}", confirmDocument.getConfirmDocumentId(), responseCode);
     }
 
     @TransactionalEventListener(value = ConfirmDocumentRejectDecisionEvent.class, phase = TransactionPhase.AFTER_COMMIT)
     public void handle(ConfirmDocumentRejectDecisionEvent event) throws JsonProcessingException {
         ConfirmDocument confirmDocument = event.confirmDocument();
-        String confirmDocumentId = confirmDocument.getConfirmDocumentId();
-        log.info("\n [PROCESS:REJECT] confirmDocumentId:{}", confirmDocumentId);
-
-        confirmDocumentRestApiAdapterService.call(confirmDocument, "REJECT");
+        log.info("START >> CDID:{} TRG:REJECT", confirmDocument.getConfirmDocumentId());
+        RestApiConnResponseCode responseCode = confirmDocumentRestApiAdapterService.call(confirmDocument, "REJECT");
+        log.info("END   >> CDID:{} TRG:REJECT RC:{}", confirmDocument.getConfirmDocumentId(), responseCode);
     }
-    /**
-     *
-     * @param confirmDocument
-     * @param triggerType
-     * @return true : REST API 정상 응답 / false REST API 정상 응답 실패
-     * 엔티티 매니저 종료된 상태
-     * @throws JsonProcessingException
-     */
-
 }

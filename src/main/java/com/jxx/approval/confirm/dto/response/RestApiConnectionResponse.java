@@ -4,7 +4,6 @@ import com.jxx.approval.confirm.domain.document.DocumentType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -23,4 +22,5 @@ public class RestApiConnectionResponse {
     private DocumentType documentType;
     private LocalDateTime createDateTime;
     private String requesterId;
+    private boolean used;
 }

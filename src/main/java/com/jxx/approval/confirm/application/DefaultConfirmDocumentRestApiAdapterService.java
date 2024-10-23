@@ -1,11 +1,12 @@
-package com.jxx.approval.confirm;
+package com.jxx.approval.confirm.application;
 
 import com.jxx.approval.common.client.SimpleRestClient;
-import com.jxx.approval.confirm.application.ConfirmDocumentRestApiAdapterService;
-import com.jxx.approval.confirm.domain.AdminClientException;
 import com.jxx.approval.confirm.domain.connect.ConnectionElement;
+import com.jxx.approval.confirm.domain.connect.RestApiConnResponseCode;
 import com.jxx.approval.confirm.domain.connect.RestApiConnection;
-import com.jxx.approval.confirm.domain.document.*;
+import com.jxx.approval.confirm.domain.connect.RestApiConnectionException;
+import com.jxx.approval.confirm.domain.document.ConfirmDocument;
+import com.jxx.approval.confirm.domain.document.DocumentType;
 import com.jxx.approval.confirm.dto.response.ResponseResult;
 import com.jxx.approval.confirm.infra.RestApiConnectionRepository;
 import com.jxx.approval.vendor.vacation.ResourceIdExtractor;
@@ -22,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.jxx.approval.confirm.domain.connect.RestApiConnResponseCode.*;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -30,25 +33,32 @@ public class DefaultConfirmDocumentRestApiAdapterService implements ConfirmDocum
     private final RestApiConnectionRepository restApiConnectionRepository;
 
     @Override
-    public boolean call(ConfirmDocument confirmDocument, String triggerType) {
+    public RestApiConnResponseCode call(ConfirmDocument confirmDocument, String triggerType) {
         String confirmDocumentId = confirmDocument.getConfirmDocumentId();
         DocumentType documentType = confirmDocument.getDocumentType();
         String companyId = confirmDocument.getCompanyId();
-
-        log.info("\n [EVENT-START][DOCID:{} DOCTYPE:{} TRIGTYPE:{}]", confirmDocumentId, documentType, triggerType);
-
-        // 추상화 START
         RestApiConnection connection = null;
         try {
-            connection = restApiConnectionRepository.fetchWithConnectionElements(documentType, triggerType).get(0);
-        } catch (ArrayIndexOutOfBoundsException exception) {
-            log.error("documentType:{} triggerType:{} 을 만족하는 restApiConnection 존재하지 않음" ,documentType, triggerType, exception);
-            throw new AdminClientException("documentType:" + documentType + "triggerType: " + triggerType + "을 만족하는 restApiConnection 존재하지 않음");
+            List<RestApiConnection> connections = restApiConnectionRepository.fetchWithConnectionElements(documentType, triggerType);
+            // documentType, triggerType 조건에 만족하는 RestApiConnection 이 스토어에 저장되어 있지 않은 케이스
+            if (connections.isEmpty()) {
+                throw new RestApiConnectionException(RCF02);
+            }
+
+            connection = connections.get(0);
+            // 연동 API가 등록되어 있지만 사용하지 않는 케이스
+            if (!connection.isUsed()) {
+                return RCS02;
+            }
+
+        } catch (Exception exception) {
+            throw new RestApiConnectionException(RCF90);
         }
 
         Map<String, Object> requestBody = buildRequestBody(connection); // request body 생성
         String url = buildUrl(confirmDocumentId, companyId, connection); // url 생성
-        return callApi(connection, requestBody, url); // api 호출
+
+        return callApi(connection, requestBody, url);
     }
 
     private Map<String, Object> buildRequestBody(RestApiConnection connection) {
@@ -96,42 +106,44 @@ public class DefaultConfirmDocumentRestApiAdapterService implements ConfirmDocum
                 .toString();
     }
 
-    /**
-     * @return true : API 정상 응답 O / false : API 정상 응답 X
-     *
-     **/
-    private static boolean callApi(RestApiConnection connection, Map<String, Object> httpRequestBody, String url) {
+    private RestApiConnResponseCode callApi(RestApiConnection connection, Map<String, Object> httpRequestBody, String url) {
         SimpleRestClient simpleRestClient = new SimpleRestClient();
         switch (connection.getMethodType()) {
             case "POST" -> {
                 try {
                     ResponseEntity<String> response = simpleRestClient.postForEntity(url, httpRequestBody, String.class);
                     HttpStatusCode statusCode = response.getStatusCode();
-                    log.info("response statusCode {}", statusCode);
-                    return statusCode.is2xxSuccessful();
+
+                    if (statusCode.is2xxSuccessful()) {
+                        return RCS01;
+                    }
+                    else { // 4xx, 5xx 응답 예외
+                        throw new RestApiConnectionException(RCF01, statusCode.value());
+                    }
+
                 } catch (Exception e) {
-                    log.error("예상치 않은 예외 발생", e);
-                    throw new ConfirmDocumentException("오류 발생");
+                    throw new RestApiConnectionException(RCF90, e);
                 }
             }
             case "PATCH" -> {
-                ResponseResult response = null;
                 try {
-                    response = simpleRestClient.patch(url, httpRequestBody);
+                    ResponseResult response = simpleRestClient.patch(url, httpRequestBody);
                     Integer statusCode = response.getStatus();
-                    log.info("response statusCode {}", statusCode);
-                    return HttpStatusCode.valueOf(statusCode).is2xxSuccessful();
+                    if (HttpStatusCode.valueOf(statusCode).is2xxSuccessful()) {
+                        return RCS01;
+                    }
+                    else { // 4xx, 5xx 응답 예외
+                        throw new RestApiConnectionException(RCF01, statusCode);
+                    }
                 } catch (Exception e) {
-                    log.error("예상치 않은 예외 발생", e);
-                    throw new ConfirmDocumentException("오류 발생");
+                    throw new RestApiConnectionException(RCF90, e);
                 }
             }
             case "GET" -> {
-                log.info("GET 미구현");
-                return false;
+                return RCF99;
             }
             default -> {
-                return false;
+                return RCF99;
             }
         }
     }
