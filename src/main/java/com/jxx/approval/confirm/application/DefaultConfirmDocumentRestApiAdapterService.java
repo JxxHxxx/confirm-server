@@ -41,6 +41,7 @@ public class DefaultConfirmDocumentRestApiAdapterService implements ConfirmDocum
         try {
             List<RestApiConnection> connections = restApiConnectionRepository.fetchWithConnectionElements(documentType, triggerType);
             // documentType, triggerType 조건에 만족하는 RestApiConnection 이 스토어에 저장되어 있지 않은 케이스
+            // 비즈니스 로직 상 문제가 있는 케이스임, 따라서 롤백시키는게 맞음, 이 케이스를 타지 않아야 함
             if (connections.isEmpty()) {
                 throw new RestApiConnectionException(RCF02);
             }
@@ -51,7 +52,7 @@ public class DefaultConfirmDocumentRestApiAdapterService implements ConfirmDocum
                 return RCS02;
             }
 
-        } catch (Exception exception) {
+        } catch (Exception exception) { // ConfirmDocumentEventListener 내 로직이 비동기 처리일 경우, 데이터 정합성 문제가 발생할 수 있으니 확인이 필요.
             throw new RestApiConnectionException(RCF90);
         }
 

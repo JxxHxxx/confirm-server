@@ -74,6 +74,7 @@ public class AdminConfirmService {
         connectionElementRepository.saveAll(connectionElements);
     }
 
+    // WRITE QUERY - 트랜잭션 직접 선언
     public RestApiConnectionResponse mappingConfirmApi(ConfirmConnectionApiRequest request) {
         //  TRIGGER_TYPE, DOCUMENT_TYPE 두개는 고유한 값을 가져야 함
         validateUnique(request);

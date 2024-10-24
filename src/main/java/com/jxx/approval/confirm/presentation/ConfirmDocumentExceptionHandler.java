@@ -70,10 +70,12 @@ public class ConfirmDocumentExceptionHandler {
                 return ResponseEntity.badRequest().body(new ResponseResult<>(400, description, response));
             }
             case RCF02 -> {
-                log.error("RC:{} DESC:{}",RCF02.name(), RCF02.getDescription(), exception);
+                log.error("==========SERIOUS==========\n" +
+                        "RC:{} DESC:{} \n " +
+                          "============================",RCF02.name(), RCF02.getDescription(), exception);
                 Map<String, Object> response = new HashMap<>();
                 response.put("errCode", RCF02.name());
-                return ResponseEntity.badRequest().body(new ResponseResult<>(400, description, response));
+                return ResponseEntity.badRequest().body(new ResponseResult<>(500, description, response));
             }
             case RCF90 -> {
                 log.error("RC:{} DESC:{}",RCF90.name(), RCF90.getDescription(), exception);
@@ -83,9 +85,13 @@ public class ConfirmDocumentExceptionHandler {
                 log.error("RC:{} DESC:{}",RCF99.name(), RCF99.getDescription(), exception);
                 return ResponseEntity.badRequest().body(new ResponseResult<>(400, description, null));
             }
+            // 컴파일을 위한 코드로 설계상 RCF, RCS 모두 아래 케이스를 타면 안됨
             default -> {
-                log.error("시스템 에러 - 해당 케이스를 타면 안됨, 개발자는 확인이 필요함");
-                return ResponseEntity.internalServerError().body(new ResponseResult<>(500, description, null));
+                log.error("==========SERIOUS==========\n" +
+                        "RC:{} DESC:{} 시스템 오류입니다. 개발자 확인이 필요하며 해당 케이스를 타지 않도록 해야 합니다.\n" +
+                        "만약 RCS 케이스라면 이 예외 핸들러에서 처리하면 안됩니다. \n" +
+                        "============================",RCF02.name(), RCF02.getDescription(), exception);
+                return ResponseEntity.internalServerError().body(new ResponseResult<>(500, description, exception.getResponseCode()));
             }
         }
     }
