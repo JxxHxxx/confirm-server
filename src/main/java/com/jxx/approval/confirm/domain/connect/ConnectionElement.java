@@ -28,7 +28,7 @@ public class ConnectionElement {
     @Comment("요소의 키")
     private String elementKey;
     @Column(name = "ELEMENT_VALUE", columnDefinition = "VARCHAR(255)")
-    @Comment("요소의 값")
+    @Comment("요소의 값(ELEMENT_VALUE_TYPE=CONST 일 경우 설정)")
     private String elementValue;
     @Column(name = "ELEMENT_VALUE_TYPE", columnDefinition = "VARCHAR(16)")
     @Comment("요소 값 유형")
