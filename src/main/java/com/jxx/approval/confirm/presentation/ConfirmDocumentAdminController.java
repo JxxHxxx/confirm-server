@@ -2,6 +2,8 @@ package com.jxx.approval.confirm.presentation;
 
 import com.jxx.approval.confirm.application.AdminConfirmService;
 import com.jxx.approval.confirm.application.ConfirmDocumentFormService;
+import com.jxx.approval.confirm.application.RestApiConnectionAdminService;
+import com.jxx.approval.confirm.domain.connect.dto.CreateMappingConfirmApiRequest;
 import com.jxx.approval.confirm.dto.request.*;
 import com.jxx.approval.confirm.dto.response.*;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ public class ConfirmDocumentAdminController {
 
     private final ConfirmDocumentFormService confirmDocumentFormService;
     private final AdminConfirmService adminConfirmService;
+    private final RestApiConnectionAdminService restApiConnectionAdminService;
 
 
     @PostMapping("/admin/confirm-document-forms")
@@ -64,7 +67,13 @@ public class ConfirmDocumentAdminController {
     public ResponseEntity<?> searchMappingConfirmApi(@ModelAttribute RestApiConnectionSearchCond cond,
                                                      @RequestParam(defaultValue = "10") int size,
                                                      @RequestParam(defaultValue = "0") int page) {
-        Page<RestApiConnectionResponse> responses = adminConfirmService.searchMappingConfirmApi(cond, size, page);
+        Page<RestApiConnectionResponse> responses = restApiConnectionAdminService.searchMappingConfirmApi(cond, size, page);
         return ResponseEntity.ok(new ResponseResult<>(200, "결재 연동 API 페이지 조회 완료", responses));
+    }
+
+    @PostMapping
+    public ResponseEntity<?> createMappingConfirmApi(@RequestBody CreateMappingConfirmApiRequest request) {
+        restApiConnectionAdminService.createMappingConfirmApi(request);
+        return ResponseEntity.ok(new ResponseResult<>(201, "", null));
     }
 }

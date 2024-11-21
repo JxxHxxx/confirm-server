@@ -1,6 +1,5 @@
 package com.jxx.approval.confirm.application;
 
-import com.jxx.approval.common.page.PageService;
 import com.jxx.approval.confirm.domain.AdminClientException;
 import com.jxx.approval.confirm.domain.connect.ConnectionElement;
 import com.jxx.approval.confirm.domain.connect.RestApiConnection;
@@ -8,12 +7,10 @@ import com.jxx.approval.confirm.domain.document.DocumentType;
 import com.jxx.approval.confirm.domain.line.ApprovalLine;
 import com.jxx.approval.confirm.dto.request.ConfirmConnectionApiRequest;
 import com.jxx.approval.confirm.dto.request.RestApiConnectionCreateRequest;
-import com.jxx.approval.confirm.dto.request.RestApiConnectionSearchCond;
 import com.jxx.approval.confirm.dto.response.ApprovalLineServiceDto;
 import com.jxx.approval.confirm.dto.response.RestApiConnectionResponse;
 import com.jxx.approval.confirm.infra.ApprovalLineRepository;
 import com.jxx.approval.confirm.infra.ConnectionElementRepository;
-import com.jxx.approval.confirm.infra.RestApiConnectionAdminMapper;
 import com.jxx.approval.confirm.infra.RestApiConnectionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +30,6 @@ public class AdminConfirmService {
     private final ApprovalLineRepository approvalLineRepository;
     private final RestApiConnectionRepository restApiConnectionRepository;
     private final ConnectionElementRepository connectionElementRepository;
-    private final RestApiConnectionAdminMapper restApiConnectionAdminMapper;
     private final PlatformTransactionManager txManager;
 
     public List<ApprovalLineServiceDto> findApprovalLinesBy(String confirmDocumentId) {
@@ -136,11 +132,5 @@ public class AdminConfirmService {
                     validatePath, validateScheme, validatePort, validateMethodType);
             throw new AdminClientException("유효하지 않은 연동 API 정보가 존재합니다.");
         }
-    }
-
-    public Page<RestApiConnectionResponse> searchMappingConfirmApi(RestApiConnectionSearchCond cond, int size, int page) {
-        List<RestApiConnectionResponse> responses = restApiConnectionAdminMapper.search(cond);
-        PageService pageService = new PageService(page, size);
-        return pageService.convertToPage(responses);
     }
 }

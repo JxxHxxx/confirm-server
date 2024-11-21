@@ -70,8 +70,7 @@ public class RestApiConnection {
 
     @Builder
     public RestApiConnection(String scheme, String host, int port, String path, String methodType, DocumentType documentType,
-                             String triggerType, String description, LocalDateTime creteDateTime, String requesterId, boolean used,
-                             List<ConnectionElement> connectionElements) {
+                             String triggerType, String description, LocalDateTime creteDateTime, String requesterId, boolean used) {
         this.scheme = scheme;
         this.host = host;
         this.port = port;
@@ -83,7 +82,6 @@ public class RestApiConnection {
         this.createDateTime = creteDateTime;
         this.requesterId = requesterId;
         this.used = used;
-        this.connectionElements = connectionElements;
     }
 
     /**
