@@ -28,7 +28,7 @@ public class RestApiConnectionAdminService {
         PageService pageService = new PageService(page, size);
         return pageService.convertToPage(responses);
     }
-    public void createMappingConfirmApi(CreateMappingConfirmApiRequest request) {
+    public RestApiConnectionResponse createMappingConfirmApi(CreateMappingConfirmApiRequest request) {
         // 검증
         if (RestApiConnectionValidator.notValid(request)) {
             throw new RestApiConnectionException(RestApiConnResponseCode.RCF10);
@@ -53,6 +53,20 @@ public class RestApiConnectionAdminService {
 
 
         // 저장
-        restApiConnectionRepository.save(restApiConnection);
+        RestApiConnection savedRestApiConnection = restApiConnectionRepository.save(restApiConnection);
+        return new RestApiConnectionResponse(
+                savedRestApiConnection.getConnectionPk(),
+                savedRestApiConnection.getDescription(),
+                savedRestApiConnection.getScheme(),
+                savedRestApiConnection.getHost(),
+                savedRestApiConnection.getPort(),
+                savedRestApiConnection.getMethodType(),
+                savedRestApiConnection.getPath(),
+                savedRestApiConnection.getTriggerType(),
+                savedRestApiConnection.getDocumentType(),
+                savedRestApiConnection.getCreateDateTime(),
+                savedRestApiConnection.getRequesterId(),
+                savedRestApiConnection.isUsed()
+        );
     }
 }

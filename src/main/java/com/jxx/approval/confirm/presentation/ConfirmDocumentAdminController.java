@@ -53,16 +53,6 @@ public class ConfirmDocumentAdminController {
         return ResponseEntity.ok(new ResponseResult<>(OK.value(), "관리자용 결재선 조회", responses));
     }
 
-    /**
-     * 결재 연동 서비스 - 결재 문서의 특정 상태로 변경되면 매핑된 API 가 호출되도록 한다.
-     * 연동 API 등록
-     **/
-    @PostMapping("/admin/confirm-documents/mapping-api")
-    public ResponseEntity<?> mappingConfirmApi(@RequestBody ConfirmConnectionApiRequest request) {
-        RestApiConnectionResponse response = adminConfirmService.mappingConfirmApi(request);
-        return ResponseEntity.status(201).body(new ResponseResult<>(201, "결재 연동 API 생성 완료", response));
-    }
-
     @GetMapping("/admin/confirm-documents/mapping-api")
     public ResponseEntity<?> searchMappingConfirmApi(@ModelAttribute RestApiConnectionSearchCond cond,
                                                      @RequestParam(defaultValue = "10") int size,
@@ -71,9 +61,13 @@ public class ConfirmDocumentAdminController {
         return ResponseEntity.ok(new ResponseResult<>(200, "결재 연동 API 페이지 조회 완료", responses));
     }
 
-    @PostMapping
+    /**
+     * 결재 연동 서비스 - 결재 문서의 특정 상태로 변경되면 매핑된 API 가 호출되도록 한다.
+     * 연동 API 등록
+     **/
+    @PostMapping("/admin/confirm-documents/mapping-api")
     public ResponseEntity<?> createMappingConfirmApi(@RequestBody CreateMappingConfirmApiRequest request) {
-        restApiConnectionAdminService.createMappingConfirmApi(request);
-        return ResponseEntity.ok(new ResponseResult<>(201, "", null));
+        RestApiConnectionResponse response = restApiConnectionAdminService.createMappingConfirmApi(request);
+        return ResponseEntity.ok(new ResponseResult<>(201, "결재 연동 API 등록 완료", response));
     }
 }
