@@ -13,8 +13,6 @@ public class RestApiConnectionValidator {
        - false : 유효함
      **/
     public static boolean notValid(CreateMappingConfirmApiRequest request) {
-
-
-        return true;
+        return false;
     }
 }

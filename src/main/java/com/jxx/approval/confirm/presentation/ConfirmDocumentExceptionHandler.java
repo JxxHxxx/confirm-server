@@ -61,10 +61,10 @@ public class ConfirmDocumentExceptionHandler {
     public ResponseEntity<?> handle(RestApiConnectionException exception) {
         String description = exception.getDescription();
 
+        Map<String, Object> response = new HashMap<>();
         switch (exception.getResponseCode()) {
             case RCF01 -> {
                 log.error("RC:{} DESC:{}",RCF01.name(), RCF01.getDescription(), exception);
-                Map<String, Object> response = new HashMap<>();
                 response.put("errCode", RCF01.name());
                 response.put("thirdPartyResponseHttpStatusCode", exception.getHttpStatusCode());
                 return ResponseEntity.badRequest().body(new ResponseResult<>(400, description, response));
@@ -73,17 +73,23 @@ public class ConfirmDocumentExceptionHandler {
                 log.error("==========SERIOUS==========\n" +
                         "RC:{} DESC:{} \n " +
                           "============================",RCF02.name(), RCF02.getDescription(), exception);
-                Map<String, Object> response = new HashMap<>();
                 response.put("errCode", RCF02.name());
-                return ResponseEntity.badRequest().body(new ResponseResult<>(500, description, response));
+                return ResponseEntity.badRequest().body(new ResponseResult<>(400, description, response));
+            }
+            case RCF10 -> {
+                log.error("RC:{} DESC:{}",RCF10.name(), RCF10.getDescription(), exception);
+                response.put("errCode", RCF10.name());
+                return ResponseEntity.badRequest().body(new ResponseResult<>(400, description, response));
             }
             case RCF90 -> {
                 log.error("RC:{} DESC:{}",RCF90.name(), RCF90.getDescription(), exception);
-                return ResponseEntity.internalServerError().body(new ResponseResult<>(500, description, null));
+                response.put("errCode", RCF90.name());
+                return ResponseEntity.internalServerError().body(new ResponseResult<>(500, description, response));
             }
             case RCF99 -> {
                 log.error("RC:{} DESC:{}",RCF99.name(), RCF99.getDescription(), exception);
-                return ResponseEntity.badRequest().body(new ResponseResult<>(400, description, null));
+                response.put("errCode", RCF99.name());
+                return ResponseEntity.internalServerError().body(new ResponseResult<>(500, description, response));
             }
             // 컴파일을 위한 코드로 설계상 RCF, RCS 모두 아래 케이스를 타면 안됨
             default -> {

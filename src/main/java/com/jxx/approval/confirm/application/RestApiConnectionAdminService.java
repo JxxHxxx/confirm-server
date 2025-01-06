@@ -29,10 +29,12 @@ public class RestApiConnectionAdminService {
         return pageService.convertToPage(responses);
     }
     public RestApiConnectionResponse createMappingConfirmApi(CreateMappingConfirmApiRequest request) {
-        // 검증
-        if (RestApiConnectionValidator.notValid(request)) {
+        // 결재 문서의 트리거가 존재하는지 검증 - 존재한다면 오류, 미존재 시, 생성 진행 가능
+        boolean duplicatedRequest = restApiConnectionRepository.findByDocumentTypeAndTriggerType(request.documentType(), request.triggerType())
+                .isPresent();
+        if (duplicatedRequest) {
             throw new RestApiConnectionException(RestApiConnResponseCode.RCF10);
-        };
+        }
 
         // 생성
         RestApiConnection restApiConnection = RestApiConnection.builder()
