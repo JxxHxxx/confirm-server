@@ -121,6 +121,9 @@
                 AND CDM.CREATE_TIME >= #{startDate} AND CDM.CREATE_TIME <= DATE_ADD(#{endDate}, INTERVAL 1 DAY)
                ]]>
             </if>
+            <if test="confirmDocumentId !=null and confirmDocumentId !=''">
+                AND CDM.CONFIRM_DOCUMENT_ID = #{confirmDocumentId}
+            </if>
             <if test="companyId !=null and companyId !=''">
                 AND CDM.COMPANY_ID = #{companyId}
             </if>
